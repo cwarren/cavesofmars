@@ -4,6 +4,7 @@ var Game =  {
     _screenWidth: 80,
     _screenHeight: 24,
     _randomSeed: 12,
+    _game_stage: 'start',
     init: function() {
         // Any necessary initialization will go here.
         this._randomSeed = 5 + Math.floor(Math.random()*100000);
@@ -17,6 +18,9 @@ var Game =  {
         // Create a helper function for binding to an event
         // and making it send it to the screen
         var game = this; // So that we don't lose this
+        
+        this.setGameStage('starting');
+        
         var bindEventToScreen = function(event) {
             window.addEventListener(event, function(e) {
                 // When an event is received, send it to the
@@ -48,6 +52,12 @@ var Game =  {
     },
     getScreenHeight: function() {
         return this._screenHeight;
+    },
+    getGameStage: function() {
+        return this._game_stage;
+    },
+    setGameStage: function(newstage) {
+        this._game_stage = newstage;
     },
     switchScreen: function(screen) {
         // If we had a screen before, notify it that we exited

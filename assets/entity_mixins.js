@@ -247,7 +247,7 @@ Game.EntityMixins.Destructible = Game.util.extendedObj(Game.EntityMixins.NonRecu
     init: function(template) {
         Game.EntityMixins.NonRecuperatingDestructible.init.call(this,template);
 
-        this._timeForFullRecuperation = properties['timeForFullRecuperation'] || (this._defaultActionDuration * 1000); // default is full recovery over 1000 turns
+        this._timeForFullRecuperation = template['timeForFullRecuperation'] || (this._defaultActionDuration * 1000); // default is full recovery over 1000 turns
         this._healingTimeCounter = 0;
     },
     getTimePerHpHealed: function() {

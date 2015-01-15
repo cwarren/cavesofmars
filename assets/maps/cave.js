@@ -1,8 +1,20 @@
-Game.Map.Cave = function(tiles, player) {
+Game.Map.Cave = function() {
+
+    // Create a map based on our size parameters
+    var width = 128;
+    var height = 48;
+    var depth = 6;
+    
+    var tiles = new Game.Builder(width, height, depth).getTiles();
+//                    var map = new Game.Map.Cave(tiles, this._player);
+
+    
     // Call the Map constructor
     Game.Map.call(this, tiles);
+    
     // Add the player
-    this.addEntityAtRandomPosition(player, 0);
+//    this.addEntityAtRandomPosition(player, 0);
+
     // Add random entities and items to each floor.
     for (var z = 0; z < this._depth; z++) {
         // 15 entities per floor
@@ -24,6 +36,7 @@ Game.Map.Cave = function(tiles, player) {
             this.addItemAtRandomPosition(Game.ItemRepository.createRandom(), z);
         }
     }
+
     // Add weapons and armor to the map in random positions and floors
     var templates = ['dagger', 'sword', 'staff', 
         'tunic', 'chainmail', 'platemail'];
@@ -31,9 +44,11 @@ Game.Map.Cave = function(tiles, player) {
         this.addItemAtRandomPosition(Game.ItemRepository.create(templates[i]),
             Math.floor(this._depth * Math.random()));
     }
+
     // Add a hole to the final cavern on the last level.
     var holePosition = this.getRandomFloorPosition(this._depth - 1);
     this._tiles[this._depth - 1][holePosition.x][holePosition.y] = 
         Game.Tile.holeToCavernTile;
 };
+
 Game.Map.Cave.extend(Game.Map);

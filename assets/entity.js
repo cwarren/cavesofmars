@@ -106,19 +106,26 @@ Game.Entity.prototype.kill = function(killed_by,message) {
 
 Game.Entity.prototype.switchMap = function(newMap) {
 
+    var oldMap = this.getMap();
     // If it's the same map, nothing to do!
-    if (newMap === this.getMap()) {
+    if (newMap === oldMap) {
         return;
     }
-    this.getMap().removeEntity(this);
-
+    if (oldMap) {
+        this.getMap().removeEntity(this);
+    }
+    
     // Clear the position
     this._x = 0;
     this._y = 0;
     this._z = 0;
 
     // Add to the new map
-    newMap.addEntity(this);
+    newMap.addEntityAtRandomPosition(this,0);
+    
+    // Start the engine!
+    newMap.getEngine().start();
+
 };
 
 Game.Entity.prototype.setPosition = function(x, y, z) {

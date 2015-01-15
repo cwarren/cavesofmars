@@ -1,0 +1,40 @@
+Screens:
+- Caves of Mars title/splash screen
+- story screen
+- class selection screen
+- play screen
+    + maps: surface, upper caves, gateway boss cave, lower tunnels
+- item selection screen
+- falling animation screen
+
+- 
+
+Game Jam Goals:
+
+- re-theme what I have for my chosen setting & story
+  + come up with story-consistent justification for experience system (and probably modify that system accordingly)
+- split messaging display into a separate screen than the main map/play area
+  + implement message history system
+  + create (and make use of) richer descriptions of observable things and narrative elements/events
+- refactor fog of war to use a secondary map rather than the live map (i.e. avoid showing distant map changes)
+- implement throwing/ranged action
+- design and implement a richer melee combat system (at the least, split out hitting, damaging, other hit effects, dodging, damage resistance, and on-being-hit effects)
+- integrate thrown/fired items into the combat system
+- improve map generation with a bit more tile variety
+  + improve impenetrable map borders
+- multi-staged digging
+- design and implement a simple loot system (or, rather, give appropriate items to appropriate NPCs, and have those items be used)
+- design and implement a simple keyed-door system
+- boss key gives you access to win state
+
+
+standard starting gear:
+
+JATT - Jack-of-All-Trades-Tool - shovel/pick/axe/staff/prybar
+HEM Suit (badly damaged)- Hostile Environment Mitigation Suit
+Multitool - [leatherman]
+Comm Unit (broken)
+HEM Pack (broken) - (heater, oxy tanks, etc.)
+Headlamp
+powerbars
+analyzer

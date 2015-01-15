@@ -6,12 +6,27 @@ Game.Screen.DEFAULT_COLOR_SETTER = '%c{white}%b{black}';
 
 // Define our initial start screen
 Game.Screen.startScreen = {
-    enter: function() {    console.log("Entered start screen."); },
-    exit: function() { console.log("Exited start screen."); },
+    enter: function() {  },
+    exit: function() {  },
     render: function(display) {
         // Render our prompt to the screen
-        display.drawText(1,1, "%c{yellow}Javascript Roguelike");
-        display.drawText(1,2, "Press [Enter] to start!");
+display.drawText(2,1,  "............................................................................");
+display.drawText(2,2,  "................................_..._.......................................");
+display.drawText(2,3,  "...............................|.|.|.|......................................");
+display.drawText(2,4,  ".............................._|.|_|.|__...___..............................");
+display.drawText(2,5,  ".............................|_..__|.'_.\\./._.\\.............................");
+display.drawText(2,6,  "...............................|.|_|.|.|.|..__/.............................");
+display.drawText(2,7,  "................................\\__|_|.|_|\\___|.............................");
+display.drawText(2,8,  "............................................................................");
+display.drawText(2,9,  ".._____...___.._..._._____._____..........__..___..___..___..______.._____..");
+display.drawText(2,10, "./..__.\\./._.\\|.|.|.|..___/..___|......../._|.|..\\/..|./._.\\.|.___.\\/..___|.");
+display.drawText(2,11, ".|./..\\//./_\\.\\.|.|.|.|__.\\.`--.....___.|.|_..|......|/./_\\.\\|.|_/./\\.`--...");
+display.drawText(2,12, ".|.|....|.._..|.|.|.|..__|.`--..\\../._.\\|.._|.|.|\\/|.||.._..||..../..`--..\\.");
+display.drawText(2,13, ".|.\\__/\\|.|.|.\\.\\_/./.|___/\\__/./.|.(_).|.|...|.|..|.||.|.|.||.|\\.\\./\\__/./.");
+display.drawText(2,14, "..\\____/\\_|.|_/\\___/\\____/\\____/...\\___/|_|...\\_|..|_/\\_|.|_/\\_|.\\_|\\____/..");
+display.drawText(2,15, "............................................................................");
+
+        display.drawText(28,20, "%c{yellow}Press [Enter] to start");
     },
     handleInput: function(inputType, inputData) {
         // When [Enter] is pressed, go to the play screen
@@ -31,6 +46,7 @@ Game.Screen.playScreen = {
     _gameEnded: false,
     _subScreen: null,
     _parentScreen: null,
+    _moveCounter: 0,
     setSubScreen: function(subScreen) {
             this._subScreen = subScreen;
             if (subScreen) {
@@ -40,24 +56,25 @@ Game.Screen.playScreen = {
             // Refresh screen on changing the subscreen
             Game.refresh();
     },
+    getPlayer: function() {
+        return this._player;
+    },
     enter: function() {
         
-        // Create a map based on our size parameters
-        var width = 128;
-        var height = 48;
-        var depth = 6;
 
 //        width = 80;
 //        height = 24;
 //        depth = 1;
 
-        // Create our map from the tiles and player
         this._player = new Game.Entity(Game.PlayerTemplate);
-        var tiles = new Game.Builder(width, height, depth).getTiles();
-        var map = new Game.Map.Cave(tiles, this._player);
+        this._moveCounter = 0;
+        
+        // Create our map from the tiles and player
+//        var tiles = new Game.Builder(width, height, depth).getTiles();
+//        var map = new Game.Map.Cave(tiles, this._player);
         
         // Start the map's engine
-        map.getEngine().start();
+//        map.getEngine().start();
     },
     exit: function() { console.log("Exited play screen."); },
     getScreenOffsets: function() {
@@ -290,6 +307,12 @@ Game.Screen.playScreen = {
                 tookAction = this.move(0, -1, 0);
             } else if (inputData.keyCode === ROT.VK_NUMPAD9) {
                 tookAction = this.move(1, -1, 0);
+            }
+            if (Game.getGameStage()=='surface') {
+                this._moveCounter++;
+                if (this._moveCounter > 1) {
+                    this.setSubScreen(Game.Screen.storyScreen);
+                }
             }
 
         } else if (inputType === 'keypress') {
@@ -880,26 +903,25 @@ Game.Screen.lookScreen = new Game.Screen.TargetBasedScreen({
 // Define our help screen
 Game.Screen.helpScreen = {
     render: function(display) {
-        var text = 'rogue1 help';
+        var text =   'CAVES of MARS';
         var border = '-------------';
         var y = 0;
         display.drawText(Game.getScreenWidth() / 2 - text.length / 2, y++, text);
         display.drawText(Game.getScreenWidth() / 2 - text.length / 2, y++, border);
-        display.drawText(0, y++, 'The villagers have been complaining of a terrible stench coming from the cave.');
-        display.drawText(0, y++, 'Find the source of this smell and get rid of it!');
-        y += 3;
-        display.drawText(0, y++, 'number pad for movement, run into something to hit it');
-        display.drawText(0, y++, '[<],[>] up a level and down a level respectively');
-        display.drawText(0, y++, '[g] to pick up something');
-        display.drawText(0, y++, '[d] to drop something');
-        display.drawText(0, y++, '[E] to eat something');
-        display.drawText(0, y++, '[w] to wield items');
-        display.drawText(0, y++, '[W] to wear items');
-        display.drawText(0, y++, '[x] to examine carried items');
-        display.drawText(0, y++, '[l] (lowercase L) to look around you');
-        display.drawText(0, y++, '[?] to show this help screen');
-        y += 3;
-        text = '--- press space key to continue ---';
+        y += 1;
+        display.drawText(1, y++, 'Use the number pad for movement, run into something to hit it');
+        y += 2;
+        display.drawText(1, y++, '[l] (lowercase L) to look around you');
+        display.drawText(1, y++, '[g] to pick up something');
+        display.drawText(1, y++, '[d] to drop something');
+        display.drawText(1, y++, '[x] to examine carried items');
+        display.drawText(1, y++, '[E] to eat something');
+        display.drawText(1, y++, '[w] to wield items');
+        display.drawText(1, y++, '[W] to wear items');
+        display.drawText(1, y++, '[<],[>] up a level and down a level respectively');
+        display.drawText(1, y++, '[?] to show this help screen');
+        y = Game.getScreenHeight()-1;
+        text = '%c{yellow}--- press space key to continue ---';
         display.drawText(Game.getScreenWidth() / 2 - text.length / 2, y++, text);
     },
     setParentScreen: function(screen) {
@@ -907,13 +929,125 @@ Game.Screen.helpScreen = {
     },
     handleInput: function(inputType, inputData) {
         if (inputData.keyCode === ROT.VK_SPACE) {
-            Game.Screen.playScreen.setSubScreen(null);
+            if (Game.getGameStage()=='starting') {
+                // NOTE: this brief timeout gives time for the input to clear (so the next screen isn't skipped over)
+                setTimeout(function(){
+                    Game.Screen.playScreen.setSubScreen(Game.Screen.storyScreen);
+                },40);
+            } else {
+                Game.Screen.playScreen.setSubScreen(null);
+            }
         }
         
     }
 };
 
 
+////////////////////////////////////////////////////////////
+
+Game.Screen.storyScreen = {
+    texts: {
+        'was_starting':"You are a part of one of the first human exploration crew on Mars. Your team has been checking out some interesting looking craters on the lower slopes of Elysium Mons.",
+        'was_surface':"Suddenly some kind of sinkhole opens under your feet! You drop deep beneath the surface! The last things you remember are the radio-relayed screams of your team mates as you plunge out of sight, the sky vanishing as the edges of the hole fall in after you, a terrific THUMP as you bounce off something on your way down, then blackness....",
+        'was_falling':"You awake to discover, to your shock, that you are not dead (as far as you know). Your gear was badly damaged by the fall - there's no way you'll be calling for help with that mess, and your suit integrity is completely shot. About the only thing still working is an emergency light on your helmet and a hand-held analyzer. On the plus side, you've made an amazing discovery! The cave air down here is actually breathable (at least for the short term), the temperature is warm enough that the crushed heating unit won't be what does you in, and through your slightly bloodied and swollen nose you think that you detect a faint, strangely organic aroma! Now all you have to do is figure out how to let your team know that you survived, and- Wait a moment! Is that *movement* over there in the shadows....!?",
+        'was_uppercaves':'After a harrowing descent you find yourself in a very large cave and dealing with a very foul smell.'
+    },
+    render: function(display) {
+        var text = 'CAVES of MARS';
+        var border = '-------------';
+        var y = 0;
+//        display.drawText(Game.getScreenWidth() / 2 - text.length / 2, y++, text);
+//        display.drawText(Game.getScreenWidth() / 2 - text.length / 2, y++, border);
+        y += 1;
+        display.drawText(1, y++, this.texts['was_'+Game.getGameStage()]);
+        y = Game.getScreenHeight()-1;
+        text = '%c{yellow}--- press space key to continue ---';
+        display.drawText(Game.getScreenWidth() / 2 - text.length / 2, y++, text);
+    },
+    setParentScreen: function(screen) {
+        this._parentScreen = screen;
+    },
+    handleInput: function(inputType, inputData) {
+        if (inputData.keyCode === ROT.VK_SPACE) {
+            if (Game.getGameStage()=='starting') {
+                Game.setGameStage('surface');
+                Game.Screen.playScreen.getPlayer().switchMap(new Game.Map.Surface());
+                Game.Screen.playScreen.setSubScreen(null);
+                return;
+            }
+            else if (Game.getGameStage()=='surface') {
+                Game.setGameStage('falling');
+                Game.switchScreen(Game.Screen.fallingScreen);
+                return;
+            }
+            else if (Game.getGameStage()=='falling') {
+                Game.setGameStage('uppercaves');
+                Game.Screen.playScreen.getPlayer().switchMap(new Game.Map.Cave());
+                Game.Screen.playScreen.setSubScreen(null);
+                return;
+            }
+            else if (Game.getGameStage()=='uppercaves') {
+                Game.setGameStage('bossfight1');
+                Game.Screen.playScreen.getPlayer().switchMap(new Game.Map.BossCavern());
+                Game.Screen.playScreen.setSubScreen(null);
+                return;
+            }
+            
+        }
+        
+    }
+};
+
+////////////////////////////////////////////////////////////
+
+Game.Screen.fallingScreen = {
+    y: 1,
+    _player: null,
+    enter: function() {
+        console.log("Entered falling screen."); 
+        this._player = Game.Screen.playScreen.getPlayer();
+        setTimeout(this.fallFarther,300);
+    },
+    exit: function() { console.log("Exited falling screen."); },
+    render: function(display) {
+        if (this.y <=2) {
+            for (var i=0;i<Game.getScreenWidth();i++) {
+                display.drawText(i,2,'#');
+            }
+        } else if (this.y==3) {
+            for (var i=0;i<Game.getScreenWidth();i++) {
+                display.drawText(i,1,'#');
+            }
+        }
+        display.drawText(Game.getScreenWidth() / 2,this.y,this._player.getRepresentation());
+//        this._player.getMap().getEngine().lock();
+    },
+    getY: function() {
+        return this.y;
+    },
+    setY: function(newY) {
+        this.y = newY;
+    },
+    fallFarther: function() {
+        var y = Game.Screen.fallingScreen.getY();
+        Game.Screen.fallingScreen.setY(y+1);
+        Game.refresh();
+        if (y < Game.getScreenHeight()) {
+            var newTimeout = Math.max(30,200/(y*y*.5));
+            
+            setTimeout(Game.Screen.fallingScreen.fallFarther,newTimeout);
+        } else {
+            setTimeout(Game.Screen.fallingScreen.finishFall,1250);
+        }
+    },
+    finishFall: function() {
+        Game.Screen.playScreen.setSubScreen(Game.Screen.storyScreen);
+        Game.switchScreen(Game.Screen.playScreen);
+    },
+    handleInput: function(inputType, inputData) {
+        // Nothing to do here      
+    }
+}
 
 ////////////////////////////////////////////////////////////
 
