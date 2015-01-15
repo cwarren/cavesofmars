@@ -43,7 +43,9 @@ Game.Repository.prototype.create = function(name, extraProperties) {
     // Create the object, passing the template as an argument
     var new_obj = new this._obj_constructor(template);
     
-    Game.ALL_THINGS[new_obj.getKey()] = new_obj;
+    if (new_obj.getKey) {
+        Game.ALL_THINGS[new_obj.getKey()] = new_obj;
+    }
     
     return new_obj;
 };

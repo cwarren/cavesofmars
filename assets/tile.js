@@ -3,6 +3,8 @@ Game.Tile = function(properties) {
     // Call the Glyph constructor with our properties
     Game.Glyph.call(this, properties);
     // Set up the properties. We use false by default.
+    this._name = properties['name'] || '';
+
     this._walkable = properties['walkable'] || false;
     this._diggable = properties['diggable'] || false;
     this._transparent = properties['transparent'] || false;
@@ -30,6 +32,9 @@ Game.Tile.prototype.isOpaque = function() {
 Game.Tile.prototype.getDescription = function() {
     return this._description;
 };
+Game.Tile.prototype.getName = function() {
+    return this._name;
+};
 
 // Standard setters
 Game.Tile.prototype.setWalkable = function(state) {
@@ -49,56 +54,77 @@ Game.Tile.prototype.setOpaque = function(state) {
 Game.Tile.prototype.setDescription = function(descr) {
     this._description = descr;
 }
+Game.Tile.prototype.setName = function(name) {
+    this._name = name;
+};
+
 
 ////////////////////////////////////////////////////////////////
 
 Game.Tile.nullTile = new Game.Tile({
+    name: 'null',
     character: ' ',
     diggable: false,
     transparent: false,
     description: 'you know nothing about this'
 });
 
+Game.Tile.airTile = new Game.Tile({
+    name: 'air',
+    character: ' ',
+    diggable: false,
+    walkable: true,
+    transparent: true,
+    description: 'open air'
+    });
+
+
 Game.Tile.floorTile = new Game.Tile({
+    name: 'floor',
     character: '.',
     walkable: true,
     transparent: true,
-    description: 'A cave floor'
+    description: 'cave floor'
     });
 
 Game.Tile.wallTile = new Game.Tile({
+    name: 'wall',
     character: '#',
     foreground: 'goldenrod',
     diggable: true,
     transparent: false,
-    description: 'A cave wall'
+    description: 'soft sand stone'
     });
 
 Game.Tile.borderTile = new Game.Tile({
+    name: 'border',
     character: '#',
     foreground: 'darkRed',
     diggable: false,
     transparent: false,
-    description: 'A cave wall made of stone to tough to dig'
+    description: 'stone to tough to dig'
     });
 
 Game.Tile.stairsUpTile = new Game.Tile({
+    name: 'stairs up',
     character: '<',
     foreground: 'white',
     walkable: true,
     transparent: true,
-    description: 'A rock staircase leading upwards'
+    description: 'A way up'
     });
 
 Game.Tile.stairsDownTile = new Game.Tile({
+    name: 'stairs down',
     character: '>',
     foreground: 'white',
     walkable: true,
     transparent: true,
-    description: 'A rock staircase leading downwards'
+    description: 'A way down'
     });
 
 Game.Tile.holeToCavernTile = new Game.Tile({
+    name: 'dark hole',
     character: 'O',
     foreground: '#666',
     walkable: true,
@@ -107,9 +133,51 @@ Game.Tile.holeToCavernTile = new Game.Tile({
     });
 
 Game.Tile.waterTile = new Game.Tile({
+    name: 'deep water',
     character: '~',
     foreground: 'blue',
     walkable: false,
     transparent: true,
-    description: 'Forbodingly murky blue water'
+    description: 'forbodingly murky blue water'
     });
+
+
+Game.SurfaceOpenTileRepository = new Game.Repository('surfaceOpen', Game.Tile);
+
+Game.SurfaceOpenTileRepository.define('sand', {
+    name: 'sand',
+    character: '~',
+    foreground: '#dc8',
+    walkable: true,
+    transparent: true,
+    description: 'a wind-swept pile of sand'
+});
+
+Game.SurfaceOpenTileRepository.define('heavy sand', {
+    name: 'heavy sand',
+    character: '~',
+    foreground: '#ffa',
+    walkable: true,
+    transparent: true,
+    description: 'heavier sand filling a slight depression'
+});
+
+Game.SurfaceOpenTileRepository.define('weathered stone', {
+    name: 'weathered stone',
+    character: '.',
+    foreground: '#fa2',
+    walkable: true,
+    transparent: true,
+    description: 'stone surface, well worn by the passage of time'
+});
+
+Game.SurfaceOpenTileRepository.define('new stone', {
+    name: 'new stone',
+    character: '.',
+    foreground: '#c96',
+    walkable: true,
+    transparent: true,
+    description: 'stone surface, freshly exposed to the elements'
+});
+
+

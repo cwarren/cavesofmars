@@ -38,3 +38,9 @@ HEM Pack (broken) - (heater, oxy tanks, etc.)
 Headlamp
 powerbars
 analyzer
+
+TODO NEXT:
+1. improve surface map (add team mate mobs, add quake event w/ radio comments from team mates)
+2. when player starts in the caves scatter rubble and rocks around them
+3. give player starting gear when they enter the play screen (play screen init); equip approp things; on falling unequip some stuff, replace it with broken versions, and scatter it around the player instead of having it in their inventory
+4. BUG FIX: healing over time seems not to be working.....

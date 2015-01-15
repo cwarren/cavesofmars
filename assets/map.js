@@ -24,6 +24,8 @@ Game.Map = function(tiles) {
     // Setup the explored array
     this._explored = new Array(this._depth);
     this._setupExploredArray();
+    
+    this._mapLightingType = 'dark';
 };
 
 // Standard getters
@@ -62,6 +64,15 @@ Game.Map.prototype.getAllFovs = function() {
 Game.Map.prototype.getScheduler = function() {
     return this._scheduler;
 }
+
+
+Game.Map.prototype.getMapLightingType = function() {
+    return this._mapLightingType;
+}
+Game.Map.prototype.setMapLightingType = function(newLightingType) {
+    this._mapLightingType = newLightingType;
+}
+
 
 
 Game.Map.prototype.setupFov = function() {
@@ -127,8 +138,16 @@ Game.Map.prototype.dig = function(x, y, z) {
 
 Game.Map.prototype.isEmptyFloor = function(x, y, z) {
     // Check if the tile is floor and also has no entity
+   
     return this.getTile(x, y, z) == Game.Tile.floorTile &&
            !this.getEntityAt(x, y, z);
+}
+
+Game.Map.prototype.isWalkable = function(x, y, z) {
+    // Check if the tile is floor and also has no entity
+    var tile = this.getTile(x, y, z);
+    
+    return tile.isWalkable() && !this.getEntityAt(x, y, z);
 }
 
 Game.Map.prototype.getEntityAt = function(x, y, z){
@@ -260,18 +279,38 @@ Game.Map.prototype.removeItem = function(itm,x,y,z) {
 }
 
 
-Game.Map.prototype.getRandomFloorPosition = function(z) {
+Game.Map.prototype.getRandomWalkablePosition = function(z) {
     // Randomly generate a tile which is a floor
     var x, y;
+    var attempts = 0;
     do {
         x = Math.floor(ROT.RNG.getUniform() * this._width);
         y = Math.floor(ROT.RNG.getUniform() * this._height);
-    } while(!this.isEmptyFloor(x, y, z));
+        attempts++;
+    } while(!this.isWalkable(x, y, z) && attempts < 100);
+    if (attempts > 99) {
+        throw new Error("could not find open walkable space");
+    }
+    return {x: x, y: y, z: z};
+}
+
+Game.Map.prototype.getRandomFloorPosition = function(z) {
+    // Randomly generate a tile which is a floor
+    var x, y;
+    var attempts = 0;
+    do {
+        x = Math.floor(ROT.RNG.getUniform() * this._width);
+        y = Math.floor(ROT.RNG.getUniform() * this._height);
+        attempts++;
+    } while(!this.isEmptyFloor(x, y, z) && attempts < 100);
+    if (attempts > 99) {
+        throw new Error("could not find open floor space");
+    }
     return {x: x, y: y, z: z};
 }
 
 Game.Map.prototype.addEntityAtRandomPosition = function(entity, z) {
-    var position = this.getRandomFloorPosition(z);
+    var position = this.getRandomWalkablePosition(z);
     entity.setPosition(position.x,position.y,z);
     this.addEntity(entity);
 //    console.dir(entity);
@@ -306,7 +345,7 @@ Game.Map.prototype.addItem = function(x, y, z, item) {
 };
 
 Game.Map.prototype.addItemAtRandomPosition = function(item, z) {
-    var position = this.getRandomFloorPosition(z);
+    var position = this.getRandomWalkablePosition(z);
     this.addItem(position.x, position.y, position.z, item);
 };
 

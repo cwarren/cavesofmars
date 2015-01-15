@@ -110,6 +110,7 @@ Game.Screen.playScreen = {
         // Store this._player.getMap() and player's z to prevent losing it in callbacks
         var map = this._player.getMap();
         var z = this._player.getZ();
+        var fullyLightMap = (map.getMapLightingType() == 'fullLight');
         
         // Find all visible cells and update the object
         map.getFov(z).compute(
@@ -125,7 +126,7 @@ Game.Screen.playScreen = {
         
         for (var x = topLeftX; x < topLeftX + screenWidth; x++) {
             for (var y = topLeftY; y < topLeftY + screenHeight; y++) {
-                if (map.isExplored(x, y, z)) {
+                if (map.isExplored(x, y, z) || fullyLightMap) {
                     // Fetch the glyph for the tile and render it to the screen
                     // at the offset position.
                     var glyph = map.getTile(x, y, z);
@@ -150,7 +151,7 @@ Game.Screen.playScreen = {
                         }
                         // Update the foreground color in case our glyph changed
                         foreground = glyph.getForeground();
-                    } else {
+                    } else if (! fullyLightMap) {
                         // Since the tile was previously explored but is not 
                         // visible, we want to change the foreground color to
                         // dark gray.
@@ -308,9 +309,10 @@ Game.Screen.playScreen = {
             } else if (inputData.keyCode === ROT.VK_NUMPAD9) {
                 tookAction = this.move(1, -1, 0);
             }
-            if (Game.getGameStage()=='surface') {
+            
+            if (tookAction && Game.getGameStage()=='surface') {
                 this._moveCounter++;
-                if (this._moveCounter > 1) {
+                if (this._moveCounter > 7) {
                     this.setSubScreen(Game.Screen.storyScreen);
                 }
             }
@@ -971,7 +973,10 @@ Game.Screen.storyScreen = {
         if (inputData.keyCode === ROT.VK_SPACE) {
             if (Game.getGameStage()=='starting') {
                 Game.setGameStage('surface');
-                Game.Screen.playScreen.getPlayer().switchMap(new Game.Map.Surface());
+                var player = Game.Screen.playScreen.getPlayer();
+                player.switchMap(new Game.Map.Surface());
+                var map = player.getMap();
+                Game.Screen.playScreen.getPlayer().setPosition(map.getWidth()/2,map.getHeight()/2,0);
                 Game.Screen.playScreen.setSubScreen(null);
                 return;
             }
@@ -1010,13 +1015,14 @@ Game.Screen.fallingScreen = {
     },
     exit: function() { console.log("Exited falling screen."); },
     render: function(display) {
+        var wallRep = Game.Tile.wallTile.getRepresentation();
         if (this.y <=2) {
             for (var i=0;i<Game.getScreenWidth();i++) {
-                display.drawText(i,2,'#');
+                display.drawText(i,2,wallRep);
             }
         } else if (this.y==3) {
             for (var i=0;i<Game.getScreenWidth();i++) {
-                display.drawText(i,1,'#');
+                display.drawText(i,1,wallRep);
             }
         }
         display.drawText(Game.getScreenWidth() / 2,this.y,this._player.getRepresentation());
