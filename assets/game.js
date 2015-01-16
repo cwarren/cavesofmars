@@ -5,6 +5,7 @@ var Game =  {
     _screenHeight: 24,
     _randomSeed: 12,
     _game_stage: 'start',
+    _controlScheme: 'numpad',
     init: function() {
         // Any necessary initialization will go here.
         this._randomSeed = 5 + Math.floor(Math.random()*100000);
@@ -59,6 +60,14 @@ var Game =  {
     setGameStage: function(newstage) {
         this._game_stage = newstage;
     },
+
+    getControlScheme: function() {
+        return this._controlScheme;
+    },
+    setControlScheme: function(newScheme) {
+        this._controlScheme = newScheme;
+    },
+    
     switchScreen: function(screen) {
         // If we had a screen before, notify it that we exited
         if (this._currentScreen !== null) {

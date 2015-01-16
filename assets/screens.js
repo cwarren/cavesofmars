@@ -32,7 +32,7 @@ display.drawText(2,15, "........................................................
         // When [Enter] is pressed, go to the play screen
         if (inputType === 'keydown') {
             if (inputData.keyCode === ROT.VK_RETURN) {
-                Game.Screen.playScreen.setSubScreen(Game.Screen.helpScreen);
+                Game.Screen.playScreen.setSubScreen(Game.Screen.helpScreenNumpad);
                 Game.switchScreen(Game.Screen.playScreen);
             }
         }
@@ -236,6 +236,15 @@ Game.Screen.playScreen = {
         }
 
         var tookAction = false;
+        if (Game.getControlScheme() == 'numpad') {
+            tookAction = this.numpadControlScheme(inputType, inputData);
+        }
+        else if (Game.getControlScheme() == 'laptop') {
+            tookAction = this.laptopControlScheme(inputType, inputData);
+        }
+        
+/*
+        var tookAction = false;
         if (inputType === 'keydown') {
             // inventory management/access
             if (inputData.keyCode === ROT.VK_I) {
@@ -334,17 +343,240 @@ Game.Screen.playScreen = {
                 tookAction = this.move(0, 0, -1);
             } else if (keyChar === '?') {
                 // Setup the help screen.
-                this.setSubScreen(Game.Screen.helpScreen);
+                this.setSubScreen(Game.Screen.helpScreenNumpad);
                 return;
             }
         }  
-
+*/
         if (tookAction) {
             this._player.finishAction();
             return true;
         }
         
         return false;
+    },
+    numpadControlScheme: function(inputType, inputData) {
+        var tookAction = false;
+        if (inputType === 'keydown') {
+            // inventory management/access
+            if (inputData.keyCode === ROT.VK_I) {
+                // Show the inventory screen
+                this.showItemsSubScreen(Game.Screen.inventoryScreen, this._player.getItems(),'You are not carrying anything.');
+                return;
+            } else if (inputData.keyCode === ROT.VK_D) {
+                // Show the drop screen
+                this.showItemsSubScreen(Game.Screen.dropScreen, this._player.getItems(),'You have nothing to drop.');
+                return;
+            } else if (inputData.keyCode === ROT.VK_E && inputData.shiftKey) {
+                // Show the drop screen
+                this.showItemsSubScreen(Game.Screen.eatScreen, this._player.getItems(),'You have nothing to eat.');
+                return;
+            } else if (inputData.keyCode === ROT.VK_W) {
+                if (inputData.shiftKey) {
+                    // Show the wear screen
+                    this.showItemsSubScreen(Game.Screen.wearScreen, this._player.getItems(),'You have nothing to wear.');
+                } else {
+                    // Show the wield screen
+                    this.showItemsSubScreen(Game.Screen.wieldScreen, this._player.getItems(),'You have nothing to wield.');
+                }
+                return;
+            } else if (inputData.keyCode === ROT.VK_X) {
+                // Show the drop screen
+                this.showItemsSubScreen(Game.Screen.examineScreen, this._player.getItems(),'You have nothing to examine.');
+                return;
+            } else if (inputData.keyCode === ROT.VK_G) {
+                var items = this._player.getMap().getItemsAt(this._player.getX(), this._player.getY(), this._player.getZ());
+
+                // If there is only one item, directly pick it up
+                if (items && items.length === 1) { 
+                    var item = items[0];
+                    if (this._player.pickupItems([0])) {
+                        Game.sendMessage(this._player, "You pick up %s.", [item.describeA()]);
+                    } else {
+                        Game.sendMessage(this._player, "Your inventory is full! Nothing was picked up.");
+                    }
+                    Game.refresh();
+                } else {
+                    this.showItemsSubScreen(Game.Screen.pickupScreen, items,'There is nothing here to pick up.');
+                } 
+            } else if (inputData.keyCode == ROT.VK_L) {
+                // Setup the look screen.
+                var offsets = this.getScreenOffsets();
+                Game.Screen.lookScreen.setup(this._player,
+                    this._player.getX(), this._player.getY(),
+                    offsets.x, offsets.y);
+                this.setSubScreen(Game.Screen.lookScreen);
+                return;
+            } else if (inputData.keyCode == ROT.VK_HOME) {
+                Game.setControlScheme('laptop');
+                return false;
+            }
+
+
+            // Movement (numpad based)
+            if (inputData.keyCode === ROT.VK_NUMPAD5) { // rest/wait/do nothing
+                tookAction = true;
+            } else if (inputData.keyCode === ROT.VK_NUMPAD1) {
+                tookAction = this.move(-1, 1, 0);
+                this._moveCounter++;
+            } else if (inputData.keyCode === ROT.VK_NUMPAD2) {
+                tookAction = this.move(0, 1, 0);
+                this._moveCounter++;
+            } else if (inputData.keyCode === ROT.VK_NUMPAD3) {
+                tookAction = this.move(1, 1, 0);
+                this._moveCounter++;
+            } else if (inputData.keyCode === ROT.VK_NUMPAD4) {
+                tookAction = this.move(-1, 0, 0);
+                this._moveCounter++;
+            } else if (inputData.keyCode === ROT.VK_NUMPAD6) {
+                tookAction = this.move(1, 0, 0);
+                this._moveCounter++;
+            } else if (inputData.keyCode === ROT.VK_NUMPAD7) {
+                tookAction = this.move(-1, -1, 0);
+                this._moveCounter++;
+            } else if (inputData.keyCode === ROT.VK_NUMPAD8) {
+                tookAction = this.move(0, -1, 0);
+                this._moveCounter++;
+            } else if (inputData.keyCode === ROT.VK_NUMPAD9) {
+                tookAction = this.move(1, -1, 0);
+                this._moveCounter++;
+            }
+            
+            if (tookAction && Game.getGameStage()=='surface') {
+                if (this._moveCounter > 9) {
+                    this.setSubScreen(Game.Screen.storyScreen);
+                }
+            }
+
+        } else if (inputType === 'keypress') {
+            var keyChar = String.fromCharCode(inputData.charCode);
+
+            // stairs up or down
+            if (keyChar === '>') {
+                tookAction = this.move(0, 0, 1);
+            } else if (keyChar === '<') {
+                tookAction = this.move(0, 0, -1);
+            } else if (keyChar === '?') {
+                // Setup the help screen.
+                this.setSubScreen(Game.Screen.helpScreenNumpad);
+                return;
+            }
+        }
+        
+        return tookAction;
+    },
+    laptopControlScheme: function(inputType, inputData) {
+        var tookAction = false;
+        if (inputType === 'keydown') {
+
+            // inventory management/access
+            if (inputData.keyCode === ROT.VK_I) {
+                // Show the inventory screen
+                this.showItemsSubScreen(Game.Screen.inventoryScreen, this._player.getItems(),'You are not carrying anything.');
+                return;
+            } else if (inputData.keyCode === ROT.VK_D && inputData.shiftKey) {
+                // Show the drop screen
+                this.showItemsSubScreen(Game.Screen.dropScreen, this._player.getItems(),'You have nothing to drop.');
+                return;
+            } else if (inputData.keyCode === ROT.VK_E && inputData.shiftKey) {
+                // Show the drop screen
+                this.showItemsSubScreen(Game.Screen.eatScreen, this._player.getItems(),'You have nothing to eat.');
+                return;
+            } else if (inputData.keyCode === ROT.VK_H) {
+                if (inputData.shiftKey) {
+                    // Show the wear screen
+                    this.showItemsSubScreen(Game.Screen.wearScreen, this._player.getItems(),'You have nothing to wear.');
+                } else {
+                    // Show the wield screen
+                    this.showItemsSubScreen(Game.Screen.wieldScreen, this._player.getItems(),'You have nothing to wield.');
+                }
+                return;
+            } else if (inputData.keyCode === ROT.VK_X && inputData.shiftKey) {
+                // Show the drop screen
+                this.showItemsSubScreen(Game.Screen.examineScreen, this._player.getItems(),'You have nothing to examine.');
+                return;
+            } else if (inputData.keyCode === ROT.VK_G) {
+                var items = this._player.getMap().getItemsAt(this._player.getX(), this._player.getY(), this._player.getZ());
+
+                // If there is only one item, directly pick it up
+                if (items && items.length === 1) { 
+                    var item = items[0];
+                    if (this._player.pickupItems([0])) {
+                        Game.sendMessage(this._player, "You pick up %s.", [item.describeA()]);
+                    } else {
+                        Game.sendMessage(this._player, "Your inventory is full! Nothing was picked up.");
+                    }
+                    Game.refresh();
+                } else {
+                    this.showItemsSubScreen(Game.Screen.pickupScreen, items,'There is nothing here to pick up.');
+                } 
+            } else if (inputData.keyCode == ROT.VK_L) {
+                // Setup the look screen.
+                var offsets = this.getScreenOffsets();
+                Game.Screen.lookScreen.setup(this._player,
+                    this._player.getX(), this._player.getY(),
+                    offsets.x, offsets.y);
+                this.setSubScreen(Game.Screen.lookScreen);
+                return;
+            } else if (inputData.keyCode == ROT.VK_HOME) {
+                Game.setControlScheme('numpad');
+                return false;
+            }
+
+
+            // Movement (numpad based)
+            if (! inputData.shiftKey) {
+                if (inputData.keyCode === ROT.VK_S) { // rest/wait/do nothing
+                    tookAction = true;
+                } else if (inputData.keyCode === ROT.VK_Z) {
+                    tookAction = this.move(-1, 1, 0);
+                    this._moveCounter++;
+                } else if (inputData.keyCode === ROT.VK_X) {
+                    tookAction = this.move(0, 1, 0);
+                    this._moveCounter++;
+                } else if (inputData.keyCode === ROT.VK_C) {
+                    tookAction = this.move(1, 1, 0);
+                    this._moveCounter++;
+                } else if (inputData.keyCode === ROT.VK_A) {
+                    tookAction = this.move(-1, 0, 0);
+                    this._moveCounter++;
+                } else if (inputData.keyCode === ROT.VK_D) {
+                    tookAction = this.move(1, 0, 0);
+                    this._moveCounter++;
+                } else if (inputData.keyCode === ROT.VK_Q) {
+                    tookAction = this.move(-1, -1, 0);
+                    this._moveCounter++;
+                } else if (inputData.keyCode === ROT.VK_W) {
+                    tookAction = this.move(0, -1, 0);
+                    this._moveCounter++;
+                } else if (inputData.keyCode === ROT.VK_E) {
+                    tookAction = this.move(1, -1, 0);
+                    this._moveCounter++;
+                }
+            }
+            
+            if (tookAction && Game.getGameStage()=='surface') {
+                if (this._moveCounter > 9) {
+                    this.setSubScreen(Game.Screen.storyScreen);
+                }
+            }
+
+        } else if (inputType === 'keypress') {
+            var keyChar = String.fromCharCode(inputData.charCode);
+
+            // stairs up or down
+            if (keyChar === '>') {
+                tookAction = this.move(0, 0, 1);
+            } else if (keyChar === '<') {
+                tookAction = this.move(0, 0, -1);
+            } else if (keyChar === '?') {
+                // Setup the help screen.
+                this.setSubScreen(Game.Screen.helpScreenLaptop);
+                return;
+            }
+        }
+        
+        return tookAction;
     },
     move: function(dX, dY, dZ) { // NOTE: dX, dY, and dZ each are integers ranging from -1 to 1
         dX = Math.floor(dX);
@@ -804,29 +1036,58 @@ Game.Screen.TargetBasedScreen.prototype.render = function(display) {
 Game.Screen.TargetBasedScreen.prototype.handleInput = function(inputType, inputData) {
     // Move the cursor
     if (inputType == 'keydown') {
-        if (inputData.keyCode === ROT.VK_NUMPAD1) {
-            tookAction = this.moveCursor(-1, 1);
-        } else if (inputData.keyCode === ROT.VK_NUMPAD2) {
-            tookAction = this.moveCursor(0, 1);
-        } else if (inputData.keyCode === ROT.VK_NUMPAD3) {
-            tookAction = this.moveCursor(1, 1);
-        } else if (inputData.keyCode === ROT.VK_NUMPAD4) {
-            tookAction = this.moveCursor(-1, 0);
-        } else if (inputData.keyCode === ROT.VK_NUMPAD6) {
-            tookAction = this.moveCursor(1, 0);
-        } else if (inputData.keyCode === ROT.VK_NUMPAD7) {
-            tookAction = this.moveCursor(-1, -1);
-        } else if (inputData.keyCode === ROT.VK_NUMPAD8) {
-            tookAction = this.moveCursor(0, -1);
-        } else if (inputData.keyCode === ROT.VK_NUMPAD9) {
-            tookAction = this.moveCursor(1, -1);
-        } else if (inputData.keyCode === ROT.VK_ESCAPE) {
-            this._parentScreen.setSubScreen(undefined);
-            this.setParentScreen(undefined);
-            //Game.Screen.playScreen.setSubScreen(undefined);
-        } else if (inputData.keyCode === ROT.VK_RETURN) {
-            this.executeOkFunction();
+    
+        if (Game.getControlScheme() == 'numpad') {
+            if (inputData.keyCode === ROT.VK_NUMPAD1) {
+                tookAction = this.moveCursor(-1, 1);
+            } else if (inputData.keyCode === ROT.VK_NUMPAD2) {
+                tookAction = this.moveCursor(0, 1);
+            } else if (inputData.keyCode === ROT.VK_NUMPAD3) {
+                tookAction = this.moveCursor(1, 1);
+            } else if (inputData.keyCode === ROT.VK_NUMPAD4) {
+                tookAction = this.moveCursor(-1, 0);
+            } else if (inputData.keyCode === ROT.VK_NUMPAD6) {
+                tookAction = this.moveCursor(1, 0);
+            } else if (inputData.keyCode === ROT.VK_NUMPAD7) {
+                tookAction = this.moveCursor(-1, -1);
+            } else if (inputData.keyCode === ROT.VK_NUMPAD8) {
+                tookAction = this.moveCursor(0, -1);
+            } else if (inputData.keyCode === ROT.VK_NUMPAD9) {
+                tookAction = this.moveCursor(1, -1);
+            } else if (inputData.keyCode === ROT.VK_ESCAPE) {
+                this._parentScreen.setSubScreen(undefined);
+                this.setParentScreen(undefined);
+                //Game.Screen.playScreen.setSubScreen(undefined);
+            } else if (inputData.keyCode === ROT.VK_RETURN) {
+                this.executeOkFunction();
+            }
+        } else
+        if (Game.getControlScheme() == 'laptop') {
+            if (inputData.keyCode === ROT.VK_Z) {
+                tookAction = this.moveCursor(-1, 1);
+            } else if (inputData.keyCode === ROT.X) {
+                tookAction = this.moveCursor(0, 1);
+            } else if (inputData.keyCode === ROT.VK_C) {
+                tookAction = this.moveCursor(1, 1);
+            } else if (inputData.keyCode === ROT.VK_A) {
+                tookAction = this.moveCursor(-1, 0);
+            } else if (inputData.keyCode === ROT.VK_D) {
+                tookAction = this.moveCursor(1, 0);
+            } else if (inputData.keyCode === ROT.VK_Q) {
+                tookAction = this.moveCursor(-1, -1);
+            } else if (inputData.keyCode === ROT.VK_W) {
+                tookAction = this.moveCursor(0, -1);
+            } else if (inputData.keyCode === ROT.VK_E) {
+                tookAction = this.moveCursor(1, -1);
+            } else if (inputData.keyCode === ROT.VK_ESCAPE) {
+                this._parentScreen.setSubScreen(undefined);
+                this.setParentScreen(undefined);
+                //Game.Screen.playScreen.setSubScreen(undefined);
+            } else if (inputData.keyCode === ROT.VK_RETURN) {
+                this.executeOkFunction();
+            }
         }
+
     }
     Game.refresh();
 };
@@ -910,7 +1171,7 @@ Game.Screen.lookScreen = new Game.Screen.TargetBasedScreen({
 
 // CSW TODO - put key bindings in a separate file to that they can be referenced here
 // Define our help screen
-Game.Screen.helpScreen = {
+Game.Screen.helpScreenNumpad = {
     render: function(display) {
         var text =   'CAVES of MARS';
         var border = '-------------';
@@ -925,10 +1186,11 @@ Game.Screen.helpScreen = {
         display.drawText(1, y++, '[d] to drop something');
         display.drawText(1, y++, '[x] to examine carried items');
         display.drawText(1, y++, '[E] to eat something');
-        display.drawText(1, y++, '[w] to wield items');
-        display.drawText(1, y++, '[W] to wear items');
+        display.drawText(1, y++, '[w] to wield something');
+        display.drawText(1, y++, '[W] to wear something');
         display.drawText(1, y++, '[<],[>] up a level and down a level respectively');
         display.drawText(1, y++, '[?] to show this help screen');
+        display.drawText(1, y++, '[Home] to switch to laptop key bindings');
         y = Game.getScreenHeight()-1;
         text = '%c{yellow}--- press space key to continue ---';
         display.drawText(Game.getScreenWidth() / 2 - text.length / 2, y++, text);
@@ -951,6 +1213,48 @@ Game.Screen.helpScreen = {
     }
 };
 
+// Define our help screen
+Game.Screen.helpScreenLaptop = {
+    render: function(display) {
+        var text =   'CAVES of MARS';
+        var border = '-------------';
+        var y = 0;
+        display.drawText(Game.getScreenWidth() / 2 - text.length / 2, y++, text);
+        display.drawText(Game.getScreenWidth() / 2 - text.length / 2, y++, border);
+        y += 1;
+        display.drawText(1, y++, 'Use the qwe,asd,zxc for movement, run into something to hit it');
+        y += 2;
+        display.drawText(1, y++, '[l] (lowercase L) to look around you');
+        display.drawText(1, y++, '[g] to pick up something');
+        display.drawText(1, y++, '[D] to drop something');
+        display.drawText(1, y++, '[X] to examine carried items');
+        display.drawText(1, y++, '[E] to eat something');
+        display.drawText(1, y++, '[h] to wield something');
+        display.drawText(1, y++, '[H] to wear something');
+        display.drawText(1, y++, '[<],[>] up a level and down a level respectively');
+        display.drawText(1, y++, '[?] to show this help screen');
+        display.drawText(1, y++, '[Home] to switch to numpad key bindings');
+        y = Game.getScreenHeight()-1;
+        text = '%c{yellow}--- press space key to continue ---';
+        display.drawText(Game.getScreenWidth() / 2 - text.length / 2, y++, text);
+    },
+    setParentScreen: function(screen) {
+        this._parentScreen = screen;
+    },
+    handleInput: function(inputType, inputData) {
+        if (inputData.keyCode === ROT.VK_SPACE) {
+            if (Game.getGameStage()=='starting') {
+                // NOTE: this brief timeout gives time for the input to clear (so the next screen isn't skipped over)
+                setTimeout(function(){
+                    Game.Screen.playScreen.setSubScreen(Game.Screen.storyScreen);
+                },40);
+            } else {
+                Game.Screen.playScreen.setSubScreen(null);
+            }
+        }
+        
+    }
+};
 
 ////////////////////////////////////////////////////////////
 
