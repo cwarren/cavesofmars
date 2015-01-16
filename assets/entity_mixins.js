@@ -74,30 +74,6 @@ Game.EntityMixins.Seer = {
         }
         
         return this.canSeeCoord(entity.getX(),entity.getY());
-/*
-        var otherX = entity.getX();
-        var otherY = entity.getY();
-
-        // If we're not in a square field of view, then we won't be in a real
-        // field of view either.
-        if ((otherX - this._x) * (otherX - this._x) +
-            (otherY - this._y) * (otherY - this._y) >
-            this._sightRadius * this._sightRadius) {
-            return false;
-        }
-
-        // Compute the FOV and check if the coordinates are in there.
-        var found = false;
-        this.getMap().getFov(this.getZ()).compute(
-            this.getX(), this.getY(), 
-            this.getSightRadius(), 
-            function(x, y, radius, visibility) {
-                if (x === otherX && y === otherY) {
-                    found = true;
-                }
-            });
-        return found;
-*/
     },
     canSeeCoord: function(x,y) {
         var otherX = x;
@@ -123,6 +99,88 @@ Game.EntityMixins.Seer = {
             });
         return found;
     }    
+}
+
+// This signifies our entity posseses a field of vision of a given radius.
+Game.EntityMixins.RadioUser = {
+    name: 'RadioUser',
+    groupName: 'Sense',
+    init: function(template) {
+        this._radioRange = template['radioRange'] || 35;
+    },
+    getRadioRadius: function() {
+        return this._radioRange;
+    },
+    canContactOnRadio: function(entity) {
+        // If not on the same map or on different floors, then exit early
+        if (!entity || this._map !== entity.getMap() || this._z !== entity.getZ()) {
+            return false;
+        }
+        
+        return this.canHearOnRadio(entity.getX(),entity.getY());
+    },
+    canContactOnRadio: function(x,y) {
+        var otherX = x;
+        var otherY = y;
+        
+        // If we're not in a square field, then we won't be in a real
+        // field either.
+        if ((otherX - this._x) * (otherX - this._x) +
+            (otherY - this._y) * (otherY - this._y) >
+            this._radioRange * this._radioRange) {
+            return false;
+        }
+
+        var z = this.getZ();
+        var map = this.getMap();
+        
+        // compute A* and check if path length <= radioRange
+        var path = new ROT.Path.AStar(this.getX(), this.getY(), function(x, y) {
+                return map.getTile(x, y, z).isTransparent();
+            }, {topology: 8});
+        
+        var pathLength = 0;
+        path.compute(otherX, otherY, function(x, y) {
+            pathLength++;
+        });
+            
+        return pathLength <= this._radioRange;
+    },
+    listeners: {
+        onMakeNoise: function(noiseStr,srcEntity) {
+            if (srcEntity.hasMixin('RadioUser') && srcEntity.canContactOnRadio(this)) {
+                Game.sendMessage(this,'*click* '+noiseStr+' *click*');
+            }
+        }
+    }
+}
+
+// This signifies our entity posseses a field of vision of a given radius.
+Game.EntityMixins.Babbler = {
+    name: 'Babbler',
+    groupName: 'Communicator',
+    init: function(template) {
+        this._babbleStrings = template['babbleStrings'] || ['...'];
+        this._babbleFrequency = template['babbleFrequency'] || .1;
+    },
+    babble: function() {
+        // If not on the same map or on different floors, then exit early
+        if (!entity || this._map !== entity.getMap() || this._z !== entity.getZ()) {
+            return false;
+        }
+        
+        return this.canHearOnRadio(entity.getX(),entity.getY());
+    },
+    listeners: {
+        onActed: function() {
+            //console.log('babbler acted');
+            //console.dir(this);
+            if (ROT.RNG.getUniform() < this._babbleFrequency) {
+                //console.log('babbler makes noise');
+                this.getMap().getPlayer().raiseEvent('onMakeNoise',this._babbleStrings.random(),this);  
+            }
+        }
+    }
 }
 
 // This signifies our entity posseses a field of vision of a given radius.
@@ -916,7 +974,7 @@ Game.EntityBehaviors.PeacefulWanderBehavior = {
         var map = actor.getMap();
         //console.dir(map);
         var attemptLimiter = 8;
-        while (attemptLimiter > 0 && ! map.isEmptyFloor(moveTarget.x, moveTarget.y, actor.getZ())) {
+        while (attemptLimiter > 0 && ! map.isWalkable(moveTarget.x, moveTarget.y, actor.getZ())) {
             moveTarget = neighbors.random();
             attemptLimiter--;
         }

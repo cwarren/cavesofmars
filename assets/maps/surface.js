@@ -2,13 +2,31 @@
 // CSW NOTE: lots of opportunities to generalize 2D tile manipulation (and possibly 3D as well)
 Game.Map.Surface = function() {
     // Call the Map constructor
-    Game.Map.call(this, this._generateTiles(150, 48));
+    Game.Map.call(this, this._generateTiles(250, 96));
     
     this.setMapLightingType('fullLight');
+    this.addTeammates();
 
 };
 Game.Map.Surface.extend(Game.Map);
 
+Game.Map.Surface.prototype.addTeammates = function() {
+    
+    var centerX = this.getWidth()/2;
+    var centerY = this.getHeight()/2;
+    
+    for (var i=0; i< 7; i++) {
+        var tm = new Game.Entity(Game.TeammateTemplate);
+        this.addEntityAtRandomPosition(tm,0);
+        
+        var x = centerX + Game.util.getRandomInteger(-14,14);
+        var y = centerY + Game.util.getRandomInteger(-14,14);
+        
+        if (this.isWalkable(x,y,0)) {
+            tm.setPosition(x,y,0);
+        }
+    }
+}
 
 Game.Map.Surface.prototype._fillCircleWithRandom = function(tiles, centerX, centerY, radius, interiorTypesArray, outlineTileType, outlinePercent) {
     // Copied from the DrawFilledCircle algorithm

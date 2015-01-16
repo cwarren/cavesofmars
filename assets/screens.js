@@ -133,7 +133,7 @@ Game.Screen.playScreen = {
                     var foreground = glyph.getForeground();
                     // If we are at a cell that is in the field of vision, we need
                     // to check if there are items or entities.
-                    if (visibleCells[x + ',' + y]) {
+                    if (fullyLightMap || visibleCells[x + ',' + y]) {
                         // Check for items first, since we want to draw entities
                         // over items.
                         var items = map.getItemsAt(x, y, z);
@@ -294,25 +294,32 @@ Game.Screen.playScreen = {
                 tookAction = true;
             } else if (inputData.keyCode === ROT.VK_NUMPAD1) {
                 tookAction = this.move(-1, 1, 0);
+                this._moveCounter++;
             } else if (inputData.keyCode === ROT.VK_NUMPAD2) {
                 tookAction = this.move(0, 1, 0);
+                this._moveCounter++;
             } else if (inputData.keyCode === ROT.VK_NUMPAD3) {
                 tookAction = this.move(1, 1, 0);
+                this._moveCounter++;
             } else if (inputData.keyCode === ROT.VK_NUMPAD4) {
                 tookAction = this.move(-1, 0, 0);
+                this._moveCounter++;
             } else if (inputData.keyCode === ROT.VK_NUMPAD6) {
                 tookAction = this.move(1, 0, 0);
+                this._moveCounter++;
             } else if (inputData.keyCode === ROT.VK_NUMPAD7) {
                 tookAction = this.move(-1, -1, 0);
+                this._moveCounter++;
             } else if (inputData.keyCode === ROT.VK_NUMPAD8) {
                 tookAction = this.move(0, -1, 0);
+                this._moveCounter++;
             } else if (inputData.keyCode === ROT.VK_NUMPAD9) {
                 tookAction = this.move(1, -1, 0);
+                this._moveCounter++;
             }
             
             if (tookAction && Game.getGameStage()=='surface') {
-                this._moveCounter++;
-                if (this._moveCounter > 7) {
+                if (this._moveCounter > 9) {
                     this.setSubScreen(Game.Screen.storyScreen);
                 }
             }
@@ -949,7 +956,8 @@ Game.Screen.helpScreen = {
 
 Game.Screen.storyScreen = {
     texts: {
-        'was_starting':"You are a part of one of the first human exploration crew on Mars. Your team has been checking out some interesting looking craters on the lower slopes of Elysium Mons.",
+        'was_starting':"You are a part of one of the first human exploration crew on Mars. After years of training, extensive technical preparation, and months of confined travel aboard the ship you finally made it to Mars! With your 6 day acclimation period done you now get to head out on the Martian surface for the first time. Your team has been sent to check out an interesting looking crater on the lower slopes of nearby Elysium Mons.",
+        'was_starting2':"It takes a while to get to the survey site, but that gives you and your team time to double check your gear. The HEM Suits are all in good shape, and everyone seems to be as excited as you are. The last half-kilometer or so is tto rough for the rover, so you pile out and make the rest of the trek on foot. While others eagerly explore around you take a moment to pause near the center of the crater and just take it all in. It is truly amazing! ...but something somehow seems a little bit 'off' here...",
         'was_surface':"Suddenly some kind of sinkhole opens under your feet! You drop deep beneath the surface! The last things you remember are the radio-relayed screams of your team mates as you plunge out of sight, the sky vanishing as the edges of the hole fall in after you, a terrific THUMP as you bounce off something on your way down, then blackness....",
         'was_falling':"You awake to discover, to your shock, that you are not dead (as far as you know). Your gear was badly damaged by the fall - there's no way you'll be calling for help with that mess, and your suit integrity is completely shot. About the only thing still working is an emergency light on your helmet and a hand-held analyzer. On the plus side, you've made an amazing discovery! The cave air down here is actually breathable (at least for the short term), the temperature is warm enough that the crushed heating unit won't be what does you in, and through your slightly bloodied and swollen nose you think that you detect a faint, strangely organic aroma! Now all you have to do is figure out how to let your team know that you survived, and- Wait a moment! Is that *movement* over there in the shadows....!?",
         'was_uppercaves':'After a harrowing descent you find yourself in a very large cave and dealing with a very foul smell.'
@@ -960,7 +968,7 @@ Game.Screen.storyScreen = {
         var y = 0;
 //        display.drawText(Game.getScreenWidth() / 2 - text.length / 2, y++, text);
 //        display.drawText(Game.getScreenWidth() / 2 - text.length / 2, y++, border);
-        y += 1;
+        y += 3;
         display.drawText(1, y++, this.texts['was_'+Game.getGameStage()]);
         y = Game.getScreenHeight()-1;
         text = '%c{yellow}--- press space key to continue ---';
@@ -972,11 +980,18 @@ Game.Screen.storyScreen = {
     handleInput: function(inputType, inputData) {
         if (inputData.keyCode === ROT.VK_SPACE) {
             if (Game.getGameStage()=='starting') {
+                setTimeout(function(){
+                    Game.setGameStage('starting2');
+                    Game.refresh();
+                },40);
+                return;
+            }
+            else if (Game.getGameStage()=='starting2') {
                 Game.setGameStage('surface');
                 var player = Game.Screen.playScreen.getPlayer();
                 player.switchMap(new Game.Map.Surface());
                 var map = player.getMap();
-                Game.Screen.playScreen.getPlayer().setPosition(map.getWidth()/2,map.getHeight()/2,0);
+                Game.Screen.playScreen.getPlayer().setPosition(map.getWidth()/2 + Game.util.getRandomInteger(-3,3),map.getHeight()/2 + Game.util.getRandomInteger(-3,3),0);
                 Game.Screen.playScreen.setSubScreen(null);
                 return;
             }
