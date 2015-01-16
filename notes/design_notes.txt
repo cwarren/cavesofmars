@@ -40,8 +40,11 @@ powerbars
 analyzer
 
 TODO NEXT:
-1. when the level is fully lit don't limit look info to sight radius
-2. when player starts in the caves scatter rubble and rocks around them
-3. give player starting gear when they enter the play screen (play screen init); equip approp things; on falling unequip some stuff, replace it with broken versions, and scatter it around the player instead of having it in their inventory
-4. improve the falling screen (make it a real map)
+1. when digging on the surface, replace the wall tile with a fresh stone surface tile instead of cave floor
+2. give player starting gear when they enter the play screen (play screen init); equip approp things; on falling unequip some stuff, replace it with broken versions, and scatter it around the player instead of having it in their inventory
+3. include description attribute when a player looks at / examines something
+3.5. improve display of detail info
+3.75. add description fields to entities
+4. when player starts in the caves scatter rubble and rocks around them
+5. improve the falling screen (make it a real map)
 8. improve surface map (add quake event w/ radio comments from team mates)

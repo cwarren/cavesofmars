@@ -1065,7 +1065,7 @@ Game.Screen.TargetBasedScreen.prototype.handleInput = function(inputType, inputD
         if (Game.getControlScheme() == 'laptop') {
             if (inputData.keyCode === ROT.VK_Z) {
                 tookAction = this.moveCursor(-1, 1);
-            } else if (inputData.keyCode === ROT.X) {
+            } else if (inputData.keyCode === ROT.VK_X) {
                 tookAction = this.moveCursor(0, 1);
             } else if (inputData.keyCode === ROT.VK_C) {
                 tookAction = this.moveCursor(1, 1);
@@ -1129,12 +1129,13 @@ Game.Screen.lookScreen = new Game.Screen.TargetBasedScreen({
     captionFunction: function(x, y) {
         var z = this._player.getZ();
         var map = this._player.getMap();
+        var fullyLightMap = (map.getMapLightingType() == 'fullLight');
         
         // If the tile is explored, we can give a better capton
-        if (map.isExplored(x, y, z)) {
+        if (fullyLightMap || map.isExplored(x, y, z)) {
             // If the tile isn't explored, we have to check if we can actually 
             // see it before testing if there's an entity or item.
-            if (this._visibleCells[x + ',' + y]) {
+            if (fullyLightMap || this._visibleCells[x + ',' + y]) {
                 var items = map.getItemsAt(x, y, z);
                 // If we have items, we want to render the top most item
                 if (items) {
