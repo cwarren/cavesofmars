@@ -11,7 +11,7 @@ var Game =  {
         console.log(this._randomSeed);
         
         ROT.RNG.setSeed(this._randomSeed);
-        //ROT.RNG.setSeed(30794);
+        ROT.RNG.setSeed(30276);
         
         
         this._display = new ROT.Display({width: this._screenWidth, height: this._screenHeight+1});

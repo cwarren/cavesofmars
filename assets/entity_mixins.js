@@ -304,8 +304,8 @@ Game.EntityMixins.Destructible = Game.util.extendedObj(Game.EntityMixins.NonRecu
     group: 'Destructible',
     init: function(template) {
         Game.EntityMixins.NonRecuperatingDestructible.init.call(this,template);
-
-        this._timeForFullRecuperation = template['timeForFullRecuperation'] || (this._defaultActionDuration * 1000); // default is full recovery over 1000 turns
+        
+        this._timeForFullRecuperation = template['timeForFullRecuperation'] || (this.getDefaultActionDuration() * 1000); // default is full recovery over 1000 turns
         this._healingTimeCounter = 0;
     },
     getTimePerHpHealed: function() {
@@ -315,7 +315,7 @@ Game.EntityMixins.Destructible = Game.util.extendedObj(Game.EntityMixins.NonRecu
         if (this._healingTimeCounter >= this.getTimePerHpHealed()) {
             this._hp++;
             this._healingTimeCounter -= this.getTimePerHpHealed();
-            Game.sendMessage('You feel a little bit better');
+            Game.sendMessage(this,'You feel a little bit better');
             this.raiseEvent('onRecuperated');
         }
     },
@@ -334,6 +334,16 @@ Game.EntityMixins.Destructible = Game.util.extendedObj(Game.EntityMixins.NonRecu
             }
             this._healingTimeCounter += foodItem.getFoodValue();
             this.doRecuperation();
+        },
+        onGainLevel: function() {
+            // Heal the entity.
+            this.setHp(this.getMaxHp());
+        },
+        details: function() {
+            return [
+                {key: 'defense', value: this.getDefenseValue()},
+                {key: 'hp', value: this.getHp()}
+            ];
         }
     }
 });   

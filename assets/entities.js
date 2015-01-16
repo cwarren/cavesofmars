@@ -11,9 +11,10 @@ Game.PlayerTemplate = {
     statPointsPerLevel: 2,
 //    fullness: 1000,
     allies: ['teammate'],
-    mixins: [Game.EntityMixins.PlayerActor, Game.EntityMixins.MeleeAttacker, Game.EntityMixins.Destructible, Game.EntityMixins.MessageRecipient, 
+    mixins: [Game.EntityMixins.PlayerActor, Game.EntityMixins.MeleeAttacker, Game.EntityMixins.MessageRecipient, 
              Game.EntityMixins.FoodConsumer, Game.EntityMixins.InventoryHolder, Game.EntityMixins.Seer, Game.EntityMixins.Digger,
-             Game.EntityMixins.Equipper, Game.EntityMixins.ExperienceGainer, Game.EntityMixins.PlayerStatGainer, Game.EntityMixins.Allier, Game.EntityMixins.RadioUser]
+             Game.EntityMixins.Equipper, Game.EntityMixins.ExperienceGainer, Game.EntityMixins.PlayerStatGainer, Game.EntityMixins.Allier,
+             Game.EntityMixins.RadioUser, Game.EntityMixins.Destructible]
 }
 
 

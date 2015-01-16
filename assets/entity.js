@@ -1,9 +1,6 @@
 Game.Entity = function(properties) {
     properties = properties || {};
 
-    // Call the glyph's construtor with our set of properties
-    Game.DynamicGlyph.call(this, properties);
-
     // Instantiate any properties from the passed object
     this._name = properties['name'] || '';
     this._x = properties['x'] || 0;
@@ -13,14 +10,16 @@ Game.Entity = function(properties) {
     this._map = null;
     this._alive = true;
     
-    // Acting speed
-    
+    // Acting speed    
     this._defaultActionDuration = properties['defaultActionDuration'] || 1000;
     this._moveDuration = properties['moveDuration'] || this._defaultActionDuration;
     this._meleeDuration = properties['meleeDuration'] || this._defaultActionDuration;
     this._rangedDuration = properties['rangedDuration'] || this._defaultActionDuration;
     
     this._lastActionDuration = this._defaultActionDuration;    
+
+    // Call the glyph's construtor with our set of properties
+    Game.DynamicGlyph.call(this, properties);
 }
 // Make entities inherit all the functionality from dynamicglyphs (i.e. mixin support et al)
 Game.Entity.extend(Game.DynamicGlyph);
