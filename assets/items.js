@@ -102,7 +102,7 @@ Game.ItemRepository.define('JAT tool, damaged', {
 Game.ItemRepository.define('JAT tool', {
     name: 'JAT tool',
     character: Game.ItemRepository.Symbol['polearm'],
-    foreground: 'gray',
+    foreground: '#bbf',
     attackValue: 6,
     defenseValue: 1,
     wieldable: true,

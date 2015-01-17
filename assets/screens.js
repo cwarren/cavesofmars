@@ -257,7 +257,7 @@ Game.Screen.playScreen = {
             tookAction = this.laptopControlScheme(inputType, inputData);
         }
         
-        if ((inputData.keyCode === ROT.VK_ESCAPE) || (inputData.keyCode === ROT.VK_SPACE)) {
+        if ((inputData.keyCode === ROT.VK_ESCAPE) && (inputData.keyCode === ROT.VK_SPACE)) {
             this._player.clearMessages();
             Game.refresh();
         }
@@ -321,8 +321,11 @@ Game.Screen.playScreen = {
                     offsets.x, offsets.y);
                 this.setSubScreen(Game.Screen.lookScreen);
                 return;
-            } else if (inputData.keyCode == ROT.VK_HOME) {
-                Game.setControlScheme('laptop');
+            } else if (inputData.keyCode === ROT.VK_BACK_SLASH) {
+                //setTimeout(20,function(){
+                    console.log('switching to laptop keybindings');
+                    Game.setControlScheme('laptop');
+                //});
                 return false;
             }
 
@@ -432,8 +435,11 @@ Game.Screen.playScreen = {
                     offsets.x, offsets.y);
                 this.setSubScreen(Game.Screen.lookScreen);
                 return;
-            } else if (inputData.keyCode == ROT.VK_HOME) {
-                Game.setControlScheme('numpad');
+            } else if (inputData.keyCode === ROT.VK_BACK_SLASH) {
+                //setTimeout(20,function(){
+                    console.log('switching to numpad keybindings');
+                    Game.setControlScheme('numpad');
+                //});
                 return false;
             }
 
@@ -674,8 +680,65 @@ Game.Screen.ItemListScreen.prototype.handleInput = function(inputType, inputData
 
 Game.Screen.inventoryScreen = new Game.Screen.ItemListScreen({
     caption: 'Inventory',
-    canSelect: false
+    canSelect: false,
+    
 });
+
+Game.Screen.inventoryScreen.handleInput = function(inputType, inputData) {
+
+    if ((inputData.keyCode === ROT.VK_ESCAPE) || (inputData.keyCode === ROT.VK_RETURN)) {
+        Game.Screen.playScreen.setSubScreen(undefined);
+    }
+        
+    if (Game.getControlScheme() == 'numpad') {
+        if (inputData.keyCode === ROT.VK_D) {
+            // Show the drop screen
+            this._parentScreen.showItemsSubScreen(Game.Screen.dropScreen, this._player.getItems(),'You have nothing to drop.');
+            return;
+        } else if (inputData.keyCode === ROT.VK_E && inputData.shiftKey) {
+            // Show the drop screen
+            this._parentScreen.showItemsSubScreen(Game.Screen.eatScreen, this._player.getItems(),'You have nothing to eat.');
+            return;
+        } else if (inputData.keyCode === ROT.VK_W) {
+            if (inputData.shiftKey) {
+                // Show the wear screen
+                this._parentScreen.showItemsSubScreen(Game.Screen.wearScreen, this._player.getItems(),'You have nothing to wear.');
+            } else {
+                // Show the wield screen
+                this._parentScreen.showItemsSubScreen(Game.Screen.wieldScreen, this._player.getItems(),'You have nothing to wield.');
+            }
+            return;
+        } else if (inputData.keyCode === ROT.VK_X) {
+            // Show the drop screen
+            this._parentScreen.showItemsSubScreen(Game.Screen.examineScreen, this._player.getItems(),'You have nothing to examine.');
+            return;
+        }
+    }
+    else if (Game.getControlScheme() == 'laptop') {
+        if (inputData.keyCode === ROT.VK_D && inputData.shiftKey) {
+            // Show the drop screen
+            this._parentScreen.showItemsSubScreen(Game.Screen.dropScreen, this._player.getItems(),'You have nothing to drop.');
+            return;
+        } else if (inputData.keyCode === ROT.VK_E && inputData.shiftKey) {
+            // Show the drop screen
+            this._parentScreen.showItemsSubScreen(Game.Screen.eatScreen, this._player.getItems(),'You have nothing to eat.');
+            return;
+        } else if (inputData.keyCode === ROT.VK_H) {
+            if (inputData.shiftKey) {
+                // Show the wear screen
+                this._parentScreen.showItemsSubScreen(Game.Screen.wearScreen, this._player.getItems(),'You have nothing to wear.');
+            } else {
+                // Show the wield screen
+                this._parentScreen.showItemsSubScreen(Game.Screen.wieldScreen, this._player.getItems(),'You have nothing to wield.');
+            }
+            return;
+        } else if (inputData.keyCode === ROT.VK_X && inputData.shiftKey) {
+            // Show the drop screen
+            this._parentScreen.showItemsSubScreen(Game.Screen.examineScreen, this._player.getItems(),'You have nothing to examine.');
+            return;
+        }
+    }
+}
 
 //-------------------
 
@@ -1134,7 +1197,7 @@ Game.Screen.helpScreenNumpad = {
         display.drawText(Game.getScreenWidth() / 2 - text.length / 2, y++, text);
         display.drawText(Game.getScreenWidth() / 2 - text.length / 2, y++, border);
         y += 1;
-        display.drawText(1, y++, 'Use the number pad for movement, run into something to hit it');
+        display.drawText(1, y++, 'NUMPAD CONTROLS: Use the number pad for movement, run into something to hit it');
         y += 2;
         display.drawText(1, y++, '[l] (lowercase L) to look around you');
         display.drawText(1, y++, '[g] to pick up something');
@@ -1145,7 +1208,7 @@ Game.Screen.helpScreenNumpad = {
         display.drawText(1, y++, '[W] to wear something');
         display.drawText(1, y++, '[<],[>] up a level and down a level respectively');
         display.drawText(1, y++, '[?] to show this help screen');
-        display.drawText(1, y++, '[Home] to switch to laptop key bindings');
+        display.drawText(1, y++, '[\\] to switch to laptop key bindings');
         y = Game.getScreenHeight()-1;
         text = '%c{yellow}--- press space key to continue ---';
         display.drawText(Game.getScreenWidth() / 2 - text.length / 2, y++, text);
@@ -1177,7 +1240,7 @@ Game.Screen.helpScreenLaptop = {
         display.drawText(Game.getScreenWidth() / 2 - text.length / 2, y++, text);
         display.drawText(Game.getScreenWidth() / 2 - text.length / 2, y++, border);
         y += 1;
-        display.drawText(1, y++, 'Use the qwe,asd,zxc for movement, run into something to hit it');
+        display.drawText(1, y++, 'LAPTOP CONTROLS: Use the qwe,asd,zxc for movement, run into something to hit it');
         y += 2;
         display.drawText(1, y++, '[l] (lowercase L) to look around you');
         display.drawText(1, y++, '[g] to pick up something');
@@ -1188,7 +1251,7 @@ Game.Screen.helpScreenLaptop = {
         display.drawText(1, y++, '[H] to wear something');
         display.drawText(1, y++, '[<],[>] up a level and down a level respectively');
         display.drawText(1, y++, '[?] to show this help screen');
-        display.drawText(1, y++, '[Home] to switch to numpad key bindings');
+        display.drawText(1, y++, '[\\] to switch to numpad key bindings');
         y = Game.getScreenHeight()-1;
         text = '%c{yellow}--- press space key to continue ---';
         display.drawText(Game.getScreenWidth() / 2 - text.length / 2, y++, text);
@@ -1300,11 +1363,11 @@ Game.Screen.storyScreen = {
                 }
 
                 // falling from that height *HURTS*
-                player.takeDamage(player,Math.floor(player.getMaxHp()*(.3+ROT.RNG.getUniform()/2)));
+                player.takeDamage(player,Math.floor(player.getMaxHp()*(.3+ROT.RNG.getUniform()/2)));                
+                Game.Screen.playScreen.setSubScreen(null);
                 Game.sendMessage(player,"OW! You awake battered and bruided, surrounded by fallen rocks, and lying on something distinctly uncomfortable.");
                 Game.sendMessage(player,"Through some combination of luck and quality nano-docs you're at least still alive...");
-                
-                Game.Screen.playScreen.setSubScreen(null);
+                Game.refresh();
                 return;
             }
             else if (Game.getGameStage()=='uppercaves') {
