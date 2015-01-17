@@ -2,6 +2,7 @@
 Game.PlayerTemplate = {
     name: 'player',
     character: '@',
+    description: "Yourself.",
     foreground: 'white',
     background: 'black',
     maxHp: 30,
@@ -107,6 +108,7 @@ Game.EntityRepository.define('fruiting fungus', {
     name: 'fruiting fungus',
     group: 'fungus',
     character: '%',
+    description: "You're not sure about the chemical and biological details, but on the surface this looks very much like a large mushroom patch. Occasionally a puff of spores is visible in the air near it.",
     foreground: 'brown',
     maxHp: 15,
     corpseName: 'pile of mushroom caps',
@@ -119,6 +121,7 @@ Game.EntityRepository.define('spreading fungus', {
     name: 'spreading fungus',
     group: 'fungus',
     character: '%',
+    description: "It appears fungal, but the mycelium counterpart is actively move around, apparently seeking nutrients. You can almost make out _something_ in the middle, but it's too obscured to be sure.",
     foreground: 'pink',
     attackValue: 4,
     defenseValue: 1,
@@ -136,6 +139,7 @@ Game.EntityRepository.define('quiescent fungus', {
     name: 'quiescent fungus',
     group: 'fungus',
     character: '%',
+    description: "Some kind of fungal-oid. Apparently dormant.",
     foreground: 'grey',
     maxHp: 5,
     corpseName: 'spore-y mass',
@@ -147,6 +151,7 @@ Game.EntityRepository.define('fungus zombie', {
     name: 'fungus zombie',
     group: 'fungus',
     character: 'z',
+    description: "This was once a creature of some sort, but it's body has been completely invaded and subsequently controlled by some kind of fungal network. Ew.",
     foreground: 'pink',
     attackValue: 5,
     defenseValue: 3,
@@ -163,8 +168,9 @@ Game.EntityRepository.define('fungus zombie', {
 });
 
 Game.EntityRepository.define('bat', {
-    name: 'bat',
+    name: 'bat-beast',
     character: 'b',
+    description: "This large, bluish, bat-like creature seems non-hostile. It mostly just flies around with it's mouth open, avoiding anything big and living off whatever it can filter out of the air.",
     foreground: 'blue',
     maxHp: 5,
     corpseFoodValue: 15,
@@ -172,9 +178,10 @@ Game.EntityRepository.define('bat', {
     mixins: [Game.EntityMixins.PeacefulRoamingBehaviorController, Game.EntityMixins.Destructible,Game.EntityMixins.CorpseDropper]
 });
 
-Game.EntityRepository.define('newt', {
-    name: 'giant newt',
+Game.EntityRepository.define('golden lizard', {
+    name: 'golden lizard',
     character: 'l',
+    description: "OK, maybe not *actually* a lizard, but it *looks* pretty lizard-y. The claws and visible teeth suggest it's an predator, but it generally wanders aimlessly. It probably is employing some sort of low-energy lurk-and-pounce strategy.",
     foreground: 'yellow',
     maxHp: 7,
     attackValue: 4,
@@ -189,6 +196,7 @@ Game.EntityRepository.define('newt', {
 Game.EntityRepository.define('rock lizard', {
     name: 'rock lizard',
     character: 'l',
+    description: "It's not very big, but it's got formidable natural protection. It reminds you a bit of a snapping turtle, but it's scutes are distributed all over it's body instead of being fused into a single shell. It's claws and snout look adapted for digging through the local sandstone.",
     foreground: 'goldenrod',
     maxHp: 4,
     attackValue: 2,
@@ -199,9 +207,10 @@ Game.EntityRepository.define('rock lizard', {
              Game.EntityMixins.ExperienceGainer, Game.EntityMixins.RandomStatGainer]
 });
 
-Game.EntityRepository.define('snake', {
-    name: 'snake',
+Game.EntityRepository.define('whip-spine', {
+    name: 'whip-spine',
     character: 's',
+    description: "Snake-like, but with a large spike where you'd expect to see a head. It can probably strike pretty quickly when coiled, but would take a while to recover.",
     foreground: 'green',
     maxHp: 9,
     attackValue: 3,
@@ -216,20 +225,22 @@ Game.EntityRepository.define('snake', {
 Game.EntityRepository.define('ooze', {
     name: 'ooze',
     character: 'o',
+    description: "Sort of like a large slime-mold, but a LOT more active. Apparently has some sort of rudimentary sensory system - maybe scent-based. Leaves noticeable etched traces as it passes across the stone floor - this thing is beyond omnivorous.",
     foreground: 'lightGreen',
     maxHp: 10,
     attackValue: 5,
     sightRadius: 2,
-    allies: ['giant zombie','ooze'],
+    allies: ['giant zombie symbiote','ooze'],
     baseBehavior: Game.EntityBehaviors.AggressiveWanderBehavior,
     behaviors: [Game.EntityBehaviors.AggressiveWanderBehavior],
     mixins: [Game.EntityMixins.AggressiveRoamingBehaviorController, Game.EntityMixins.MeleeAttacker, Game.EntityMixins.Destructible, Game.EntityMixins.Seer,
              Game.EntityMixins.ExperienceGainer, Game.EntityMixins.RandomStatGainer, Game.EntityMixins.Allier]
 });
 
-Game.EntityRepository.define('giant zombie', {
-    name: 'giant zombie', 
+Game.EntityRepository.define('giant zombie symbiote', {
+    name: 'giant zombie symbiote', 
     character: 'Z',
+    description: "It looks like oozes and the local fungus have developed some kind of terrifying symbiotic relationship in the process of consuming the poor creature that.... GOOD GOD! IT'S MICAH!",
     foreground: 'teal',
     maxHp: 30,
     attackValue: 8,

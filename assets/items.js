@@ -32,7 +32,7 @@ Game.ItemRepository.define('jelly ball', {
     character: Game.ItemRepository.Symbol['food'],
     foreground: 'red',
     foodValue: 50,
-    description: "Fairly small, but dense. It's translucent and the outer surface is pretty dry to the touch. The insides are the consistency of jello and smells mildly acidic and a bit cinnamon-y. It tasts surprisingly sweet. Hopefully it's not poisonous.",
+    description: "Fairly small, but dense. It's translucent and the outer surface seems pretty dry. The insides look like they're the consistency of jello. The air around it smells mildly acidic and a bit cinnamon-y. The anaylzer says it's not poisonous. Probably.",
     mixins: [Game.ItemMixins.Edible]
 });
 
@@ -54,6 +54,20 @@ Game.ItemRepository.define('corpse', {
     foodValue: 5,
     consumptions: 1,
     description: "A chilling reminder of your own mortality",
+    mixins: [Game.ItemMixins.Edible]
+}, {
+    disableRandomCreation: true
+});
+
+Game.ItemRepository.define('human corpse', {
+    name: 'human corpse',
+    group: 'corpse',
+    supergroup: 'corpse',
+    character: '@',
+    foreground: '#aba',
+    foodValue: 125,
+    consumptions: 1,
+    description: "Looks like someone else on the team ended up down here as well. I can only hope they were dead before the scavengers started working on them...",
     mixins: [Game.ItemMixins.Edible]
 }, {
     disableRandomCreation: true
@@ -163,11 +177,35 @@ Game.ItemRepository.define('HEM suit, damaged', {
     disableRandomCreation: true
 });
 
+Game.ItemRepository.define('leather armor', {
+    name: 'leather armor',
+    character: Game.ItemRepository.Symbol['wearable'],
+    foreground: 'yellow',
+    defenseValue: 2,
+    wearable: true,
+    description: "Some kind of primitive armor made from leather (or whatever the local equivalent is). It doesn't exactly fit, but you could arrange it to cover some of your more vulnerable areas.",
+    mixins: [Game.ItemMixins.Equippable]
+}, {
+    disableRandomCreation: true
+});
+
+Game.ItemRepository.define('plated leather armor', {
+    name: 'leather armor',
+    character: Game.ItemRepository.Symbol['wearable'],
+    foreground: 'orange',
+    defenseValue: 4,
+    wearable: true,
+    description: "Some kind of primitive armor made from leather (or whatever the local equivalent is), with hard, rocky plates affixed all over it. It's surprisingly effective for such low-tech work.",
+    mixins: [Game.ItemMixins.Equippable]
+}, {
+    disableRandomCreation: true
+});
+
 Game.ItemRepository.define('HEM suit', {
     name: 'HEM suit',
     character: Game.ItemRepository.Symbol['wearable'],
     foreground: 'white',
-    defenseValue: 4,
+    defenseValue: 6,
     wearable: true,
     description: "The HEM (Hostile Environment Mitigation) suit is the standard outfit for those working on the surface. It offers significant protection from scrapes and falls in addition to temperature controls, air supply, comm unit, etc.",
     mixins: [Game.ItemMixins.Equippable]
@@ -179,7 +217,7 @@ Game.ItemRepository.define('HEM-A suit', {
     name: 'HEM-A suit',
     character: Game.ItemRepository.Symbol['wearable'],
     foreground: '#8ad',
-    defenseValue: 7,
+    defenseValue: 11,
     wearable: true,
     description: "The HEM-A (Hostile Environment Mitigation - Armored) suit is the heavy duty version of the standard HEM suit, designed for work in particularly hazardous environments. It has additional padding, plus Cera-tek composite plates embedded to help protect especially vulnerable areas. It also has the standard temperature controls, air supply, comm unit, etc.",
     mixins: [Game.ItemMixins.Equippable]

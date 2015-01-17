@@ -50,8 +50,5 @@ powerbars
 analyzer
 
 TODO NEXT:
-3.75. add description fields to entities
-4. when player starts in the caves scatter rubble and rocks around them
-5. improve the falling screen (make it a real map)
+
 6. implement throw/fire action
-8. improve surface map (add quake event w/ radio comments from team mates)

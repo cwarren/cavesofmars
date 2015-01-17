@@ -38,14 +38,36 @@ Game.Map.Cave = function() {
     }
 
     // Add weapons and armor to the map in random positions and floors
-    /*
-    var templates = ['dagger', 'sword', 'staff', 
-        'tunic', 'chainmail', 'platemail'];
+    
+    var templates =['HEM suit',
+                    'HEM suit, damaged',
+                    'HEM suit, damaged',
+                    'HEM suit, damaged',
+                    'HEM-A suit',
+                    'JAT tool',
+                    'JAT tool, damaged',
+                    'JAT tool, damaged',
+                    'JAT tool, damaged',
+                    'leather armor',
+                    'leather armor',
+                    'plated leather armor',
+                    'shard blade',
+                    'shard blade',
+                    'shod staff',
+                    'staff',
+                    'stone sword',
+                    'human corpse',
+                    'human corpse',
+                    'human corpse',
+                    'human corpse',
+                    'human corpse'
+                    ];
+    
     for (var i = 0; i < templates.length; i++) {
         this.addItemAtRandomPosition(Game.ItemRepository.create(templates[i]),
             Math.floor(this._depth * Math.random()));
     }
-    */
+    
     
     // Add a hole to the final cavern on the last level.
     var holePosition = this.getRandomFloorPosition(this._depth - 1);
