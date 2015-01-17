@@ -22,6 +22,7 @@ Game.PlayerTemplate = {
 Game.TeammateTemplate = {
     name: 'teammate',
     character: '@',
+    description: "Your teammates all look the same in their HEM suits. Note to self: get them to add some kind of visual ID once we get back to base",
     foreground: '#ccc',
     background: 'black',
     allies: ['player'],

@@ -42,7 +42,7 @@ Game.ItemRepository.define('geodic nut', {
     foreground: 'lightGreen',
     foodValue: 35,
     consumptions: 4,
-    description: "This reminds you of a cross between a coconut and a geode. When you open it up the inside is fill with a soft greyish material that tastes bland and feels a bit chalky, but at least it's apparently nutritious.",
+    description: "This reminds you of a cross between a coconut and a geode. When you open it up the inside is filled with a soft greyish material that tastes bland and feels a bit chalky, but at least it's apparently nutritious.",
     mixins: [Game.ItemMixins.Edible]
 });
 
@@ -79,7 +79,7 @@ Game.ItemRepository.define('JAT tool, damaged', {
     foreground: 'gray',
     attackValue: 2,
     wieldable: true,
-    description: "The JAT (Jack-of-All-Trades) tool is the standard-issue tool for work on Mars. While not as good as a specialized tool, it's at least moderately effective as a shovel, prybar, pick, axes, and stabelizing stick for walking around rough terrain. Unfortunately this one has been badly damaged, but you could still probably hit something with it if you had to.",
+    description: "The JAT (Jack-of-All-Trades) tool is the standard-issue tool for work on Mars. While not as good as a specialized tool, it's at least moderately effective as a shovel, prybar, pick, axe, and walking stick for navigating rough terrain. Unfortunately this one has been badly damaged, but you could still probably hit something with it if you had to.",
     mixins: [Game.ItemMixins.Equippable]
 }, {
     disableRandomCreation: true
@@ -92,7 +92,7 @@ Game.ItemRepository.define('JAT tool', {
     attackValue: 6,
     defenseValue: 1,
     wieldable: true,
-    description: "The JAT (Jack-of-All-Trades) tool is the standard-issue tool for work on Mars. While not as good as a specialized tool, it's at least moderately effective as a shovel, prybar, pick, axes, and stabelizing stick for walking around rough terrain. Plus, if you have to you can use it to give something a pretty solid whack.",
+    description: "The JAT (Jack-of-All-Trades) tool is the standard-issue tool for work on Mars. While not as good as a specialized tool, it's at least moderately effective as a shovel, prybar, pick, axe, and walking stick for navigating rough terrain. Plus, if you have to you can use it to give something a pretty solid whack.",
     mixins: [Game.ItemMixins.Equippable]
 }, {
     disableRandomCreation: true

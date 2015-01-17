@@ -54,6 +54,9 @@ Game.Screen.playScreen = {
             }
             
             // Refresh screen on changing the subscreen
+            if (this._player) {
+                this._player.clearMessages();
+            }
             Game.refresh();
     },
     getPlayer: function() {
@@ -252,6 +255,11 @@ Game.Screen.playScreen = {
         }
         else if (Game.getControlScheme() == 'laptop') {
             tookAction = this.laptopControlScheme(inputType, inputData);
+        }
+        
+        if ((inputData.keyCode === ROT.VK_ESCAPE) || (inputData.keyCode === ROT.VK_SPACE)) {
+            this._player.clearMessages();
+            Game.refresh();
         }
         
         if (tookAction) {
@@ -788,12 +796,13 @@ Game.Screen.examineScreen = new Game.Screen.ItemListScreen({
         var keys = Object.keys(selectedItems);
         if (keys.length > 0) {
             var item = selectedItems[keys[0]];
-//            Game.sendMessage(this._player, "It's %s.", 
-//                [
-//                    //item.describeA(false),
-//                    item.details()
-//                ]);
             Game.sendMessage(this._player, item.details());
+            var descr = item.getDescription();
+            if (descr) {
+                Game.sendMessage(this._player, descr);
+            }
+            Game.sendMessage(this._player, '');
+
         }
         return true;
     }
@@ -916,8 +925,24 @@ Game.Screen.TargetBasedScreen.prototype.setup = function(player, startX, startY,
     this._visibleCells = visibleCells;
 };
 
+Game.Screen.TargetBasedScreen.prototype.renderPlayerMessages = function(display) {
+    // Get the messages in the player's queue and render them
+    var messages = this._player.getMessages();
+    var messageY = 0;
+    for (var i = 0; i < messages.length; i++) {
+        // Draw each message, adding the number of lines
+        messageY += display.drawText(
+            0, 
+            messageY,
+            Game.Screen.DEFAULT_COLOR_SETTER + messages[i]
+        );
+    }
+}
+
 Game.Screen.TargetBasedScreen.prototype.render = function(display) {
     Game.Screen.playScreen.renderTiles.call(Game.Screen.playScreen, display);
+    this.renderPlayerMessages(display);
+    this._player.clearMessages();
 
 //    // Draw a line from the start to the cursor.
 //    var points = Game.Geometry.getLine(this._startX, this._startY, this._cursorX,
@@ -1043,20 +1068,41 @@ Game.Screen.lookScreen = new Game.Screen.TargetBasedScreen({
             // see it before testing if there's an entity or item.
             if (fullyLightMap || this._visibleCells[x + ',' + y]) {
                 var items = map.getItemsAt(x, y, z);
+
                 // If we have items, we want to render the top most item
                 if (items) {
                     var item = items[items.length - 1];
-                    return String.format('%s - %s (%s)',
+
+                    if (items.length > 1) {
+                        Game.sendMessage(this._player,'there are several things piled up here - you can only see clearly the one on the top');
+                    }
+                    Game.sendMessage(this._player,item.getDescription());
+
+                    if (item.details()) {
+                        return String.format('%s - %s (%s)',
+                            item.getRepresentation(),
+                            item.describeA(true),
+                            item.details());
+                    }
+                    return String.format('%s - %s',
                         item.getRepresentation(),
-                        item.describeA(true),
-                        item.details());
+                        item.describeA(true));
+
                 // Else check if there's an entity
                 } else if (map.getEntityAt(x, y, z)) {
                     var entity = map.getEntityAt(x, y, z);
-                    return String.format('%s - %s (%s)',
+
+                    Game.sendMessage(this._player,entity.getDescription());
+
+                    if (entity.details()) {
+                        return String.format("%s - %s (%s)",
+                            entity.getRepresentation(),
+                            entity.describeA(true),
+                            entity.details());
+                    }
+                    return String.format("%s - %s",
                         entity.getRepresentation(),
-                        entity.describeA(true),
-                        entity.details());
+                        entity.describeA(true));
                 }
             }
             // If there was no entity/item or the tile wasn't visible, then use
@@ -1215,6 +1261,7 @@ Game.Screen.storyScreen = {
                 Game.setGameStage('uppercaves');
                 var player = Game.Screen.playScreen.getPlayer()
 
+                // remove existing inventory (just leave it on the map - player won't return to the surface map)
                 var playerItems = player.getItems();
                 for (var i=0;i<playerItems.length;i++) {
                     player.dropItem(i);
@@ -1222,15 +1269,18 @@ Game.Screen.storyScreen = {
 
                 player.switchMap(new Game.Map.Cave());
 
+                // give the player a damaged suit
                 var h = Game.ItemRepository.create('HEM suit, damaged');
                 player.addItem(h);
                 player.wear(h);
 
+                // place the damaged tool
                 var map = player.getMap();
                 var px = player.getX();
                 var py = player.getY();
                 map.addItem(px,py,0,Game.ItemRepository.create('JAT tool, damaged'));
 
+                // scatter rocks around
                 var adjCoords = Game.util.coordsNeighboring(px,py);
                 for (var i=0;i<adjCoords.length;i++) {
                     if (map.getTile(adjCoords[i].x, adjCoords[i].y, 0) == Game.Tile.floorTile) {
@@ -1247,6 +1297,7 @@ Game.Screen.storyScreen = {
                     }
                 }
 
+                // falling from that height *HURTS*
                 player.takeDamage(player,Math.floor(player.getMaxHp()*(.3+ROT.RNG.getUniform()/2)));
                 Game.sendMessage(player,"OW! You awake battered and bruided, surrounded by fallen rocks, and lying on something distinctly uncomfortable.");
                 Game.sendMessage(player,"Through some combination of luck and quality nano-docs you're at least still alive...");

@@ -109,7 +109,7 @@ Game.DynamicGlyph.prototype.details = function() {
     // CSW TODO : prettify the details string, perhaps (e.g. especially if there's a 'richDescription' key...?)
     var detStr = details.join(', ');
     if (! detStr) {
-        detStr = 'totally uninteresting';
+        return '';
     }
     return this.describeA(false) + '- '+detStr;
 };

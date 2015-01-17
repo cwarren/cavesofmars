@@ -50,8 +50,6 @@ powerbars
 analyzer
 
 TODO NEXT:
-3. include description attribute when a player looks at / examines something
-3.5. improve display of detail info
 3.75. add description fields to entities
 4. when player starts in the caves scatter rubble and rocks around them
 5. improve the falling screen (make it a real map)

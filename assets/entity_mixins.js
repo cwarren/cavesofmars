@@ -47,6 +47,16 @@ Game.sendMessageNearby = function(map, centerX, centerY, z, message, args) {
 // Create our Mixins namespace
 Game.EntityMixins = {};
 
+Game.EntityMixins.Described = {
+    name: 'Described',
+    listeners: {
+        'details': function() {
+            var det = [{key: 'description', value: this.getDescription()}];
+            return det;
+        }
+    }
+}
+
 ////////////////////////////////////////////////////////////////
 // CAPABILITIES
 
