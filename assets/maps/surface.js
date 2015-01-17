@@ -28,6 +28,10 @@ Game.Map.Surface.prototype.addTeammates = function() {
     }
 }
 
+Game.Map.prototype.getTileForDugSpace = function() {
+    return Game.Tile.newStoneTile;
+}
+
 Game.Map.Surface.prototype._fillCircleWithRandom = function(tiles, centerX, centerY, radius, interiorTypesArray, outlineTileType, outlinePercent) {
     // Copied from the DrawFilledCircle algorithm
     // http://stackoverflow.com/questions/1201200/fast-algorithm-for-drawing-filled-circles
@@ -94,20 +98,18 @@ Game.Map.Surface.prototype._generateTiles = function(width, height) {
     
     
     // First we create an array, filling it with random walkable surface
-    var usedTileTypes = {};
-
+    var surfaceTiles = [Game.Tile.sandTile,
+                 Game.Tile.heavySandTile,
+                 Game.Tile.weatheredStoneTile,
+                 Game.Tile.newStoneTile
+                ];
+                
     var tiles = new Array(width);
     for (var x = 0; x < width; x++) {
         tiles[x] = new Array(height);
         for (var y = 0; y < height; y++) {
-            var tile = Game.SurfaceOpenTileRepository.createRandom();
+            var tile = surfaceTiles.random(); 
         
-            if (usedTileTypes[tile.getName()]) {
-                tile = usedTileTypes[tile.getName()];
-            } else {
-                usedTileTypes[tile.getName()] = tile;
-            }
-
             if (ROT.RNG.getUniform() < .15) {
                 tile = Game.Tile.wallTile;
             }
@@ -116,21 +118,14 @@ Game.Map.Surface.prototype._generateTiles = function(width, height) {
         }
     }
     
-
     // Now we determine the radius of the area to carve out.
 //    var radius = (Math.min(width, height) - 4) / 2;
-    this._fillCircleWithRandom(tiles, width / 2, height / 2, 14, [Game.SurfaceOpenTileRepository.create('sand')], Game.Tile.wallTile,.6);
-    this._fillCircleWithRandom(tiles, width / 2, height / 2, 13, [Game.SurfaceOpenTileRepository.create('sand')], Game.Tile.wallTile,.7);
-    this._fillCircleWithRandom(tiles, width / 2, height / 2, 12, [Game.SurfaceOpenTileRepository.create('sand')], Game.Tile.wallTile,.8);
-    this._fillCircleWithRandom(tiles, width / 2, height / 2, 11, [Game.SurfaceOpenTileRepository.create('sand')], Game.Tile.wallTile,.7);
+    this._fillCircleWithRandom(tiles, width / 2, height / 2, 14, [Game.Tile.sandTile], Game.Tile.wallTile,.6);
+    this._fillCircleWithRandom(tiles, width / 2, height / 2, 13, [Game.Tile.sandTile], Game.Tile.wallTile,.7);
+    this._fillCircleWithRandom(tiles, width / 2, height / 2, 12, [Game.Tile.sandTile], Game.Tile.wallTile,.8);
+    this._fillCircleWithRandom(tiles, width / 2, height / 2, 11, [Game.Tile.sandTile], Game.Tile.wallTile,.7);
 
-    this._fillCircleWithRandom(tiles, width / 2, height / 2, 10, 
-        [Game.SurfaceOpenTileRepository.create('sand'),
-         Game.SurfaceOpenTileRepository.create('heavy sand'),
-         Game.SurfaceOpenTileRepository.create('heavy sand'),
-         Game.SurfaceOpenTileRepository.create('weathered stone')
-        ]
-        ,Game.Tile.wallTile,.6);
+    this._fillCircleWithRandom(tiles, width / 2, height / 2, 10,surfaceTiles,Game.Tile.wallTile,.6);
 
     // Return the tiles in an array as we only have 1 depth level.
     return [tiles];

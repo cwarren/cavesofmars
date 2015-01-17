@@ -132,8 +132,12 @@ Game.Map.prototype.getTile = function(x, y, z) {
 Game.Map.prototype.dig = function(x, y, z) {
     // If the tile is diggable, update it to a floor
     if (this.getTile(x, y, z).isDiggable()) {
-        this._tiles[z][x][y] = Game.Tile.floorTile;
+            this._tiles[z][x][y] = this.getTileForDugSpace(); //Game.Tile.floorTile;
     }
+}
+
+Game.Map.prototype.getTileForDugSpace = function() {
+    return Game.Tile.floorTile;
 }
 
 Game.Map.prototype.isEmptyFloor = function(x, y, z) {
@@ -147,7 +151,9 @@ Game.Map.prototype.isWalkable = function(x, y, z) {
     // Check if the tile is floor and also has no entity
     var tile = this.getTile(x, y, z);
     
-    return tile.isWalkable() && !this.getEntityAt(x, y, z);
+    var w = tile.isWalkable();
+    var e = this.getEntityAt(x, y, z);
+    return w && !e;
 }
 
 Game.Map.prototype.getEntityAt = function(x, y, z){
@@ -266,15 +272,18 @@ Game.Map.prototype.removeEntity = function(entity) {
 Game.Map.prototype.removeItem = function(itm,x,y,z) {
     var mapItems = this.getItemsAt(x,y,z);
 
-    // Iterate through all items there until a match is found
-    for (var i = 0; i < mapItems.length; i++) {
-        if (mapItems[i].getId() == itm.getId()) {
-            mapItems.splice(i, 1);
-            break;
+    if (mapItems) {
+        // Iterate through all items there until a match is found
+        for (var i = 0; i < mapItems.length; i++) {
+            if (mapItems[i].getId() == itm.getId()) {
+                mapItems.splice(i, 1);
+                break;
+            }
         }
+        // Update the map items
+        this.setItemsAt(x,y,z, mapItems);
     }
-    // Update the map items
-    this.setItemsAt(x,y,z, mapItems);
+    
     this.nuke(itm);
 }
 

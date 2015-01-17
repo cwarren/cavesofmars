@@ -74,7 +74,7 @@ Game.ItemRepository.define('rock', {
 
 // Weapons
 Game.ItemRepository.define('JAT tool, damaged', {
-    name: 'JAT tool',
+    name: 'JAT tool, damaged',
     character: Game.ItemRepository.Symbol['polearm'],
     foreground: 'gray',
     attackValue: 2,
@@ -154,7 +154,7 @@ Game.ItemRepository.define('shod staff', {
 Game.ItemRepository.define('HEM suit, damaged', {
     name: 'HEM suit, damaged',
     character: Game.ItemRepository.Symbol['wearable'],
-    foreground: 'green',
+    foreground: 'grey',
     defenseValue: 1,
     wearable: true,
     description: "The HEM (Hostile Environment Mitigation) suit is the standard outfit for those working on the surface. It would offer significant protection from scrapes and falls in addition to temperature controls, air supply, comm unit, etc. Sadly, this one has been very badly damaged and so provides only minimal protection. All the complicated systems have also been destroyed.",
@@ -176,7 +176,7 @@ Game.ItemRepository.define('HEM suit', {
 });
 
 Game.ItemRepository.define('HEM-A suit', {
-    name: 'platemail',
+    name: 'HEM-A suit',
     character: Game.ItemRepository.Symbol['wearable'],
     foreground: '#8ad',
     defenseValue: 7,

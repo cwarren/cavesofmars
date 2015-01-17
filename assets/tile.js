@@ -142,42 +142,40 @@ Game.Tile.waterTile = new Game.Tile({
     });
 
 
-Game.SurfaceOpenTileRepository = new Game.Repository('surfaceOpen', Game.Tile);
-
-Game.SurfaceOpenTileRepository.define('sand', {
+Game.Tile.sandTile = new Game.Tile({
     name: 'sand',
     character: '~',
-    foreground: '#dc8',
+    foreground: '#ec8',
     walkable: true,
     transparent: true,
     description: 'a wind-swept pile of sand'
 });
 
-Game.SurfaceOpenTileRepository.define('heavy sand', {
+Game.Tile.heavySandTile = new Game.Tile({
     name: 'heavy sand',
     character: '~',
-    foreground: '#ffa',
+    foreground: '#fda',
     walkable: true,
     transparent: true,
     description: 'heavier sand filling a slight depression'
 });
 
-Game.SurfaceOpenTileRepository.define('weathered stone', {
+Game.Tile.weatheredStoneTile = new Game.Tile({
     name: 'weathered stone',
     character: '.',
-    foreground: '#fa2',
+    foreground: '#f92',
     walkable: true,
     transparent: true,
     description: 'stone surface, well worn by the passage of time'
 });
 
-Game.SurfaceOpenTileRepository.define('new stone', {
+Game.Tile.newStoneTile = new Game.Tile({
     name: 'new stone',
     character: '.',
-    foreground: '#c96',
+    foreground: '#da9',
     walkable: true,
     transparent: true,
     description: 'stone surface, freshly exposed to the elements'
-});
+    });
 
 

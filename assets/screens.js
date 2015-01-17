@@ -67,6 +67,16 @@ Game.Screen.playScreen = {
 //        depth = 1;
 
         this._player = new Game.Entity(Game.PlayerTemplate);
+
+        // initial inventory/gear
+        var h = Game.ItemRepository.create('HEM suit');
+        this._player.addItem(h);
+        this._player.wear(h);
+
+        var j = Game.ItemRepository.create('JAT tool');
+        this._player.addItem(j);
+        this._player.wield(j);        
+        
         this._moveCounter = 0;
         
         // Create our map from the tiles and player
@@ -236,6 +246,7 @@ Game.Screen.playScreen = {
         }
 
         var tookAction = false;
+        
         if (Game.getControlScheme() == 'numpad') {
             tookAction = this.numpadControlScheme(inputType, inputData);
         }
@@ -243,111 +254,6 @@ Game.Screen.playScreen = {
             tookAction = this.laptopControlScheme(inputType, inputData);
         }
         
-/*
-        var tookAction = false;
-        if (inputType === 'keydown') {
-            // inventory management/access
-            if (inputData.keyCode === ROT.VK_I) {
-                // Show the inventory screen
-                this.showItemsSubScreen(Game.Screen.inventoryScreen, this._player.getItems(),'You are not carrying anything.');
-                return;
-            } else if (inputData.keyCode === ROT.VK_D) {
-                // Show the drop screen
-                this.showItemsSubScreen(Game.Screen.dropScreen, this._player.getItems(),'You have nothing to drop.');
-                return;
-            } else if (inputData.keyCode === ROT.VK_E && inputData.shiftKey) {
-                // Show the drop screen
-                this.showItemsSubScreen(Game.Screen.eatScreen, this._player.getItems(),'You have nothing to eat.');
-                return;
-            } else if (inputData.keyCode === ROT.VK_W) {
-                if (inputData.shiftKey) {
-                    // Show the wear screen
-                    this.showItemsSubScreen(Game.Screen.wearScreen, this._player.getItems(),'You have nothing to wear.');
-                } else {
-                    // Show the wield screen
-                    this.showItemsSubScreen(Game.Screen.wieldScreen, this._player.getItems(),'You have nothing to wield.');
-                }
-                return;
-            } else if (inputData.keyCode === ROT.VK_X) {
-                // Show the drop screen
-                this.showItemsSubScreen(Game.Screen.examineScreen, this._player.getItems(),'You have nothing to examine.');
-                return;
-            } else if (inputData.keyCode === ROT.VK_G) {
-                var items = this._player.getMap().getItemsAt(this._player.getX(), this._player.getY(), this._player.getZ());
-
-                // If there is only one item, directly pick it up
-                if (items && items.length === 1) { 
-                    var item = items[0];
-                    if (this._player.pickupItems([0])) {
-                        Game.sendMessage(this._player, "You pick up %s.", [item.describeA()]);
-                    } else {
-                        Game.sendMessage(this._player, "Your inventory is full! Nothing was picked up.");
-                    }
-                    Game.refresh();
-                } else {
-                    this.showItemsSubScreen(Game.Screen.pickupScreen, items,'There is nothing here to pick up.');
-                } 
-            } else if (inputData.keyCode == ROT.VK_L) {
-                // Setup the look screen.
-                var offsets = this.getScreenOffsets();
-                Game.Screen.lookScreen.setup(this._player,
-                    this._player.getX(), this._player.getY(),
-                    offsets.x, offsets.y);
-                this.setSubScreen(Game.Screen.lookScreen);
-                return;
-            }
-
-
-            // Movement (numpad based)
-            if (inputData.keyCode === ROT.VK_NUMPAD5) { // rest/wait/do nothing
-                tookAction = true;
-            } else if (inputData.keyCode === ROT.VK_NUMPAD1) {
-                tookAction = this.move(-1, 1, 0);
-                this._moveCounter++;
-            } else if (inputData.keyCode === ROT.VK_NUMPAD2) {
-                tookAction = this.move(0, 1, 0);
-                this._moveCounter++;
-            } else if (inputData.keyCode === ROT.VK_NUMPAD3) {
-                tookAction = this.move(1, 1, 0);
-                this._moveCounter++;
-            } else if (inputData.keyCode === ROT.VK_NUMPAD4) {
-                tookAction = this.move(-1, 0, 0);
-                this._moveCounter++;
-            } else if (inputData.keyCode === ROT.VK_NUMPAD6) {
-                tookAction = this.move(1, 0, 0);
-                this._moveCounter++;
-            } else if (inputData.keyCode === ROT.VK_NUMPAD7) {
-                tookAction = this.move(-1, -1, 0);
-                this._moveCounter++;
-            } else if (inputData.keyCode === ROT.VK_NUMPAD8) {
-                tookAction = this.move(0, -1, 0);
-                this._moveCounter++;
-            } else if (inputData.keyCode === ROT.VK_NUMPAD9) {
-                tookAction = this.move(1, -1, 0);
-                this._moveCounter++;
-            }
-            
-            if (tookAction && Game.getGameStage()=='surface') {
-                if (this._moveCounter > 9) {
-                    this.setSubScreen(Game.Screen.storyScreen);
-                }
-            }
-
-        } else if (inputType === 'keypress') {
-            var keyChar = String.fromCharCode(inputData.charCode);
-
-            // stairs up or down
-            if (keyChar === '>') {
-                tookAction = this.move(0, 0, 1);
-            } else if (keyChar === '<') {
-                tookAction = this.move(0, 0, -1);
-            } else if (keyChar === '?') {
-                // Setup the help screen.
-                this.setSubScreen(Game.Screen.helpScreenNumpad);
-                return;
-            }
-        }  
-*/
         if (tookAction) {
             this._player.finishAction();
             return true;
@@ -1307,7 +1213,44 @@ Game.Screen.storyScreen = {
             }
             else if (Game.getGameStage()=='falling') {
                 Game.setGameStage('uppercaves');
-                Game.Screen.playScreen.getPlayer().switchMap(new Game.Map.Cave());
+                var player = Game.Screen.playScreen.getPlayer()
+
+                var playerItems = player.getItems();
+                for (var i=0;i<playerItems.length;i++) {
+                    player.dropItem(i);
+                }
+
+                player.switchMap(new Game.Map.Cave());
+
+                var h = Game.ItemRepository.create('HEM suit, damaged');
+                player.addItem(h);
+                player.wear(h);
+
+                var map = player.getMap();
+                var px = player.getX();
+                var py = player.getY();
+                map.addItem(px,py,0,Game.ItemRepository.create('JAT tool, damaged'));
+
+                var adjCoords = Game.util.coordsNeighboring(px,py);
+                for (var i=0;i<adjCoords.length;i++) {
+                    if (map.getTile(adjCoords[i].x, adjCoords[i].y, 0) == Game.Tile.floorTile) {
+                        map.addItem(adjCoords[i].x, adjCoords[i].y,0,Game.ItemRepository.create('rock'));
+                    }
+
+                    var adjCoords2 = Game.util.coordsNeighboring(adjCoords[i].x, adjCoords[i].y);
+                    for (var j=0;j<adjCoords2.length;j++) {
+                        var addX = adjCoords2[j].x;
+                        var addY = adjCoords2[j].y;
+                        if ((ROT.RNG.getUniform() < .5) && (addX!=px) && (addY!=py) && (map.getTile(addX, addY, 0) == Game.Tile.floorTile)) {
+                            map.addItem(addX, addY,0,Game.ItemRepository.create('rock'));
+                        }
+                    }
+                }
+
+                player.takeDamage(player,Math.floor(player.getMaxHp()*(.3+ROT.RNG.getUniform()/2)));
+                Game.sendMessage(player,"OW! You awake battered and bruided, surrounded by fallen rocks, and lying on something distinctly uncomfortable.");
+                Game.sendMessage(player,"Through some combination of luck and quality nano-docs you're at least still alive...");
+                
                 Game.Screen.playScreen.setSubScreen(null);
                 return;
             }
