@@ -11,9 +11,6 @@ Screens:
 
 Game Jam Goals:
 
-- re-theme what I have for my chosen setting & story
-  + come up with story-consistent justification for experience system (and probably modify that system accordingly)
-
 - split messaging display into a separate screen than the main map/play area
   + implement message history system
   + create (and make use of) richer descriptions of observable things and narrative elements/events
@@ -51,4 +48,10 @@ analyzer
 
 TODO NEXT:
 
-6. implement throw/fire action
+2. implement throw/fire action
+3. polish/create lose and win screens / story
+4. add to story to note that the PC has a utility tool when they land in the cave
+5. tweak entity number so they scale w/ PC a bit better
+6. implement Awakener entity mixin, and add it to quiescent fungus (can awaken into spreading fungus)
+
+50. design/implement alternate path to victory(ish) - post death, if killed at least one ooze and at least one fungus, or if killed by fungus, option to revive and play as a fungal zombie - food consumption increases dramatically, allied with fungus, no further equipping, but still can level/improve

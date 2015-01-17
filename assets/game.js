@@ -5,7 +5,7 @@ var Game =  {
     _screenHeight: 24,
     _randomSeed: 12,
     _game_stage: 'start',
-    _controlScheme: 'numpad',
+    _controlScheme: '',
     init: function() {
         // Any necessary initialization will go here.
         this._randomSeed = 5 + Math.floor(Math.random()*100000);
@@ -21,6 +21,7 @@ var Game =  {
         var game = this; // So that we don't lose this
         
         this.setGameStage('starting');
+        this.setControlScheme(Game.Bindings.BindingSet_Numpad);
         
         var bindEventToScreen = function(event) {
             window.addEventListener(event, function(e) {

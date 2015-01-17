@@ -248,255 +248,131 @@ Game.Screen.playScreen = {
             return;
         }
 
-        var tookAction = false;
-        
-        if (Game.getControlScheme() == 'numpad') {
-            tookAction = this.numpadControlScheme(inputType, inputData);
-        }
-        else if (Game.getControlScheme() == 'laptop') {
-            tookAction = this.laptopControlScheme(inputType, inputData);
-        }
-        
-        if ((inputData.keyCode === ROT.VK_ESCAPE) && (inputData.keyCode === ROT.VK_SPACE)) {
+        if ((inputData.keyCode === ROT.VK_ESCAPE) || (inputData.keyCode === ROT.VK_SPACE)) {
             this._player.clearMessages();
             Game.refresh();
+            return;
         }
-        
+
+        var tookAction = false;        
+        var gameAction = Game.Bindings.getAction(inputType, inputData, Game.getControlScheme());
+
+        //----------------------------
+        // inventory actions
+        if (gameAction === Game.Bindings.Actions.Inventory.INVENTORY_LIST) {
+            this.showItemsSubScreen(Game.Screen.inventoryScreen, this._player.getItems(),'You are not carrying anything.');
+            return;
+
+        } else if (gameAction === Game.Bindings.Actions.Inventory.INVENTORY_DROP) {
+            this.showItemsSubScreen(Game.Screen.dropScreen, this._player.getItems(),'You have nothing to drop.');
+            return;
+
+        } else if (gameAction === Game.Bindings.Actions.Inventory.INVENTORY_EAT) {
+            this.showItemsSubScreen(Game.Screen.eatScreen, this._player.getItems(),'You have nothing to eat.');
+            return;
+
+        } else if (gameAction === Game.Bindings.Actions.Inventory.INVENTORY_WIELD) {
+            this.showItemsSubScreen(Game.Screen.wieldScreen, this._player.getItems(),'You have nothing to wield.');
+            return;
+
+        } else if (gameAction === Game.Bindings.Actions.Inventory.INVENTORY_WEAR) {
+            this.showItemsSubScreen(Game.Screen.wearScreen, this._player.getItems(),'You have nothing to wear.');
+            return;
+
+        } else if (gameAction === Game.Bindings.Actions.Inventory.INVENTORY_EXAMINE) {
+            this.showItemsSubScreen(Game.Screen.examineScreen, this._player.getItems(),'You have nothing to examine.');
+            return;
+
+        } else if (gameAction === Game.Bindings.Actions.Inventory.INVENTORY_GET) {
+            var items = this._player.getMap().getItemsAt(this._player.getX(), this._player.getY(), this._player.getZ());
+
+            // If there is only one item, directly pick it up
+            if (items && items.length === 1) { 
+                var item = items[0];
+                if (this._player.pickupItems([0])) {
+                    Game.sendMessage(this._player, "You pick up %s.", [item.describeA()]);
+                } else {
+                    Game.sendMessage(this._player, "Your inventory is full! Nothing was picked up.");
+                }
+                Game.refresh();
+            } else {
+                this.showItemsSubScreen(Game.Screen.pickupScreen, items,'There is nothing here to pick up.');
+            } 
+
+
+        //----------------------------
+        // world actions
+        } else if (gameAction === Game.Bindings.Actions.World.LOOK) {
+            var offsets = this.getScreenOffsets();
+            Game.Screen.lookScreen.setup(this._player,
+                this._player.getX(), this._player.getY(),
+                offsets.x, offsets.y);
+            this.setSubScreen(Game.Screen.lookScreen);
+            return;
+
+
+        //----------------------------
+        // meta actions
+        } else if (gameAction === Game.Bindings.Actions.Meta.SWITCH_KEYBINDING) {
+            if (Game.getControlScheme() === Game.Bindings.BindingSet_Numpad) {
+                Game.setControlScheme(Game.Bindings.BindingSet_Laptop);
+            } else {
+                Game.setControlScheme(Game.Bindings.BindingSet_Numpad);
+            }
+            return;
+
+        } else if (gameAction === Game.Bindings.Actions.Meta.HELP) {
+            this.setSubScreen(Game.Screen.helpScreenNumpad);
+            return;
+
+
+        //----------------------------
+        // movement actions
+        } else if (gameAction === Game.Bindings.Actions.Moves.MOVE_UL) {
+            tookAction = this.move(-1, -1, 0);
+            this._moveCounter++;
+        } else if (gameAction === Game.Bindings.Actions.Moves.MOVE_U) {
+            tookAction = this.move(0, -1, 0);
+            this._moveCounter++;
+        } else if (gameAction === Game.Bindings.Actions.Moves.MOVE_UR) {
+            tookAction = this.move(1, -1, 0);
+            this._moveCounter++;
+        } else if (gameAction === Game.Bindings.Actions.Moves.MOVE_L) {
+            tookAction = this.move(-1, 0, 0);
+            this._moveCounter++;
+        } else if (gameAction === Game.Bindings.Actions.Moves.MOVE_WAIT) {
+            tookAction = true;
+        } else if (gameAction === Game.Bindings.Actions.Moves.MOVE_R) {
+            tookAction = this.move(1, 0, 0);
+            this._moveCounter++;
+        } else if (gameAction === Game.Bindings.Actions.Moves.MOVE_DL) {
+            tookAction = this.move(-1, 1, 0);
+            this._moveCounter++;
+        } else if (gameAction === Game.Bindings.Actions.Moves.MOVE_D) {
+            tookAction = this.move(0, 1, 0);
+            this._moveCounter++;
+        } else if (gameAction === Game.Bindings.Actions.Moves.MOVE_DR) {
+            tookAction = this.move(1, 1, 0);
+            this._moveCounter++;
+        } else if (gameAction === Game.Bindings.Actions.Moves.MOVE_ASCEND) {
+            tookAction = this.move(0, 0, -1);
+        } else if (gameAction === Game.Bindings.Actions.Moves.MOVE_DESCEND) {
+            tookAction = this.move(0, 0, 1);
+        }
+
+        // after 9 moves on the surface the player goes to the next stage of the story
+        if (tookAction && Game.getGameStage()=='surface') {
+            if (this._moveCounter > 9) {
+                this.setSubScreen(Game.Screen.storyScreen);
+            }
+        }
+
         if (tookAction) {
             this._player.finishAction();
             return true;
         }
         
         return false;
-    },
-    numpadControlScheme: function(inputType, inputData) {
-        var tookAction = false;
-        if (inputType === 'keydown') {
-            // inventory management/access
-            if (inputData.keyCode === ROT.VK_I) {
-                // Show the inventory screen
-                this.showItemsSubScreen(Game.Screen.inventoryScreen, this._player.getItems(),'You are not carrying anything.');
-                return;
-            } else if (inputData.keyCode === ROT.VK_D) {
-                // Show the drop screen
-                this.showItemsSubScreen(Game.Screen.dropScreen, this._player.getItems(),'You have nothing to drop.');
-                return;
-            } else if (inputData.keyCode === ROT.VK_E && inputData.shiftKey) {
-                // Show the drop screen
-                this.showItemsSubScreen(Game.Screen.eatScreen, this._player.getItems(),'You have nothing to eat.');
-                return;
-            } else if (inputData.keyCode === ROT.VK_W) {
-                if (inputData.shiftKey) {
-                    // Show the wear screen
-                    this.showItemsSubScreen(Game.Screen.wearScreen, this._player.getItems(),'You have nothing to wear.');
-                } else {
-                    // Show the wield screen
-                    this.showItemsSubScreen(Game.Screen.wieldScreen, this._player.getItems(),'You have nothing to wield.');
-                }
-                return;
-            } else if (inputData.keyCode === ROT.VK_X) {
-                // Show the drop screen
-                this.showItemsSubScreen(Game.Screen.examineScreen, this._player.getItems(),'You have nothing to examine.');
-                return;
-            } else if (inputData.keyCode === ROT.VK_G) {
-                var items = this._player.getMap().getItemsAt(this._player.getX(), this._player.getY(), this._player.getZ());
-
-                // If there is only one item, directly pick it up
-                if (items && items.length === 1) { 
-                    var item = items[0];
-                    if (this._player.pickupItems([0])) {
-                        Game.sendMessage(this._player, "You pick up %s.", [item.describeA()]);
-                    } else {
-                        Game.sendMessage(this._player, "Your inventory is full! Nothing was picked up.");
-                    }
-                    Game.refresh();
-                } else {
-                    this.showItemsSubScreen(Game.Screen.pickupScreen, items,'There is nothing here to pick up.');
-                } 
-            } else if (inputData.keyCode == ROT.VK_L) {
-                // Setup the look screen.
-                var offsets = this.getScreenOffsets();
-                Game.Screen.lookScreen.setup(this._player,
-                    this._player.getX(), this._player.getY(),
-                    offsets.x, offsets.y);
-                this.setSubScreen(Game.Screen.lookScreen);
-                return;
-            } else if (inputData.keyCode === ROT.VK_BACK_SLASH) {
-                //setTimeout(20,function(){
-                    console.log('switching to laptop keybindings');
-                    Game.setControlScheme('laptop');
-                //});
-                return false;
-            }
-
-
-            // Movement (numpad based)
-            if (inputData.keyCode === ROT.VK_NUMPAD5) { // rest/wait/do nothing
-                tookAction = true;
-            } else if (inputData.keyCode === ROT.VK_NUMPAD1) {
-                tookAction = this.move(-1, 1, 0);
-                this._moveCounter++;
-            } else if (inputData.keyCode === ROT.VK_NUMPAD2) {
-                tookAction = this.move(0, 1, 0);
-                this._moveCounter++;
-            } else if (inputData.keyCode === ROT.VK_NUMPAD3) {
-                tookAction = this.move(1, 1, 0);
-                this._moveCounter++;
-            } else if (inputData.keyCode === ROT.VK_NUMPAD4) {
-                tookAction = this.move(-1, 0, 0);
-                this._moveCounter++;
-            } else if (inputData.keyCode === ROT.VK_NUMPAD6) {
-                tookAction = this.move(1, 0, 0);
-                this._moveCounter++;
-            } else if (inputData.keyCode === ROT.VK_NUMPAD7) {
-                tookAction = this.move(-1, -1, 0);
-                this._moveCounter++;
-            } else if (inputData.keyCode === ROT.VK_NUMPAD8) {
-                tookAction = this.move(0, -1, 0);
-                this._moveCounter++;
-            } else if (inputData.keyCode === ROT.VK_NUMPAD9) {
-                tookAction = this.move(1, -1, 0);
-                this._moveCounter++;
-            }
-            
-            if (tookAction && Game.getGameStage()=='surface') {
-                if (this._moveCounter > 9) {
-                    this.setSubScreen(Game.Screen.storyScreen);
-                }
-            }
-
-        } else if (inputType === 'keypress') {
-            var keyChar = String.fromCharCode(inputData.charCode);
-
-            // stairs up or down
-            if (keyChar === '>') {
-                tookAction = this.move(0, 0, 1);
-            } else if (keyChar === '<') {
-                tookAction = this.move(0, 0, -1);
-            } else if (keyChar === '?') {
-                // Setup the help screen.
-                this.setSubScreen(Game.Screen.helpScreenNumpad);
-                return;
-            }
-        }
-        
-        return tookAction;
-    },
-    laptopControlScheme: function(inputType, inputData) {
-        var tookAction = false;
-        if (inputType === 'keydown') {
-
-            // inventory management/access
-            if (inputData.keyCode === ROT.VK_I) {
-                // Show the inventory screen
-                this.showItemsSubScreen(Game.Screen.inventoryScreen, this._player.getItems(),'You are not carrying anything.');
-                return;
-            } else if (inputData.keyCode === ROT.VK_D && inputData.shiftKey) {
-                // Show the drop screen
-                this.showItemsSubScreen(Game.Screen.dropScreen, this._player.getItems(),'You have nothing to drop.');
-                return;
-            } else if (inputData.keyCode === ROT.VK_E && inputData.shiftKey) {
-                // Show the drop screen
-                this.showItemsSubScreen(Game.Screen.eatScreen, this._player.getItems(),'You have nothing to eat.');
-                return;
-            } else if (inputData.keyCode === ROT.VK_H) {
-                if (inputData.shiftKey) {
-                    // Show the wear screen
-                    this.showItemsSubScreen(Game.Screen.wearScreen, this._player.getItems(),'You have nothing to wear.');
-                } else {
-                    // Show the wield screen
-                    this.showItemsSubScreen(Game.Screen.wieldScreen, this._player.getItems(),'You have nothing to wield.');
-                }
-                return;
-            } else if (inputData.keyCode === ROT.VK_X && inputData.shiftKey) {
-                // Show the drop screen
-                this.showItemsSubScreen(Game.Screen.examineScreen, this._player.getItems(),'You have nothing to examine.');
-                return;
-            } else if (inputData.keyCode === ROT.VK_G) {
-                var items = this._player.getMap().getItemsAt(this._player.getX(), this._player.getY(), this._player.getZ());
-
-                // If there is only one item, directly pick it up
-                if (items && items.length === 1) { 
-                    var item = items[0];
-                    if (this._player.pickupItems([0])) {
-                        Game.sendMessage(this._player, "You pick up %s.", [item.describeA()]);
-                    } else {
-                        Game.sendMessage(this._player, "Your inventory is full! Nothing was picked up.");
-                    }
-                    Game.refresh();
-                } else {
-                    this.showItemsSubScreen(Game.Screen.pickupScreen, items,'There is nothing here to pick up.');
-                } 
-            } else if (inputData.keyCode == ROT.VK_L) {
-                // Setup the look screen.
-                var offsets = this.getScreenOffsets();
-                Game.Screen.lookScreen.setup(this._player,
-                    this._player.getX(), this._player.getY(),
-                    offsets.x, offsets.y);
-                this.setSubScreen(Game.Screen.lookScreen);
-                return;
-            } else if (inputData.keyCode === ROT.VK_BACK_SLASH) {
-                //setTimeout(20,function(){
-                    console.log('switching to numpad keybindings');
-                    Game.setControlScheme('numpad');
-                //});
-                return false;
-            }
-
-
-            // Movement (numpad based)
-            if (! inputData.shiftKey) {
-                if (inputData.keyCode === ROT.VK_S) { // rest/wait/do nothing
-                    tookAction = true;
-                } else if (inputData.keyCode === ROT.VK_Z) {
-                    tookAction = this.move(-1, 1, 0);
-                    this._moveCounter++;
-                } else if (inputData.keyCode === ROT.VK_X) {
-                    tookAction = this.move(0, 1, 0);
-                    this._moveCounter++;
-                } else if (inputData.keyCode === ROT.VK_C) {
-                    tookAction = this.move(1, 1, 0);
-                    this._moveCounter++;
-                } else if (inputData.keyCode === ROT.VK_A) {
-                    tookAction = this.move(-1, 0, 0);
-                    this._moveCounter++;
-                } else if (inputData.keyCode === ROT.VK_D) {
-                    tookAction = this.move(1, 0, 0);
-                    this._moveCounter++;
-                } else if (inputData.keyCode === ROT.VK_Q) {
-                    tookAction = this.move(-1, -1, 0);
-                    this._moveCounter++;
-                } else if (inputData.keyCode === ROT.VK_W) {
-                    tookAction = this.move(0, -1, 0);
-                    this._moveCounter++;
-                } else if (inputData.keyCode === ROT.VK_E) {
-                    tookAction = this.move(1, -1, 0);
-                    this._moveCounter++;
-                }
-            }
-            
-            if (tookAction && Game.getGameStage()=='surface') {
-                if (this._moveCounter > 9) {
-                    this.setSubScreen(Game.Screen.storyScreen);
-                }
-            }
-
-        } else if (inputType === 'keypress') {
-            var keyChar = String.fromCharCode(inputData.charCode);
-
-            // stairs up or down
-            if (keyChar === '>') {
-                tookAction = this.move(0, 0, 1);
-            } else if (keyChar === '<') {
-                tookAction = this.move(0, 0, -1);
-            } else if (keyChar === '?') {
-                // Setup the help screen.
-                this.setSubScreen(Game.Screen.helpScreenLaptop);
-                return;
-            }
-        }
-        
-        return tookAction;
     },
     move: function(dX, dY, dZ) { // NOTE: dX, dY, and dZ each are integers ranging from -1 to 1
         dX = Math.floor(dX);
@@ -689,54 +565,30 @@ Game.Screen.inventoryScreen.handleInput = function(inputType, inputData) {
     if ((inputData.keyCode === ROT.VK_ESCAPE) || (inputData.keyCode === ROT.VK_RETURN)) {
         Game.Screen.playScreen.setSubScreen(undefined);
     }
-        
-    if (Game.getControlScheme() == 'numpad') {
-        if (inputData.keyCode === ROT.VK_D) {
-            // Show the drop screen
-            this._parentScreen.showItemsSubScreen(Game.Screen.dropScreen, this._player.getItems(),'You have nothing to drop.');
-            return;
-        } else if (inputData.keyCode === ROT.VK_E && inputData.shiftKey) {
-            // Show the drop screen
-            this._parentScreen.showItemsSubScreen(Game.Screen.eatScreen, this._player.getItems(),'You have nothing to eat.');
-            return;
-        } else if (inputData.keyCode === ROT.VK_W) {
-            if (inputData.shiftKey) {
-                // Show the wear screen
-                this._parentScreen.showItemsSubScreen(Game.Screen.wearScreen, this._player.getItems(),'You have nothing to wear.');
-            } else {
-                // Show the wield screen
-                this._parentScreen.showItemsSubScreen(Game.Screen.wieldScreen, this._player.getItems(),'You have nothing to wield.');
-            }
-            return;
-        } else if (inputData.keyCode === ROT.VK_X) {
-            // Show the drop screen
-            this._parentScreen.showItemsSubScreen(Game.Screen.examineScreen, this._player.getItems(),'You have nothing to examine.');
-            return;
-        }
-    }
-    else if (Game.getControlScheme() == 'laptop') {
-        if (inputData.keyCode === ROT.VK_D && inputData.shiftKey) {
-            // Show the drop screen
-            this._parentScreen.showItemsSubScreen(Game.Screen.dropScreen, this._player.getItems(),'You have nothing to drop.');
-            return;
-        } else if (inputData.keyCode === ROT.VK_E && inputData.shiftKey) {
-            // Show the drop screen
-            this._parentScreen.showItemsSubScreen(Game.Screen.eatScreen, this._player.getItems(),'You have nothing to eat.');
-            return;
-        } else if (inputData.keyCode === ROT.VK_H) {
-            if (inputData.shiftKey) {
-                // Show the wear screen
-                this._parentScreen.showItemsSubScreen(Game.Screen.wearScreen, this._player.getItems(),'You have nothing to wear.');
-            } else {
-                // Show the wield screen
-                this._parentScreen.showItemsSubScreen(Game.Screen.wieldScreen, this._player.getItems(),'You have nothing to wield.');
-            }
-            return;
-        } else if (inputData.keyCode === ROT.VK_X && inputData.shiftKey) {
-            // Show the drop screen
-            this._parentScreen.showItemsSubScreen(Game.Screen.examineScreen, this._player.getItems(),'You have nothing to examine.');
-            return;
-        }
+
+    var gameAction = Game.Bindings.getAction(inputType, inputData, Game.getControlScheme());
+
+    //----------------------------
+    // inventory actions
+    if (gameAction === Game.Bindings.Actions.Inventory.INVENTORY_DROP) {
+        this._parentScreen.showItemsSubScreen(Game.Screen.dropScreen, this._player.getItems(),'You have nothing to drop.');
+        return;
+
+    } else if (gameAction === Game.Bindings.Actions.Inventory.INVENTORY_EAT) {
+        this._parentScreen.showItemsSubScreen(Game.Screen.eatScreen, this._player.getItems(),'You have nothing to eat.');
+        return;
+
+    } else if (gameAction === Game.Bindings.Actions.Inventory.INVENTORY_WIELD) {
+        this._parentScreen.showItemsSubScreen(Game.Screen.wieldScreen, this._player.getItems(),'You have nothing to wield.');
+        return;
+
+    } else if (gameAction === Game.Bindings.Actions.Inventory.INVENTORY_WEAR) {
+        this._parentScreen.showItemsSubScreen(Game.Screen.wearScreen, this._player.getItems(),'You have nothing to wear.');
+        return;
+
+    } else if (gameAction === Game.Bindings.Actions.Inventory.INVENTORY_EXAMINE) {
+        this._parentScreen.showItemsSubScreen(Game.Screen.examineScreen, this._player.getItems(),'You have nothing to examine.');
+        return;
     }
 }
 
@@ -1280,8 +1132,8 @@ Game.Screen.storyScreen = {
     texts: {
         'was_starting':"You are a part of one of the first human exploration crew on Mars. After years of training, extensive technical preparation, and months of confined travel aboard the ship you finally made it to Mars! With your 6 day acclimation period done you now get to head out on the Martian surface for the first time. Your team has been sent to check out an interesting looking crater on the lower slopes of nearby Elysium Mons.",
         'was_starting2':"It takes a while to get to the survey site, but that gives you and your team time to double check your gear. The HEM Suits are all in good shape, and everyone seems to be as excited as you are. The last half-kilometer or so is tto rough for the rover, so you pile out and make the rest of the trek on foot. While others eagerly explore around you take a moment to pause near the center of the crater and just take it all in. It is truly amazing! ...but something somehow seems a little bit 'off' here...",
-        'was_surface':"*RUMBLE* Quake! Someone... Dari?... drops out of sight and almost immediately also out of radio contact. You rush for stable-looking ground but suddently some kind of sinkhole opens under your feet! You plunge deep beneath the surface! The last things you remember are the radio-relayed screams of your team mates as you plunge out of sight, the sky vanishing as the edges of the hole fall in after you, a terrific THUMP as you bounce off something on your way down, then blackness....",
-        'was_falling':"You awake to discover, to your shock, that you are not dead (as far as you know). Your gear was badly damaged by the fall - there's no way you'll be calling for help with that mess, and your suit integrity is completely shot. About the only thing still working is an emergency light on your helmet and a hand-held analyzer. On the plus side, you've made an amazing discovery! The cave air down here is actually breathable (at least for the short term), the temperature is warm enough that the crushed heating unit won't be what does you in, and through your slightly bloodied and swollen nose you think that you detect a faint, strangely organic aroma! Now all you have to do is figure out how to let your team know that you survived, and- Wait a moment! Is that *movement* over there in the shadows....!?",
+        'was_surface':"*RUMBLE* Quake! Someone... Dari?... drops out of sight, and almost immediately also out of radio contact. While trying to ignore the screaming over the radio you rush for stable-looking ground. Out of the corner of your eye you see several more of your teammates are swallowed up by the ground. Suddenly some kind of sinkhole opens under your feet! You plunge beneath the surface! The last things you remember are the radio-relayed panic of your team mates as you fall out of sight, the sky vanishing as the edges of the hole fall in after you, a terrific THUMP as you bounce off something on your way down, then blackness....",
+        'was_falling':"You awake to discover, to your shock, that you are not dead. Your gear was badly damaged by the fall - there's no way you'll be calling for help with that mess, and your suit integrity is completely shot. About the only thing still working is an emergency light on your helmet, a hand-held analyzer, and your old-fashioned multi-tool. On the plus side, you've made an amazing discovery! The cave air down here is actually breathable (at least for the short term), the temperature is warm enough that the crushed heating unit won't be what does you in, and through your slightly bloodied and swollen nose you think that you detect a faint, strangely organic aroma! Now all you have to do is figure out how to let your team know that you survived, and- Wait a moment! Is that *movement* over there in the shadows....!?",
         'was_uppercaves':'After a harrowing descent you find yourself in a very large cave and dealing with a very foul smell.'
     },
     render: function(display) {
@@ -1365,9 +1217,13 @@ Game.Screen.storyScreen = {
                 // falling from that height *HURTS*
                 player.takeDamage(player,Math.floor(player.getMaxHp()*(.3+ROT.RNG.getUniform()/2)));                
                 Game.Screen.playScreen.setSubScreen(null);
-                Game.sendMessage(player,"OW! You awake battered and bruided, surrounded by fallen rocks, and lying on something distinctly uncomfortable.");
-                Game.sendMessage(player,"Through some combination of luck and quality nano-docs you're at least still alive...");
-                Game.refresh();
+
+                setTimeout(function() {
+                    Game.sendMessage(Game.Screen.playScreen.getPlayer(),"OW! You awake battered and bruised, surrounded by fallen rocks, and lying on something distinctly uncomfortable.");
+                    Game.sendMessage(Game.Screen.playScreen.getPlayer(),"Through some combination of luck and quality nano-docs you're at least still alive...");
+                    Game.refresh();
+                },50);
+
                 return;
             }
             else if (Game.getGameStage()=='uppercaves') {
