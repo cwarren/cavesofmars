@@ -47,7 +47,8 @@ analyzer
 TODO NEXT:
 
 2. implement throw/fire action
-5. tweak entity number so they scale w/ PC a bit better
+
+5. tweak entity numbers so they scale w/ PC a bit better
 6. implement Awakener entity mixin, and add it to quiescent fungus (can awaken into spreading fungus)
 7. implement multi-stage digging
 8. improved map borders

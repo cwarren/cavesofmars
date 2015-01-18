@@ -6,6 +6,7 @@ Game.Tile = function(properties) {
     this._name = properties['name'] || '';
 
     this._walkable = properties['walkable'] || false;
+    this._airPassable = properties['airPassable'] || this._walkable;
     this._diggable = properties['diggable'] || false;
     this._transparent = properties['transparent'] || false;
     this._opaque = (properties['opaque'] !== undefined) ?
@@ -19,6 +20,9 @@ Game.Tile.extend(Game.Glyph);
 // Standard getters
 Game.Tile.prototype.isWalkable = function() {
     return this._walkable;
+}
+Game.Tile.prototype.isAirPassable = function() {
+    return this._airPassable;
 }
 Game.Tile.prototype.isDiggable = function() {
     return this._diggable;

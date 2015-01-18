@@ -75,6 +75,7 @@ Game.Bindings['BindingSet_Numpad']['isKeydown'][ROT.VK_D] = Game.Bindings.Action
 Game.Bindings['BindingSet_Numpad']['isKeydown'][ROT.VK_W] = Game.Bindings.Actions.Inventory.INVENTORY_WIELD,
 Game.Bindings['BindingSet_Numpad']['isKeydown'][ROT.VK_X] = Game.Bindings.Actions.Inventory.INVENTORY_EXAMINE,
 Game.Bindings['BindingSet_Numpad']['isKeydown'][ROT.VK_G] = Game.Bindings.Actions.Inventory.INVENTORY_GET,
+Game.Bindings['BindingSet_Numpad']['isKeydown'][ROT.VK_F] = Game.Bindings.Actions.Inventory.INVENTORY_FLING,
 
 Game.Bindings['BindingSet_Numpad']['isKeydown'][ROT.VK_L] = Game.Bindings.Actions.World.LOOK,
 
@@ -108,6 +109,7 @@ Game.Bindings['BindingSet_Laptop']['isKeydown'][ROT.VK_C] = Game.Bindings.Action
 Game.Bindings['BindingSet_Laptop']['isKeydown'][ROT.VK_I] = Game.Bindings.Actions.Inventory.INVENTORY_LIST,
 Game.Bindings['BindingSet_Laptop']['isKeydown'][ROT.VK_H] = Game.Bindings.Actions.Inventory.INVENTORY_WIELD,
 Game.Bindings['BindingSet_Laptop']['isKeydown'][ROT.VK_G] = Game.Bindings.Actions.Inventory.INVENTORY_GET,
+Game.Bindings['BindingSet_Numpad']['isKeydown'][ROT.VK_F] = Game.Bindings.Actions.Inventory.INVENTORY_FLING,
 
 Game.Bindings['BindingSet_Laptop']['isKeydown'][ROT.VK_L] = Game.Bindings.Actions.World.LOOK,
 

@@ -287,6 +287,25 @@ Game.Map.prototype.removeItem = function(itm,x,y,z) {
     this.nuke(itm);
 }
 
+// remove it from the map, but don't nuke it
+Game.Map.prototype.extractItem = function(itm,x,y,z) {
+    var mapItems = this.getItemsAt(x,y,z);
+
+    if (mapItems) {
+        // Iterate through all items there until a match is found
+        for (var i = 0; i < mapItems.length; i++) {
+            if (mapItems[i].getId() == itm.getId()) {
+                mapItems.splice(i, 1);
+                break;
+            }
+        }
+        // Update the map items
+        this.setItemsAt(x,y,z, mapItems);
+    }
+    
+    return itm;
+}
+
 
 Game.Map.prototype.getRandomWalkablePosition = function(z) {
     // Randomly generate a tile which is a floor

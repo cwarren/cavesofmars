@@ -1,5 +1,6 @@
 Game.Geometry = {
     getLine: function(startX, startY, endX, endY) {
+        // returns a list of points from starting position to ending, inclusive of both
         var points = [];
         var dx = Math.abs(endX - startX);
         var dy = Math.abs(endY - startY);

@@ -283,6 +283,10 @@ Game.Screen.playScreen = {
             this.showItemsSubScreen(Game.Screen.examineScreen, this._player.getItems(),'You have nothing to examine.');
             return;
 
+        } else if (gameAction === Game.Bindings.Actions.Inventory.INVENTORY_FLING) {
+            this.showItemsSubScreen(Game.Screen.fireFlingScreen, this._player.getItems(),'You have nothing to examine.');
+            return;
+
         } else if (gameAction === Game.Bindings.Actions.Inventory.INVENTORY_GET) {
             var items = this._player.getMap().getItemsAt(this._player.getX(), this._player.getY(), this._player.getZ());
 
@@ -304,9 +308,7 @@ Game.Screen.playScreen = {
         // world actions
         } else if (gameAction === Game.Bindings.Actions.World.LOOK) {
             var offsets = this.getScreenOffsets();
-            Game.Screen.lookScreen.setup(this._player,
-                this._player.getX(), this._player.getY(),
-                offsets.x, offsets.y);
+            Game.Screen.lookScreen.setup(this._player,this._player.getX(), this._player.getY(),offsets.x, offsets.y);
             this.setSubScreen(Game.Screen.lookScreen);
             return;
 
@@ -322,7 +324,11 @@ Game.Screen.playScreen = {
             return;
 
         } else if (gameAction === Game.Bindings.Actions.Meta.HELP) {
-            this.setSubScreen(Game.Screen.helpScreenNumpad);
+            if (Game.getControlScheme() === Game.Bindings.BindingSet_Numpad) {
+                this.setSubScreen(Game.Screen.helpScreenNumpad);
+            } else {
+                this.setSubScreen(Game.Screen.helpScreenLaptop);
+            }
             return;
 
 
@@ -665,7 +671,7 @@ Game.Screen.wieldScreen = new Game.Screen.ItemListScreen({
             this._player.unequip(item);
             this._player.wield(item);
             Game.sendMessage(this._player, "You are wielding %s.", [item.describeA()]);
-            console.dir(this._player);
+            //console.dir(this._player);
         }
         return true;
     }
@@ -697,6 +703,37 @@ Game.Screen.wearScreen = new Game.Screen.ItemListScreen({
         return true;
     }
 });
+
+//-------------------
+
+Game.Screen.fireFlingScreen = new Game.Screen.ItemListScreen({
+    caption: 'Choose the item you wish to fire/fling',
+    canSelect: true,
+    canSelectMultipleItems: false,
+    hasNoItemOption: true,
+    isAcceptable: function(item) {
+        return item;
+    },
+    ok: function(selectedItems) {
+        var keys = Object.keys(selectedItems);
+        if (keys.length > 0) {
+            var item = selectedItems[keys[0]];
+            this.setAmmo(item);
+
+            var offsets = Game.Screen.playScreen.getScreenOffsets();
+            Game.Screen.rangedTargetScreen.setup(this._player,this._player.getX(), this._player.getY(),offsets.x, offsets.y);
+            this._parentScreen.setSubScreen(Game.Screen.rangedTargetScreen);
+        }
+        return false;
+    }
+});
+
+Game.Screen.fireFlingScreen.setAmmo = function(item) {
+    this._ammo = item;
+}
+Game.Screen.fireFlingScreen.getAmmo = function() {
+    return this._ammo;
+}
 
 //-------------------
 
@@ -801,7 +838,7 @@ Game.Screen.TargetBasedScreen = function(template) {
     this._parentScreen = null;
 
     // By default, our ok return does nothing and does not consume a turn.
-    this._isAcceptableFunction = template['okFunction'] || function(x, y) {
+    this._okFunction = template['okFunction'] || function(x, y) {
         return false;
     };
     // The defaut caption function simply returns an empty string.
@@ -1008,6 +1045,206 @@ Game.Screen.lookScreen = new Game.Screen.TargetBasedScreen({
     }
 });
 
+//-------------------
+
+Game.Screen.rangedTargetScreen = new Game.Screen.TargetBasedScreen({
+    captionFunction: function(x, y) {
+        var z = this._player.getZ();
+        var map = this._player.getMap();
+        var fullyLightMap = (map.getMapLightingType() == 'fullLight');
+        
+        // If the tile is explored, we can give a better capton
+        if (fullyLightMap || map.isExplored(x, y, z)) {
+            // If the tile isn't explored, we have to check if we can actually 
+            // see it before testing if there's an entity or item.
+            if (fullyLightMap || this._visibleCells[x + ',' + y]) {
+                var items = map.getItemsAt(x, y, z);
+
+                // If we have items, we want to render the top most item
+                if (items) {
+                    var item = items[items.length - 1];
+
+                    if (items.length > 1) {
+                        Game.sendMessage(this._player,'there are several things piled up here - you can only see clearly the one on the top');
+                    }
+
+                    if (item.details()) {
+                        return String.format('%s - %s (%s)',
+                            item.getRepresentation(),
+                            item.describeA(true),
+                            item.details());
+                    }
+                    return String.format('%s - %s',
+                        item.getRepresentation(),
+                        item.describeA(true));
+
+                // Else check if there's an entity
+                } else if (map.getEntityAt(x, y, z)) {
+                    var entity = map.getEntityAt(x, y, z);
+
+                    if (entity.details()) {
+                        return String.format("%s - %s (%s)",
+                            entity.getRepresentation(),
+                            entity.describeA(true),
+                            entity.details());
+                    }
+                    return String.format("%s - %s",
+                        entity.getRepresentation(),
+                        entity.describeA(true));
+                }
+            }
+            // If there was no entity/item or the tile wasn't visible, then use
+            // the tile information.
+            return String.format('%s - %s',
+                map.getTile(x, y, z).getRepresentation(),
+                map.getTile(x, y, z).getDescription());
+
+        } else {
+            // If the tile is not explored, show the null tile description.
+            return String.format('%s - %s',
+                Game.Tile.nullTile.getRepresentation(),
+                Game.Tile.nullTile.getDescription());
+        }
+    },
+    okFunction: function(x, y) {
+//        console.log('starting rangedTargetScreen okFunction');
+//        console.dir(this);
+//        console.log('params: '+x+', '+y);
+
+        var player = this._player;
+        var z = player.getZ();
+        var map = player.getMap();
+        var ammo = Game.Screen.fireFlingScreen.getAmmo();
+         
+//        console.log('a');
+        
+        if (! ammo) {
+            this._parentScreen.setSubScreen(undefined);
+            this.setParentScreen(undefined);
+            return false;
+        }
+
+//        console.log('b');
+        
+        // NOTE: returning true at this point - from here on out an action is used!
+        
+        // get the line from the player to the target location
+        // drop the item from the player's inventory (unequipping if necessary)
+
+        // set potential next space to space 2 in the path (i.e. NOT on/under the player)
+
+        // step through the path:
+        // if there's an entity there that's not the player, done 
+        //      if entity is not allied, do damage; nuke item if it's depletable, otherwise update its position to the potential space
+        //      else (entity is ally), done (leave item at previous tile)
+        // else if tile is NOT passable, done (leave item at previous tile)
+        // else [no entity, no blocking tile, not target]
+        //      update item position to potential tile
+        //      spaces traveled ++
+        //      if spaces traveled >= max range, done
+        //          else, set potential tile to be the next tile in the path
+        
+        var maxRange = player.getSightRadius()+2;
+//        player.getItems();
+        player.dropItem(player.getItems().indexOf(ammo));
+        
+//        console.dir(player);
+//        console.dir(map);
+        
+        //var path = Game.Geometry.getLine(player.getX(), player.getX(), this._cursorX, this._cursorY);
+        var path = Game.Geometry.getLine(player.getX(), player.getY(), x, y);
+
+//        console.log('path=');
+//        console.dir(path);
+
+        //var path = Game.Geometry.getLine(this._cursorX,this._cursorY, this._startX, this._startY);
+
+
+        var pathIdx = 1;
+        var rangeTraveled = 0;
+
+//        console.log('c');
+
+        while (path.length > pathIdx) {
+
+//  console.log('d.'+pathIdx);
+   
+            var potentialPosition = path[pathIdx];
+
+            var ent = map.getEntityAt(potentialPosition.x,potentialPosition.y,z);
+            if (ent) {
+//   console.log('   e d.'+pathIdx);
+
+                if (player.isAlliedWith(ent)) {
+//   console.log('   f d.'+pathIdx);
+                    setTimeout(function(){
+                        Game.sendMessage(player,'You manage to avoid hitting your friend.');
+                        Game.refresh();
+                        },100);
+                } else {
+//   console.log('   g d.'+pathIdx);
+                    if (ROT.RNG.getUniform() < .25) {
+//   console.log('   h d.'+pathIdx);
+                        map.extractItem(ammo,path[pathIdx-1].x,path[pathIdx-1].y,z);
+                        map.addItem(potentialPosition.x,potentialPosition.y,z,ammo);
+                    } else {
+//   console.log('   i d.'+pathIdx);
+                        map.removeItem(ammo,path[pathIdx-1].x,path[pathIdx-1].y,z);
+                    }
+                    var damage = 1;  // CSW NOTE: turn this into a real ranged damage calculation!
+                    ent.takeDamage(player,damage);
+//   console.log('   j d.'+pathIdx);
+                }
+                Game.refresh();
+                break;
+            }
+            
+            var tile = map.getTile(potentialPosition.x,potentialPosition.y,z);
+//   console.log('   k d.'+pathIdx);
+//   console.log('x,y,z= '+potentialPosition.x+','+potentialPosition.y+','+z);
+//   console.dir(tile);
+            if (! tile.isAirPassable()) {
+//   console.log('   l d.'+pathIdx);
+                break;
+            }
+
+            // move the item 1 space
+//console.log('###########');
+//console.log('x,y,z= '+path[pathIdx-1].x+','+path[pathIdx-1].y+','+z);
+//console.dir(map.getItemsAt(path[pathIdx-1].x,path[pathIdx-1].y,z));
+//console.log('x,y,z= '+potentialPosition.x+','+potentialPosition.y+','+z);
+//console.dir(map.getItemsAt(potentialPosition.x,potentialPosition.y,z));
+//console.log('---');
+
+            map.extractItem(ammo,path[pathIdx-1].x,path[pathIdx-1].y,z);
+            map.addItem(potentialPosition.x,potentialPosition.y,z,ammo);
+
+//console.log('x,y,z= '+path[pathIdx-1].x+','+path[pathIdx-1].y+','+z);
+//console.dir(map.getItemsAt(path[pathIdx-1].x,path[pathIdx-1].y,z));
+//console.log('x,y,z= '+potentialPosition.x+','+potentialPosition.y+','+z);
+//console.dir(map.getItemsAt(potentialPosition.x,potentialPosition.y,z));
+
+            rangeTraveled++;
+            Game.refresh();
+            // CSW NOTE: probably will need to turn this into a functional recursive process to deal with timeouts so the item is actually seen by the player in its new position
+            
+//   console.log('   m d.'+pathIdx);
+            if (rangeTraveled >= maxRange) {
+//   console.log('   n d.'+pathIdx);
+                break;
+            }
+
+            pathIdx++;
+//   console.log('   o d.'+pathIdx);
+        }
+
+//   console.log('p');
+
+        return true;
+    }
+});
+
+
 ////////////////////////////////////////////////////////////
 
 // CSW TODO - put key bindings in a separate file to that they can be referenced here
@@ -1027,6 +1264,7 @@ Game.Screen.helpScreenNumpad = {
         display.drawText(1, y++, '[d] to drop something');
         display.drawText(1, y++, '[x] to examine carried items');
         display.drawText(1, y++, '[E] to eat something');
+        display.drawText(1, y++, '[f] to fire/fling something');
         display.drawText(1, y++, '[w] to wield something');
         display.drawText(1, y++, '[W] to wear something');
         display.drawText(1, y++, '[<],[>] up a level and down a level respectively');
@@ -1070,6 +1308,7 @@ Game.Screen.helpScreenLaptop = {
         display.drawText(1, y++, '[D] to drop something');
         display.drawText(1, y++, '[X] to examine carried items');
         display.drawText(1, y++, '[E] to eat something');
+        display.drawText(1, y++, '[f] to fire/fling something');
         display.drawText(1, y++, '[h] to wield something');
         display.drawText(1, y++, '[H] to wear something');
         display.drawText(1, y++, '[<],[>] up a level and down a level respectively');
