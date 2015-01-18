@@ -424,6 +424,76 @@ Game.EntityMixins.Allier = {
 }
 
 
+Game.EntityMixins.RangedAttacker = {
+    name: 'RangedAttacker',
+    groupName: 'Attacker',
+    init: function(template) {
+        this._rangedAttackValue = template['rangedAttackValue'] || 1;
+    },
+    getRangedAttackValue: function(ammo) {
+        var modifier = 0;
+        // If we can equip items, then have to take into consideration launchers (if matched with approp ammo)
+        //if (this.hasMixin(Game.EntityMixins.Equipper)) {
+        //    if (this.getLauncher()) {
+        //        modifier += this.getLauncher().getRangedAttackValue();
+        //    }
+        //}
+        return this._rangedAttackValue + modifier;
+    },
+    increaseRangedAttackValue: function(value) {
+            // If no value was passed, default to 1.
+            value = value || 2;
+            // Add to the attack value.
+            this._rangedAttackValue += value;
+            Game.sendMessage(this, "You have better aim!");
+    },
+    rangedAttack: function(target,ammo) {
+        
+        // Only hit the entity if they were attackable
+        if (target.hasMixin('Destructible')) {
+            var attack = this.getRangedAttackValue(ammo);
+            var defense = target.getDefenseValue();
+            
+            var max = Math.max(0, attack - defense);
+            var damage = 1 + Math.floor(ROT.RNG.getUniform() * max);
+
+            if (this.hasMixin('MessageRecipient')) {
+                Game.sendMessage(this, 'You hit the %s with the %s for %d damage', 
+                    [target.getName(), ammo.getName(), damage]);
+            }
+            if (target.hasMixin('MessageRecipient')) {
+                Game.sendMessage(target, 'The %s hits you with the %s for %d damage', 
+                    [this.getName(), ammo.getName(), damage]);
+            }
+
+            this.setLastActionDuration(this.getRangedAttackDuration());
+            
+            Game.sendMessageNearby(this.getMap(), this.getX(), this.getY(), this.getZ(),
+                            'The %s hit the %s for %d damage',
+                            [this.getName(), target.getName(), damage]);
+
+            // CSW NOTE: figure out how to avoid double-messaging the player (or other message recipient)
+
+            //console.log(vsprintf('The %s hit the %s for %d damage!',
+            //                [this.getName(), target.getName(), damage]));
+                            
+            target.takeDamage(this, damage);
+        }
+    },
+    getRangedAttackDuration: function() {
+        return this.getRangedDuration();
+    },
+    listeners: {
+//        onDamaged: function(aggressor) {
+//            this._currentBehavior = Game.EntityBehaviors.MeleeAttackerBehavior;
+//        },
+        details: function() {
+            return [{key: 'ranged attack', value: this.getRangedAttackValue()}];
+        }
+    }
+}
+
+
 Game.EntityMixins.MeleeAttacker = {
     name: 'MeleeAttacker',
     groupName: 'Attacker',
@@ -844,6 +914,9 @@ Game.EntityMixins.ExperienceGainer = {
         if (this.hasMixin('MeleeAttacker')) {
             this._statOptions.push(['Increase attack value', this.increaseAttackValue]);
         }
+        if (this.hasMixin('RangedAttacker')) {
+            this._statOptions.push(['Increase ranged attack value', this.increaseRangedAttackValue]);
+        }
         if (this.hasMixin('Destructible')) {
             this._statOptions.push(['Increase defense value', this.increaseDefenseValue]);   
             this._statOptions.push(['Increase max health', this.increaseMaxHp]);
@@ -863,7 +936,7 @@ Game.EntityMixins.ExperienceGainer = {
         return this._experience;
     },
     getNextLevelExperience: function() {
-        return (this._level * this._level) * 10;
+        return (1 + (this._level + 1) * this._level) * 10;
     },
     getStatPoints: function() {
         return this._statPoints;

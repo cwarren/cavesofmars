@@ -69,10 +69,10 @@ Game.ItemMixins.Equippable = {
     listeners: {
         'details': function() {
             var results = [];
-            if (this._wieldable) {
+            if ((this._wieldable) || (this.getAttackValue() > 0)) {
                 results.push({key: 'attack', value: this.getAttackValue()});
             }
-            if (this._wearable) {
+            if ((this._wearable) || (this.getDefenseValue() > 0)) {
                 results.push({key: 'defense', value: this.getDefenseValue()});
             }
             return results;

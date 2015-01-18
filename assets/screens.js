@@ -994,8 +994,24 @@ Game.Screen.lookScreen = new Game.Screen.TargetBasedScreen({
             if (fullyLightMap || this._visibleCells[x + ',' + y]) {
                 var items = map.getItemsAt(x, y, z);
 
-                // If we have items, we want to render the top most item
-                if (items) {
+                // If we have entities, we want to deal with them first
+                if (map.getEntityAt(x, y, z)) {
+                    var entity = map.getEntityAt(x, y, z);
+
+                    Game.sendMessage(this._player,entity.getDescription());
+
+                    if (entity.details()) {
+                        return String.format("%s - %s (%s)",
+                            entity.getRepresentation(),
+                            entity.describeA(true),
+                            entity.details());
+                    }
+                    return String.format("%s - %s",
+                        entity.getRepresentation(),
+                        entity.describeA(true));
+
+                // Else check if there's are any items
+                } else if (items) {
                     var item = items[items.length - 1];
 
                     if (items.length > 1) {
@@ -1012,22 +1028,6 @@ Game.Screen.lookScreen = new Game.Screen.TargetBasedScreen({
                     return String.format('%s - %s',
                         item.getRepresentation(),
                         item.describeA(true));
-
-                // Else check if there's an entity
-                } else if (map.getEntityAt(x, y, z)) {
-                    var entity = map.getEntityAt(x, y, z);
-
-                    Game.sendMessage(this._player,entity.getDescription());
-
-                    if (entity.details()) {
-                        return String.format("%s - %s (%s)",
-                            entity.getRepresentation(),
-                            entity.describeA(true),
-                            entity.details());
-                    }
-                    return String.format("%s - %s",
-                        entity.getRepresentation(),
-                        entity.describeA(true));
                 }
             }
             // If there was no entity/item or the tile wasn't visible, then use
@@ -1060,8 +1060,20 @@ Game.Screen.rangedTargetScreen = new Game.Screen.TargetBasedScreen({
             if (fullyLightMap || this._visibleCells[x + ',' + y]) {
                 var items = map.getItemsAt(x, y, z);
 
-                // If we have items, we want to render the top most item
-                if (items) {
+                // deal with entities if there are any, otherwise items
+                if (map.getEntityAt(x, y, z)) {
+                    var entity = map.getEntityAt(x, y, z);
+
+                    if (entity.details()) {
+                        return String.format("%s - %s (%s)",
+                            entity.getRepresentation(),
+                            entity.describeA(true),
+                            entity.details());
+                    }
+                    return String.format("%s - %s",
+                        entity.getRepresentation(),
+                        entity.describeA(true));
+                } else if (items) {
                     var item = items[items.length - 1];
 
                     if (items.length > 1) {
@@ -1077,20 +1089,6 @@ Game.Screen.rangedTargetScreen = new Game.Screen.TargetBasedScreen({
                     return String.format('%s - %s',
                         item.getRepresentation(),
                         item.describeA(true));
-
-                // Else check if there's an entity
-                } else if (map.getEntityAt(x, y, z)) {
-                    var entity = map.getEntityAt(x, y, z);
-
-                    if (entity.details()) {
-                        return String.format("%s - %s (%s)",
-                            entity.getRepresentation(),
-                            entity.describeA(true),
-                            entity.details());
-                    }
-                    return String.format("%s - %s",
-                        entity.getRepresentation(),
-                        entity.describeA(true));
                 }
             }
             // If there was no entity/item or the tile wasn't visible, then use
@@ -1107,25 +1105,17 @@ Game.Screen.rangedTargetScreen = new Game.Screen.TargetBasedScreen({
         }
     },
     okFunction: function(x, y) {
-//        console.log('starting rangedTargetScreen okFunction');
-//        console.dir(this);
-//        console.log('params: '+x+', '+y);
-
         var player = this._player;
         var z = player.getZ();
         var map = player.getMap();
         var ammo = Game.Screen.fireFlingScreen.getAmmo();
          
-//        console.log('a');
-        
         if (! ammo) {
             this._parentScreen.setSubScreen(undefined);
             this.setParentScreen(undefined);
             return false;
         }
 
-//        console.log('b');
-        
         // NOTE: returning true at this point - from here on out an action is used!
         
         // get the line from the player to the target location
@@ -1145,100 +1135,54 @@ Game.Screen.rangedTargetScreen = new Game.Screen.TargetBasedScreen({
         //          else, set potential tile to be the next tile in the path
         
         var maxRange = player.getSightRadius()+2;
-//        player.getItems();
         player.dropItem(player.getItems().indexOf(ammo));
         
-//        console.dir(player);
-//        console.dir(map);
-        
-        //var path = Game.Geometry.getLine(player.getX(), player.getX(), this._cursorX, this._cursorY);
         var path = Game.Geometry.getLine(player.getX(), player.getY(), x, y);
-
-//        console.log('path=');
-//        console.dir(path);
-
-        //var path = Game.Geometry.getLine(this._cursorX,this._cursorY, this._startX, this._startY);
-
 
         var pathIdx = 1;
         var rangeTraveled = 0;
-
-//        console.log('c');
-
         while (path.length > pathIdx) {
-
-//  console.log('d.'+pathIdx);
-   
             var potentialPosition = path[pathIdx];
 
             var ent = map.getEntityAt(potentialPosition.x,potentialPosition.y,z);
             if (ent) {
-//   console.log('   e d.'+pathIdx);
-
                 if (player.isAlliedWith(ent)) {
-//   console.log('   f d.'+pathIdx);
                     setTimeout(function(){
                         Game.sendMessage(player,'You manage to avoid hitting your friend.');
                         Game.refresh();
                         },100);
                 } else {
-//   console.log('   g d.'+pathIdx);
                     if (ROT.RNG.getUniform() < .25) {
-//   console.log('   h d.'+pathIdx);
                         map.extractItem(ammo,path[pathIdx-1].x,path[pathIdx-1].y,z);
                         map.addItem(potentialPosition.x,potentialPosition.y,z,ammo);
                     } else {
-//   console.log('   i d.'+pathIdx);
                         map.removeItem(ammo,path[pathIdx-1].x,path[pathIdx-1].y,z);
                     }
-                    var damage = 1;  // CSW NOTE: turn this into a real ranged damage calculation!
-                    ent.takeDamage(player,damage);
-//   console.log('   j d.'+pathIdx);
+                    player.rangedAttack(ent,ammo);
                 }
                 Game.refresh();
                 break;
             }
             
             var tile = map.getTile(potentialPosition.x,potentialPosition.y,z);
-//   console.log('   k d.'+pathIdx);
-//   console.log('x,y,z= '+potentialPosition.x+','+potentialPosition.y+','+z);
-//   console.dir(tile);
             if (! tile.isAirPassable()) {
-//   console.log('   l d.'+pathIdx);
                 break;
             }
 
             // move the item 1 space
-//console.log('###########');
-//console.log('x,y,z= '+path[pathIdx-1].x+','+path[pathIdx-1].y+','+z);
-//console.dir(map.getItemsAt(path[pathIdx-1].x,path[pathIdx-1].y,z));
-//console.log('x,y,z= '+potentialPosition.x+','+potentialPosition.y+','+z);
-//console.dir(map.getItemsAt(potentialPosition.x,potentialPosition.y,z));
-//console.log('---');
-
             map.extractItem(ammo,path[pathIdx-1].x,path[pathIdx-1].y,z);
             map.addItem(potentialPosition.x,potentialPosition.y,z,ammo);
-
-//console.log('x,y,z= '+path[pathIdx-1].x+','+path[pathIdx-1].y+','+z);
-//console.dir(map.getItemsAt(path[pathIdx-1].x,path[pathIdx-1].y,z));
-//console.log('x,y,z= '+potentialPosition.x+','+potentialPosition.y+','+z);
-//console.dir(map.getItemsAt(potentialPosition.x,potentialPosition.y,z));
 
             rangeTraveled++;
             Game.refresh();
             // CSW NOTE: probably will need to turn this into a functional recursive process to deal with timeouts so the item is actually seen by the player in its new position
             
-//   console.log('   m d.'+pathIdx);
             if (rangeTraveled >= maxRange) {
-//   console.log('   n d.'+pathIdx);
                 break;
             }
 
             pathIdx++;
-//   console.log('   o d.'+pathIdx);
         }
-
-//   console.log('p');
 
         return true;
     }

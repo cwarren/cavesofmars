@@ -190,7 +190,7 @@ Game.ItemRepository.define('leather armor', {
 });
 
 Game.ItemRepository.define('plated leather armor', {
-    name: 'leather armor',
+    name: 'plated leather armor',
     character: Game.ItemRepository.Symbol['wearable'],
     foreground: 'orange',
     defenseValue: 4,
