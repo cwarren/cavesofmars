@@ -882,61 +882,32 @@ Game.Screen.TargetBasedScreen.prototype.render = function(display) {
 };
 
 Game.Screen.TargetBasedScreen.prototype.handleInput = function(inputType, inputData) {
-    // Move the cursor
-    if (inputType == 'keydown') {
-    
-        if (Game.getControlScheme() == 'numpad') {
-            if (inputData.keyCode === ROT.VK_NUMPAD1) {
-                tookAction = this.moveCursor(-1, 1);
-            } else if (inputData.keyCode === ROT.VK_NUMPAD2) {
-                tookAction = this.moveCursor(0, 1);
-            } else if (inputData.keyCode === ROT.VK_NUMPAD3) {
-                tookAction = this.moveCursor(1, 1);
-            } else if (inputData.keyCode === ROT.VK_NUMPAD4) {
-                tookAction = this.moveCursor(-1, 0);
-            } else if (inputData.keyCode === ROT.VK_NUMPAD6) {
-                tookAction = this.moveCursor(1, 0);
-            } else if (inputData.keyCode === ROT.VK_NUMPAD7) {
-                tookAction = this.moveCursor(-1, -1);
-            } else if (inputData.keyCode === ROT.VK_NUMPAD8) {
-                tookAction = this.moveCursor(0, -1);
-            } else if (inputData.keyCode === ROT.VK_NUMPAD9) {
-                tookAction = this.moveCursor(1, -1);
-            } else if (inputData.keyCode === ROT.VK_ESCAPE) {
-                this._parentScreen.setSubScreen(undefined);
-                this.setParentScreen(undefined);
-                //Game.Screen.playScreen.setSubScreen(undefined);
-            } else if (inputData.keyCode === ROT.VK_RETURN) {
-                this.executeOkFunction();
-            }
-        } else
-        if (Game.getControlScheme() == 'laptop') {
-            if (inputData.keyCode === ROT.VK_Z) {
-                tookAction = this.moveCursor(-1, 1);
-            } else if (inputData.keyCode === ROT.VK_X) {
-                tookAction = this.moveCursor(0, 1);
-            } else if (inputData.keyCode === ROT.VK_C) {
-                tookAction = this.moveCursor(1, 1);
-            } else if (inputData.keyCode === ROT.VK_A) {
-                tookAction = this.moveCursor(-1, 0);
-            } else if (inputData.keyCode === ROT.VK_D) {
-                tookAction = this.moveCursor(1, 0);
-            } else if (inputData.keyCode === ROT.VK_Q) {
-                tookAction = this.moveCursor(-1, -1);
-            } else if (inputData.keyCode === ROT.VK_W) {
-                tookAction = this.moveCursor(0, -1);
-            } else if (inputData.keyCode === ROT.VK_E) {
-                tookAction = this.moveCursor(1, -1);
-            } else if (inputData.keyCode === ROT.VK_ESCAPE) {
-                this._parentScreen.setSubScreen(undefined);
-                this.setParentScreen(undefined);
-                //Game.Screen.playScreen.setSubScreen(undefined);
-            } else if (inputData.keyCode === ROT.VK_RETURN) {
-                this.executeOkFunction();
-            }
-        }
 
+    var gameAction = Game.Bindings.getAction(inputType, inputData, Game.getControlScheme());
+
+    if (gameAction === Game.Bindings.Actions.Moves.MOVE_UL) {
+        tookAction = this.moveCursor(-1, -1);
+    } else if (gameAction === Game.Bindings.Actions.Moves.MOVE_U) {
+        tookAction = this.moveCursor(0, -1);
+    } else if (gameAction === Game.Bindings.Actions.Moves.MOVE_UR) {
+        tookAction = this.moveCursor(1, -1);
+    } else if (gameAction === Game.Bindings.Actions.Moves.MOVE_L) {
+        tookAction = this.moveCursor(-1, 0);
+    } else if (gameAction === Game.Bindings.Actions.Moves.MOVE_R) {
+        tookAction = this.moveCursor(1, 0);
+    } else if (gameAction === Game.Bindings.Actions.Moves.MOVE_DL) {
+        tookAction = this.moveCursor(-1, 1);
+    } else if (gameAction === Game.Bindings.Actions.Moves.MOVE_D) {
+        tookAction = this.moveCursor(0, 1);
+    } else if (gameAction === Game.Bindings.Actions.Moves.MOVE_DR) {
+        tookAction = this.moveCursor(1, 1);
+    } else if (inputData.keyCode === ROT.VK_ESCAPE) {
+        this._parentScreen.setSubScreen(undefined);
+        this.setParentScreen(undefined);
+    } else if (inputData.keyCode === ROT.VK_RETURN) {
+        this.executeOkFunction();
     }
+
     Game.refresh();
 };
 
@@ -1296,21 +1267,65 @@ Game.Screen.fallingScreen = {
 
 // Define our winning screen
 Game.Screen.winScreen = {
-    enter: function() {    console.log("Entered win screen."); },
+    _texts: [
+        "Wonder of wonders, the comm unit in the remains of Micah's HEM suit is still functional! You strip the battery out of his broken headlamp, out of your analyzer, and after a bit of thought out of your own head lamp as well. Stringing them together in series gives you enough juice to punch a signal through to the surface... you hope.",
+        "After several days waiting the last of the power is gone and you're left in darkness... but not silence! You can faintly hear the sound of human voices! Lots of shouting eventually produces a response, and soon a rope descends, followed by... a monster? You've been through too much at this point to give up without a fight!",
+        "....",
+        "They manage to subdue you without killing you, though (thankfully) you have no memory of this. You awake back at the base in the autodock, surrounded by anxious friends and crew mates. They tell you that it was a very near thing. Your nano-docs did the best they could while down there, but there were strange interactions with some of the native life, The fungal hyphae that had laced your body were beginning to get in to your brain - just a day or so longer and you would have been totally lost. With great relief you dictate your full, harrowing tale to a rapt audience.",
+        "The story of your experience becomes an immediate best-seller back on earth, and spurs a new age of exploration, not to mention migration. Years later you finally find some closure when you speak at the dedication ceremony of a statue that the Mars One city government is erecting in honor of the first explorers of humanity's second home. Farewell Micah, Dari, Ondras, Maya, and all the rest who gave their lives to this harsh place. Wherever you are, may you take what comfort you can in having helped bring about a new age of wonder...",
+        "FINIT"
+    ],
+    _text_idx: 0,
+    _inputLock: false,
+    enter: function() {
+        console.log("Entered win screen."); 
+    },
     exit: function() { console.log("Exited win screen."); },
     render: function(display) {
         // Render our prompt to the screen
-        for (var i = 0; i < 22; i++) {
-            // Generate random background colors
-            var r = Math.round(ROT.RNG.getUniform() * 255);
-            var g = Math.round(ROT.RNG.getUniform() * 255);
-            var b = Math.round(ROT.RNG.getUniform() * 255);
-            var background = ROT.Color.toRGB([r, g, b]);
-            display.drawText(2, i + 1, "%b{" + background + "}You win!");
+        display.drawText(2,3,this._texts[this._text_idx]);
+        if (this._text_idx < this._texts.length-1) {
+            y = Game.getScreenHeight()-1;
+            text = '%c{yellow}--- press space key to continue ---';
+            display.drawText(Game.getScreenWidth() / 2 - text.length / 2, y++, text);
+        } else {
+            display.drawText(15,1,"%c{black}|%c{orange}                          .--------.");
+            display.drawText(15,2,"%c{black}|%c{orange}                     .---'  o    .  `---.");
+            display.drawText(15,3,"%c{black}|%c{orange}                  .-'    .    O#  .. . . `-.");
+            display.drawText(15,4,"%c{black}|%c{orange}               .-'     ### ##  #.#         .`..");
+            display.drawText(15,5,"%c{black}|%c{orange}             .'##   ###  ##       # ###   . . .`.");
+            display.drawText(15,6,"%c{black}|%c{orange}           .'##O  #### ## ####.  #######   .    .`.");
+            display.drawText(15,7,"%c{black}|%c{orange}          /###  o   ###O  #O### .##   ##     O   . \\");
+            display.drawText(15,8,"%c{black}|%c{orange}         /      .  ###O## # ##....### ### ##     .  \\");
+            display.drawText(15,9,"%c{black}|%c{orange}        /#  o  ..  ..  #O#  ## .####      # #     ## \\");
+            display.drawText(15,10,"%c{black}|%c{orange}       /##O      .  .#####  o   ###### # ##  # o #### \\");
+            display.drawText(15,11,"%c{black}|%c{orange}      /#O###           ...       #   ##########  ##### \\");
+            display.drawText(15,12,"%c{black}|%c{orange}      |#  ## O  O #  `.-./  .     ### O ### ###   ###  |");
+            display.drawText(15,13,"%c{black}|%c{orange}     / O#### O      --`## .        ##  ##O##   ###    . \\");
+            display.drawText(15,14,"%c{black}|%c{orange}     |# ###O .  #  #    `    #              . ######    |");
+            display.drawText(15,15,"%c{black}|%c{orange}     |   O#                   ##o  #    .     ## ###    |");
+            display.drawText(15,16,"%c{black}|%c{orange}     |  .     #   # # .   . o        ##   o   ###   .   |");
+            display.drawText(15,17,"%c{black}|%c{orange}     \\  O  #    #    .  #..  -. .   ## #       ##       /");
+            display.drawText(15,18,"%c{black}|%c{orange}      |  #    # .#  ..     .  '   . ##O#     .    .    |");
+            display.drawText(15,19,"%c{black}|%c{orange}      \\ .  o   ..  #  ####...##      ##  .           . /");
+            display.drawText(15,20,"%c{black}|%c{orange}       \\      ###    # ####,  .          .   .. o     /");
+            display.drawText(15,21,"%c{black}|%c{orange}        \\    #####   ##\\#####,   O        .....      /");
+            display.drawText(15,22,"%c{black}|%c{orange}         \\ o  ###   .....##\\ __ #### .   ..... .--.  /");
+            display.drawText(15,23,"%c{black}|%c{orange}          \\  ..  .     . \\.-###.    ###   . .`--'  /");
+            display.drawText(15,24,"%c{black}|%c{orange}           `.             `-' #  #,    #  O        .'");
+
         }
     },
     handleInput: function(inputType, inputData) {
-        // Nothing to do here      
+        if ((inputData.keyCode === ROT.VK_SPACE)&&(this._text_idx < this._texts.length-1)&&(!this._inputLock)) {
+            this._inputLock=true;
+            //console.dir(this);
+            setTimeout(function(){
+                Game.Screen.winScreen._text_idx++;
+                Game.Screen.winScreen._inputLock = false;
+                Game.refresh();
+            },100);
+        }
     }
 }
 
@@ -1320,9 +1335,32 @@ Game.Screen.loseScreen = {
     exit: function() { console.log("Exited lose screen."); },
     render: function(display) {
         // Render our prompt to the screen
-        for (var i = 0; i < 22; i++) {
-            display.drawText(2, i + 1, "%b{red}You lose! :(");
-        }
+//        for (var i = 0; i < 22; i++) {
+//            display.drawText(2, i + 1, "%b{red}You lose! :(");
+//        }
+        display.drawText(2, 2, "%c{black}|%c{grey}        darkness descends and all the noises stop");
+        display.drawText(2,4,"%c{black}|%c{white}                                  ...");
+        display.drawText(2,5,"%c{black}|%c{white}                                ;::::;");
+        display.drawText(2,6,"%c{black}|%c{white}                              ;::::; :;");
+        display.drawText(2,7,"%c{black}|%c{white}                            ;:::::'   :;");
+        display.drawText(2,8,"%c{black}|%c{white}                           ;:::::;     ;.");
+        display.drawText(2,9,"%c{black}|%c{white}                          ,:::::'       ;           OOO\\");
+        display.drawText(2,10,"%c{black}|%c{white}                          ::::::;       ;          OOOOO\\");
+        display.drawText(2,11,"%c{black}|%c{white}                          ;:::::;       ;         OOOOOOOO");
+        display.drawText(2,12,"%c{black}|%c{white}                         ,;::::::;     ;'         / OOOOOOO");
+        display.drawText(2,13,"%c{black}|%c{white}                       ;:::::::::`. ,,,;.        /  / *OOOOOO");
+        display.drawText(2,14,"%c{black}|%c{white}                     .';:::::::::::::::::;,     /  /     *OOOO");
+        display.drawText(2,15,"%c{black}|%c{white}                    ,::::::;::::::;;;;::::;,   /  /        *OOO");
+        display.drawText(2,16,"%c{black}|%c{white}                   ;`::::::`'::::::;;;::::: ,#/  /          *OOO");
+        display.drawText(2,17,"%c{black}|%c{white}                   :`:::::::`;::::::;;::: ;::#  /            *OOO");
+        display.drawText(2,18,"%c{black}|%c{white}                   ::`:::::::`;:::::::: ;::::# /              *OO");
+        display.drawText(2,19,"%c{black}|%c{white}                   `:`:::::::`;:::::: ;::::::#/               *OO");
+        display.drawText(2,20,"%c{black}|%c{white}                    :::`:::::::`;; ;:::::::::##                OO");
+        display.drawText(2,21,"%c{black}|%c{white}                    ::::`:::::::`;::::::::;:::#                OO");
+        display.drawText(2,22,"%c{black}|%c{white}                    `:::::`::::::::::::;'`:;::#                O");
+        display.drawText(2,23,"%c{black}|%c{white}                     `:::::`::::::::;' /  / `:#");
+        display.drawText(2,24,"%c{black}|%c{white}                      ::::::`:::::;'  /  /   `#");
+
     },
     handleInput: function(inputType, inputData) {
         // Nothing to do here      
