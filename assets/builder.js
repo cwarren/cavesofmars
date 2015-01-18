@@ -57,15 +57,106 @@ Game.Builder.prototype._generateLevel = function() {
         }
     });
     
+    
+    var borderMap = Game.util.newArray2D(this._width,this._height,Game.Tile.nullTile);
+    var borderGenerator = new ROT.Map.Cellular(this._width, this._height);
+    borderGenerator.randomize(.25);
+    
     // set up the impenetrable border
     for (var i=0; i<this._width; i++) {
-            levelMap[i][0] = Game.Tile.borderTile;
-            levelMap[i][this._height-1] = Game.Tile.borderTile;
+        borderGenerator.set(i,0,1);
+        borderGenerator.set(i,1,1);
+        borderGenerator.set(i,this._height-1,1);
+        borderGenerator.set(i,this._height-2,1);
+        
+        if (ROT.RNG.getUniform()<.8) {
+            borderGenerator.set(i,2,1);
+        }
+        if (ROT.RNG.getUniform()<.8) {
+            borderGenerator.set(i,this._height-3,1);
+        }
+
+        if (ROT.RNG.getUniform()<.6) {
+            borderGenerator.set(i,3,1);
+        }
+        if (ROT.RNG.getUniform()<.6) {
+            borderGenerator.set(i,this._height-4,1);
+        }
+
+        if (ROT.RNG.getUniform()<.4) {
+            borderGenerator.set(i,4,1);
+        }
+        if (ROT.RNG.getUniform()<.4) {
+            borderGenerator.set(i,this._height-5,1);
+        }
+
+        if (ROT.RNG.getUniform()<.30) {
+            borderGenerator.set(i,5,1);
+        }
+        if (ROT.RNG.getUniform()<.30) {
+            borderGenerator.set(i,this._height-6,1);
+        }
+
+        if (ROT.RNG.getUniform()<.35) {
+            borderGenerator.set(i,6,1);
+        }
+        if (ROT.RNG.getUniform()<.35) {
+            borderGenerator.set(i,this._height-7,1);
+        }
     }
     for (var i=0; i<this._height; i++) {
-            levelMap[0][i] = Game.Tile.borderTile;
-            levelMap[this._width-1][i] = Game.Tile.borderTile;
+        borderGenerator.set(0,i,1);
+        borderGenerator.set(1,i,1);
+        borderGenerator.set(this._width-1,i,1);
+        borderGenerator.set(this._width-2,i,1);
+        
+        if (ROT.RNG.getUniform()<.8) {
+            borderGenerator.set(2,i,1);
+        }
+        if (ROT.RNG.getUniform()<.8) {
+            borderGenerator.set(this._width-3,i,1);
+        }
+
+        if (ROT.RNG.getUniform()<.6) {
+            borderGenerator.set(3,i,1);
+        }
+        if (ROT.RNG.getUniform()<.6) {
+            borderGenerator.set(this._width-4,i,1);
+        }
+
+        if (ROT.RNG.getUniform()<.4) {
+            borderGenerator.set(4,i,1);
+        }
+        if (ROT.RNG.getUniform()<.4) {
+            borderGenerator.set(this._width-5,i,1);
+        }
+
+        if (ROT.RNG.getUniform()<.3) {
+            borderGenerator.set(5,i,1);
+        }
+        if (ROT.RNG.getUniform()<.3) {
+            borderGenerator.set(this._width-6,i,1);
+        }
+
+        if (ROT.RNG.getUniform()<.35) {
+            borderGenerator.set(6,i,1);
+        }
+        if (ROT.RNG.getUniform()<.35) {
+            borderGenerator.set(this._width-7,i,1);
+        }
+
     }
+
+    // Iteratively smoothen the map
+    for (var i = 0; i < 2; i++) {
+        borderGenerator.create();
+    }
+    // Smoothen it one last time and then update our map
+    borderGenerator.create(function(x,y,v) {
+        if (v === 1) {
+            levelMap[x][y] = Game.Tile.borderTile;
+        }
+    });
     
     return levelMap;
 };
@@ -119,7 +210,7 @@ Game.Builder.prototype._removeRegion = function(region, z) {
             if (this._regions[z][x][y] == region) {
                 // Clear the region and set the tile to a wall tile
                 this._regions[z][x][y] = 0;
-                this._tiles[z][x][y] = Game.Tile.wallTile;
+                this._tiles[z][x][y] = Game.Tile.borderTile;
             }
         }
     }

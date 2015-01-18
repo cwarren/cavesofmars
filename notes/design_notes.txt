@@ -46,11 +46,8 @@ analyzer
 
 TODO NEXT:
 
-2. implement throw/fire action
-
-5. tweak entity numbers so they scale w/ PC a bit better
-6. implement Awakener entity mixin, and add it to quiescent fungus (can awaken into spreading fungus)
-7. implement multi-stage digging
-8. improved map borders
+3. implement Awakener entity mixin, and add it to quiescent fungus (can awaken into spreading fungus)
+5. implement multi-stage digging
+7. tweak entity numbers so they scale w/ PC a bit better
 
 50. design/implement alternate path to victory(ish) - post death, if killed at least one ooze and at least one fungus, or if killed by fungus, option to revive and play as a fungal zombie - food consumption increases dramatically, allied with fungus, no further equipping, but still can level/improve

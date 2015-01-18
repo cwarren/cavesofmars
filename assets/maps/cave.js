@@ -11,6 +11,7 @@ Game.Map.Cave = function() {
     
     // Call the Map constructor
     Game.Map.call(this, tiles);
+    //this.setMapLightingType('fullLight');
     
     // Add the player
 //    this.addEntityAtRandomPosition(player, 0);

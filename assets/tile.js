@@ -106,7 +106,7 @@ Game.Tile.borderTile = new Game.Tile({
     foreground: 'darkRed',
     diggable: false,
     transparent: false,
-    description: 'stone to tough to dig'
+    description: 'stone too tough to dig'
     });
 
 Game.Tile.stairsUpTile = new Game.Tile({
