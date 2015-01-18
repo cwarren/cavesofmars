@@ -144,7 +144,9 @@ Game.EntityRepository.define('quiescent fungus', {
     maxHp: 5,
     corpseName: 'spore-y mass',
     corpseFoodValue: 1,
-    mixins: [Game.EntityMixins.Destructible,Game.EntityMixins.CorpseDropper]
+    awakenPercentRate: 10,
+    awakenSpawnEntityName: 'spreading fungus',
+    mixins: [Game.EntityMixins.Destructible,Game.EntityMixins.CorpseDropper, Game.EntityMixins.DamageAwakener]
 });
 
 Game.EntityRepository.define('fungus zombie', {

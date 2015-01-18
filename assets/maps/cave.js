@@ -30,8 +30,10 @@ Game.Map.Cave = function() {
                         entity.getExperience());
                 }
             }
+
+            this.addEntityAtRandomPosition(Game.EntityRepository.create('quiescent fungus'), z);
         }
-        // 15 items per floor
+        // 15 random items per floor
         for (var i = 0; i < 15; i++) {
             // Add a random entity
             this.addItemAtRandomPosition(Game.ItemRepository.createRandom(), z);
@@ -40,13 +42,25 @@ Game.Map.Cave = function() {
 
     // Add weapons and armor to the map in random positions and floors
     
-    var templates =['HEM suit',
+    var templatesShallow =[
                     'HEM suit, damaged',
                     'HEM suit, damaged',
                     'HEM suit, damaged',
-                    'HEM-A suit',
-                    'JAT tool',
                     'JAT tool, damaged',
+                    'JAT tool, damaged',
+                    'JAT tool, damaged',
+                    'leather armor',
+                    'shard blade',
+                    'staff',
+                    'human corpse',
+                    'human corpse',
+                    'human corpse',
+                    'human corpse'
+                    ];
+    var templatesMedium =[
+                    'HEM suit',
+                    'HEM suit, damaged',
+                    'HEM suit, damaged',
                     'JAT tool, damaged',
                     'JAT tool, damaged',
                     'leather armor',
@@ -60,15 +74,65 @@ Game.Map.Cave = function() {
                     'human corpse',
                     'human corpse',
                     'human corpse',
-                    'human corpse',
+                    ];
+    var templatesDeep =[
+                    'HEM suit',
+                    'HEM suit, damaged',
+                    'HEM-A suit',
+                    'JAT tool',
+                    'JAT tool, damaged',
+                    'JAT tool, damaged',
+                    'leather armor',
+                    'plated leather armor',
+                    'shard blade',
+                    'shod staff',
+                    'staff',
+                    'stone sword',
                     'human corpse'
                     ];
     
+    var depthDivision = this._depth/3;
+    
+    // scatter one of each shallow item over the first floor set
+    for (var i = 0; i < templatesShallow.length; i++) {
+        this.addItemAtRandomPosition(Game.ItemRepository.create(templatesShallow[i]),
+            Math.floor(depthDivision * Math.random()));
+    }
+    
+    // add additional items, graded a bit by depth
+    for (var d = 0; d < this._depth; d++) {
+        var templates = templatesDeep;
+        if (d < depthDivision) {
+            templates = templatesShallow;
+        } else
+        if (d < depthDivision*2) {
+            templates = templatesMedium;
+        }
+        
+        for (var itemCount = 2 + Math.floor(ROT.RNG.getUniform()*4); itemCount > 0; itemCount--) {
+            this.addItemAtRandomPosition(Game.ItemRepository.create(templates.random()),d);
+        }
+        
+        if (ROT.RNG.getUniform() < .1) {
+            this.addItemAtRandomPosition(Game.ItemRepository.create(templatesMedium.random()),d);
+        }
+        if (ROT.RNG.getUniform() < .1) {
+            this.addItemAtRandomPosition(Game.ItemRepository.create(templatesDeep.random()),d);
+        }
+    }
+
+/*
+
     for (var i = 0; i < templates.length; i++) {
         this.addItemAtRandomPosition(Game.ItemRepository.create(templates[i]),
             Math.floor(this._depth * Math.random()));
     }
-    
+
+    for (var i = 0; i < templates.length; i++) {
+        this.addItemAtRandomPosition(Game.ItemRepository.create(templates[i]),
+            Math.floor(this._depth * Math.random()));
+    }
+*/    
     
     // Add a hole to the final cavern on the last level.
     var holePosition = this.getRandomFloorPosition(this._depth - 1);

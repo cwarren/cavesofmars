@@ -830,6 +830,39 @@ Game.EntityMixins.SuicideSpawner = {
     }
 };
 
+Game.EntityMixins.DamageAwakener = {
+    name: 'DamageAwakener',
+    group: 'Awakener',
+    init: function(template) {
+        this._awakenPercentRate = template['awakenPercentRate'] || 5;
+        this._awakenSpawnEntityName = template['awakenSpawnEntityName'] || '';
+    },
+    listeners: {
+        onDamaged: function(attacker) {
+            if ((this._awakenSpawnEntityName) && (Math.round(ROT.RNG.getUniform() * 100) <= this._awakenPercentRate)) {
+                this.raiseEvent('onAwaken');
+            }
+        },
+        onAwaken: function() {
+            // Check if we can spawn a new entity
+            if (this._awakenSpawnEntityName) {
+                var entity = Game.EntityRepository.create(this._awakenSpawnEntityName);
+                var oX = this.getX();
+                var oY = this.getY();
+                var oZ = this.getZ();
+                var conflictEntity = this.getMap().getEntityAt(oX,oY,oZ);
+                if (conflictEntity && conflictEntity.getId() == this.getId()) {
+                    this.getMap().removeEntity(this);
+                    entity.setPosition(oX,oY,oZ);
+                    this.getMap().addEntity(entity);
+                } else if (! conflictEntity) {
+                    entity.setPosition(oX,oY,oZ);
+                    this.getMap().addEntity(entity);
+                }
+            }    
+        }
+    }
+};
 
 Game.EntityMixins.AutoDegrader = {
     name: 'AutoDegrader',
