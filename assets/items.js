@@ -92,9 +92,11 @@ Game.ItemRepository.define('JAT tool, damaged', {
     character: Game.ItemRepository.Symbol['polearm'],
     foreground: 'gray',
     attackValue: 2,
+    digAdder: 3,
+    digMultiplier: .75,
     wieldable: true,
     description: "The JAT (Jack-of-All-Trades) tool is the standard-issue tool for work on Mars. While not as good as a specialized tool, it's at least moderately effective as a shovel, prybar, pick, axe, and walking stick for navigating rough terrain. Unfortunately this one has been badly damaged, but you could still probably hit something with it if you had to.",
-    mixins: [Game.ItemMixins.Equippable]
+    mixins: [Game.ItemMixins.Equippable, Game.ItemMixins.DigTool]
 }, {
     disableRandomCreation: true
 });
@@ -105,9 +107,11 @@ Game.ItemRepository.define('JAT tool', {
     foreground: '#bbf',
     attackValue: 6,
     defenseValue: 1,
+    digAdder: 3,
+    digMultiplier: 2.5,
     wieldable: true,
     description: "The JAT (Jack-of-All-Trades) tool is the standard-issue tool for work on Mars. While not as good as a specialized tool, it's at least moderately effective as a shovel, prybar, pick, axe, and walking stick for navigating rough terrain. Plus, if you have to you can use it to give something a pretty solid whack.",
-    mixins: [Game.ItemMixins.Equippable]
+    mixins: [Game.ItemMixins.Equippable, Game.ItemMixins.DigTool]
 }, {
     disableRandomCreation: true
 });
@@ -142,9 +146,11 @@ Game.ItemRepository.define('staff', {
     foreground: 'yellow',
     attackValue: 1,
     defenseValue: 3,
+    digAdder: 0,
+    digMultiplier: 1.25,
     wieldable: true,
     description: "A long fairly thin piece of something that resembles wood, with wrappings where the hands are to be placed. It's light weight and flex makes it more of a defensive tool.",
-    mixins: [Game.ItemMixins.Equippable]
+    mixins: [Game.ItemMixins.Equippable, Game.ItemMixins.DigTool]
 }, {
     disableRandomCreation: true
 });
@@ -155,9 +161,11 @@ Game.ItemRepository.define('shod staff', {
     foreground: 'yellow',
     attackValue: 4,
     defenseValue: 2,
+    digAdder: 1,
+    digMultiplier: 1.75,
     wieldable: true,
     description: "A long heavy piece of something that resembles wood. Parts of it are also wrapped in some kind of metal. It's heavy, but well balanced.",
-    mixins: [Game.ItemMixins.Equippable]
+    mixins: [Game.ItemMixins.Equippable, Game.ItemMixins.DigTool]
 }, {
     disableRandomCreation: true
 });
@@ -206,9 +214,10 @@ Game.ItemRepository.define('HEM suit', {
     character: Game.ItemRepository.Symbol['wearable'],
     foreground: 'white',
     defenseValue: 6,
+    digAdder: 1,
     wearable: true,
     description: "The HEM (Hostile Environment Mitigation) suit is the standard outfit for those working on the surface. It offers significant protection from scrapes and falls in addition to temperature controls, air supply, comm unit, etc.",
-    mixins: [Game.ItemMixins.Equippable]
+    mixins: [Game.ItemMixins.Equippable, Game.ItemMixins.DigTool]
 }, {
     disableRandomCreation: true
 });
@@ -218,9 +227,10 @@ Game.ItemRepository.define('HEM-A suit', {
     character: Game.ItemRepository.Symbol['wearable'],
     foreground: '#8ad',
     defenseValue: 11,
+    digAdder: 2,
     wearable: true,
     description: "The HEM-A (Hostile Environment Mitigation - Armored) suit is the heavy duty version of the standard HEM suit, designed for work in particularly hazardous environments. It has additional padding, plus Cera-tek composite plates embedded to help protect especially vulnerable areas. It also has the standard temperature controls, air supply, comm unit, etc.",
-    mixins: [Game.ItemMixins.Equippable]
+    mixins: [Game.ItemMixins.Equippable, Game.ItemMixins.DigTool]
 }, {
     disableRandomCreation: true
 });

@@ -55,6 +55,20 @@ extendedObj: function (baseObj, extensions) {
 getRandomInteger: function (minValInclusive, maxValInclusive) {
     var randRange = maxValInclusive - minValInclusive + 1;
     return minValInclusive + Math.floor(ROT.RNG.getUniform() * randRange);
+},
+
+scanEventResultsFor: function(eventResults,needle) {
+    var res = [];
+    if (eventResults) {
+        for (var i = 0; i<eventResults.length; i++) {
+            for (var j = 0; j<eventResults[i].length; j++) {
+                if (eventResults[i][j].key == needle) {
+                    res.push(eventResults[i][j].value);
+                }
+            }
+        }
+    }
+    return res;
 }
 
 };

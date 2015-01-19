@@ -368,7 +368,7 @@ Game.Screen.playScreen = {
 
         // after 9 moves on the surface the player goes to the next stage of the story
         if (tookAction && Game.getGameStage()=='surface') {
-            if (this._moveCounter > 9) {
+            if (this._moveCounter > (5 + ROT.RNG.getUniform()*10)) {
                 this.setSubScreen(Game.Screen.storyScreen);
             }
         }
@@ -1032,10 +1032,30 @@ Game.Screen.lookScreen = new Game.Screen.TargetBasedScreen({
             }
             // If there was no entity/item or the tile wasn't visible, then use
             // the tile information.
-            return String.format('%s - %s',
+            var t = map.getTile(x, y, z);
+            var dug = map.getDigStatus(x, y, z);
+            var diggingDescr = '';
+            if (dug > 0) {
+                var dugPercent = dug / t.getDigResistance();
+                if (dugPercent < .2) {
+                    diggingDescr = 'lightly scratched at';
+                } else
+                if (dugPercent < .4) {
+                    diggingDescr = 'pretty scratched at';
+                } else
+                if (dugPercent < .6) {
+                    diggingDescr = 'clearly worked at';
+                } else
+                if (dugPercent < .8) {
+                    diggingDescr = 'beginning to come apart';
+                } else {
+                    diggingDescr = 'almost falling apart';
+                }                
+            }
+            return String.format('%s - %s %s',
                 map.getTile(x, y, z).getRepresentation(),
-                map.getTile(x, y, z).getDescription());
-
+                map.getTile(x, y, z).getDescription(),
+                diggingDescr);
         } else {
             // If the tile is not explored, show the null tile description.
             return String.format('%s - %s',
@@ -1400,21 +1420,26 @@ Game.Screen.fallingScreen = {
     enter: function() {
         console.log("Entered falling screen."); 
         this._player = Game.Screen.playScreen.getPlayer();
+        this._fallLine = '';
+        for (var i=0;i<Game.getScreenWidth();i++) {
+            if (i == Math.floor(Game.getScreenWidth() / 2)) {
+                this._fallLine += Game.Tile.airTile.getRepresentation();
+            } else {
+                this._fallLine += Game.Tile.STANDARD_WALL_TILES.random().getRepresentation();
+            }
+        }
+        
+        
+        
         setTimeout(this.fallFarther,300);
     },
     exit: function() { console.log("Exited falling screen."); },
     render: function(display) {
-        var wallRep = Game.Tile.wallTile.getRepresentation();
+        var wallRep = Game.Tile.STANDARD_WALL_TILES.random().getRepresentation();
         if (this.y <=2) {
-            for (var i=0;i<Game.getScreenWidth();i++) {
-                display.drawText(i,2,wallRep);
-            }
+            display.drawText(0,2,this._fallLine);
         } else if (this.y==3) {
-            for (var i=0;i<Game.getScreenWidth();i++) {
-                if (i != Game.getScreenWidth() / 2) {
-                    display.drawText(i,1,wallRep);
-                }
-            }
+            display.drawText(0,1,this._fallLine);
         }
         display.drawText(Game.getScreenWidth() / 2,this.y,this._player.getRepresentation());
 //        this._player.getMap().getEngine().lock();

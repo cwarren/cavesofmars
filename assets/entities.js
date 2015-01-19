@@ -7,8 +7,9 @@ Game.PlayerTemplate = {
     background: 'black',
     maxHp: 30,
     attackValue: 3,
+    digRate: 2,
     sightRadius: 4,
-    inventorySlots: 22,
+    inventorySlots: 12,
     statPointsPerLevel: 2,
 //    fullness: 1000,
     allies: ['teammate'],
@@ -198,14 +199,15 @@ Game.EntityRepository.define('golden lizard', {
 Game.EntityRepository.define('rock lizard', {
     name: 'rock lizard',
     character: 'l',
-    description: "It's not very big, but it's got formidable natural protection. It reminds you a bit of a snapping turtle, but it's scutes are distributed all over it's body instead of being fused into a single shell. It's claws and snout look adapted for digging through the local sandstone.",
+    description: "It's not very big, but it's got formidable natural protection. It reminds you a bit of a snapping turtle, but it's scutes are distributed all over it's body instead of being fused into a single shell. It's claws and snout look extremely well adapted for digging through the local stone.",
     foreground: 'goldenrod',
     maxHp: 4,
     attackValue: 2,
     defenseValue: 5,
+    digRate: 20,
     corpseFoodValue: 25,
     defaultActionDuration: 1350,
-    mixins: [Game.EntityMixins.AggressiveRoamingBehaviorController, Game.EntityMixins.MeleeAttacker, Game.EntityMixins.Destructible, Game.EntityMixins.Digger,Game.EntityMixins.CorpseDropper,
+    mixins: [Game.EntityMixins.AggressiveRoamingBehaviorController, Game.EntityMixins.MeleeAttacker, Game.EntityMixins.Destructible, Game.EntityMixins.Digger, Game.EntityMixins.CorpseDropper,
              Game.EntityMixins.ExperienceGainer, Game.EntityMixins.RandomStatGainer]
 });
 

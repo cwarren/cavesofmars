@@ -16,15 +16,9 @@ Game Jam Goals:
 
 - refactor fog of war to use a secondary map rather than the live map (i.e. avoid showing distant map changes)
 
-- implement throwing/ranged action
-
 - design and implement a richer melee combat system (at the least, split out hitting, damaging, other hit effects, dodging, damage resistance, and on-being-hit effects)
 
 - integrate thrown/fired items into the combat system
-
-- improve impenetrable map borders
-
-- multi-staged digging
 
 - design and implement a simple loot system (or, rather, give appropriate items to appropriate NPCs, and have those items be used)
 
@@ -46,8 +40,12 @@ analyzer
 
 TODO NEXT:
 
-5. implement multi-stage digging
 6. implement spore-y mass use (drop on corpse)
 7. tweak entity numbers so they scale w/ PC a bit better
+9. add new entity: small martian
+11.    which can pick up and equip items it finds
+12.    and which uses a more interesting / better wander mechanism
+13. new item: sling, which uses rocks as ammo (and uses a different equipment slot? refactor the wear/wield process to support generalized equipment slots?)
+
 
 50. design/implement alternate path to victory(ish) - post death, if killed at least one ooze and at least one fungus, or if killed by fungus, option to revive and play as a fungal zombie - food consumption increases dramatically, allied with fungus, no further equipping, but still can level/improve

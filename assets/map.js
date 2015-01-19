@@ -16,6 +16,9 @@ Game.Map = function(tiles) {
     // Create a table which will hold the items
     this._items = {};
 
+    // Create a table which will hold dig status-s (stati?)
+    this._dig_status = {};
+
     // Create the engine and scheduler
     //this._scheduler = new ROT.Scheduler.Speed();
     this._scheduler = new ROT.Scheduler.Action();
@@ -26,6 +29,15 @@ Game.Map = function(tiles) {
     this._setupExploredArray();
     
     this._mapLightingType = 'dark';
+    
+    this._diggingTable = {
+        'hard sandstone': Game.Tile.softenedSandstoneTile,
+        'softened sandstone': Game.Tile.crackedStoneTile,
+        'weak basalt': Game.Tile.slightlyCrackedStoneTile,
+        'slightly cracked stone': Game.Tile.crackedStoneTile,
+        'cracked stone': Game.Tile.rubbleTile,
+        'rubble': Game.Tile.newStoneTile
+    };
 };
 
 // Standard getters
@@ -51,6 +63,10 @@ Game.Map.prototype.getPlayer = function() {
 
 Game.Map.prototype.getEntities = function() {
     return this._entities;
+}
+
+Game.Map.prototype.getFullDigStatus = function() {
+    return this._dig_status;
 }
 
 Game.Map.prototype.getFov = function(depth) {
@@ -129,15 +145,43 @@ Game.Map.prototype.getTile = function(x, y, z) {
     }
 };
 
-Game.Map.prototype.dig = function(x, y, z) {
+Game.Map.prototype.getDigStatus = function(x, y, z) {
+    var dig_status = this._dig_status[x+','+y+','+z];
+    if (! dig_status) {
+        return 0;
+    }
+    return dig_status;
+}
+
+Game.Map.prototype.setDigStatus = function(digAmount, x, y, z) {
+    this._dig_status[x+','+y+','+z] = digAmount;
+}
+
+Game.Map.prototype.dig = function(digger,digAmount, x, y, z) {
     // If the tile is diggable, update it to a floor
-    if (this.getTile(x, y, z).isDiggable()) {
-            this._tiles[z][x][y] = this.getTileForDugSpace(); //Game.Tile.floorTile;
+    var dugTile = this.getTile(x, y, z);
+    if (dugTile.isDiggable()) {
+        var curDigAmt = this.getDigStatus(x, y, z) + digAmount;
+        Game.sendMessage(digger,'You dig at the %s',[dugTile.getName()]);
+        if (curDigAmt >= dugTile.getDigResistance()) {
+            this.setDigStatus(curDigAmt - dugTile.getDigResistance(),x, y, z);
+            var newTile = this.getNewTileForDugOutTile(dugTile);
+            this._tiles[z][x][y] = newTile;
+            if (! newTile) {
+                newTile = Game.Tile.rubbleTile;
+            }
+            Game.sendMessage(digger,'The %s is now %s',[dugTile.getName(),newTile.getName()]);
+
+        } else {
+            this.setDigStatus(curDigAmt,x, y, z);
+        }
+    } else {
+        Game.sendMessage(digger,'the %s seems not to be diggable',[dugTile.getName()]);
     }
 }
 
-Game.Map.prototype.getTileForDugSpace = function() {
-    return Game.Tile.floorTile;
+Game.Map.prototype.getNewTileForDugOutTile = function(dugTile) {
+    return this._diggingTable[dugTile.getName()];
 }
 
 Game.Map.prototype.isEmptyFloor = function(x, y, z) {

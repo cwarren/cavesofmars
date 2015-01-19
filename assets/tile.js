@@ -8,6 +8,8 @@ Game.Tile = function(properties) {
     this._walkable = properties['walkable'] || false;
     this._airPassable = properties['airPassable'] || this._walkable;
     this._diggable = properties['diggable'] || false;
+    this._digResistance = properties['digResistance'] || 10;
+    
     this._transparent = properties['transparent'] || false;
     this._opaque = (properties['opaque'] !== undefined) ?
         properties['opaque'] : (! this._transparent);
@@ -27,6 +29,10 @@ Game.Tile.prototype.isAirPassable = function() {
 Game.Tile.prototype.isDiggable = function() {
     return this._diggable;
 }
+Game.Tile.prototype.getDigResistance = function() {
+    return this._digResistance;
+}
+
 Game.Tile.prototype.isTransparent = function() {
     return this._transparent;
 }
@@ -46,6 +52,9 @@ Game.Tile.prototype.setWalkable = function(state) {
 }
 Game.Tile.prototype.setDiggable = function(state) {
     this._diggable = state;
+}
+Game.Tile.prototype.setDigResistance = function(dr) {
+    this._digResistance = dr;
 }
 Game.Tile.prototype.setTransparent = function(state) {
     this._transparent = state;
@@ -91,22 +100,82 @@ Game.Tile.floorTile = new Game.Tile({
     description: 'cave floor'
     });
 
-Game.Tile.wallTile = new Game.Tile({
-    name: 'wall',
+Game.Tile.hardSandstoneTile = new Game.Tile({
+    name: 'hard sandstone',
     character: '#',
-    foreground: 'goldenrod',
+    foreground: '#ca4',
     diggable: true,
+    digResistance: 11,
     transparent: false,
-    description: 'soft sand stone'
+    description: 'hard sandstone'
     });
 
-Game.Tile.borderTile = new Game.Tile({
-    name: 'border',
+Game.Tile.softenedSandstoneTile = new Game.Tile({
+    name: 'softened sandstone',
     character: '#',
-    foreground: 'darkRed',
+    foreground: '#b85',
+    diggable: true,
+    digResistance: 8,
+    transparent: false,
+    description: 'softened sandstone'
+    });
+
+Game.Tile.basaltTile = new Game.Tile({
+    name: 'weak basalt',
+    character: '#',
+    foreground: '#557',
+    diggable: true,
+    digResistance: 16,
+    transparent: false,
+    description: 'weak basalt'
+    });
+
+Game.Tile.slightlyCrackedStoneTile = new Game.Tile({
+    name: 'slightly cracked stone',
+    character: '#',
+    foreground: '#987',
+    diggable: true,
+    digResistance: 10,
+    transparent: false,
+    description: 'slightly cracked stone'
+    });
+
+Game.Tile.crackedStoneTile = new Game.Tile({
+    name: 'cracked stone',
+    character: '#',
+    foreground: '#ca7',
+    diggable: true,
+    digResistance: 5,
+    transparent: false,
+    description: 'cracked stone'
+    });
+
+Game.Tile.rubbleTile = new Game.Tile({
+    name: 'rubble',
+    character: '#',
+    foreground: '#eca',
+    diggable: true,
+    digResistance: 3,
+    transparent: false,
+    description: 'rubble'
+    });
+
+Game.Tile.STANDARD_WALL_TILES = [
+Game.Tile.hardSandstoneTile,
+Game.Tile.softenedSandstoneTile,
+Game.Tile.basaltTile,
+Game.Tile.slightlyCrackedStoneTile,
+Game.Tile.crackedStoneTile,
+Game.Tile.rubbleTile
+];
+
+Game.Tile.borderTile = new Game.Tile({
+    name: 'strong basalt',
+    character: '#',
+    foreground: '#446',
     diggable: false,
     transparent: false,
-    description: 'stone too tough to dig'
+    description: 'strong basalt - stone too tough to dig'
     });
 
 Game.Tile.stairsUpTile = new Game.Tile({
@@ -149,10 +218,10 @@ Game.Tile.waterTile = new Game.Tile({
 Game.Tile.sandTile = new Game.Tile({
     name: 'sand',
     character: '~',
-    foreground: '#ec8',
+    foreground: '#db7',
     walkable: true,
     transparent: true,
-    description: 'a wind-swept pile of sand'
+    description: 'a pile of sand'
 });
 
 Game.Tile.heavySandTile = new Game.Tile({

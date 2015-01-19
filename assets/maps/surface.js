@@ -28,11 +28,7 @@ Game.Map.Surface.prototype.addTeammates = function() {
     }
 }
 
-Game.Map.prototype.getTileForDugSpace = function() {
-    return Game.Tile.newStoneTile;
-}
-
-Game.Map.Surface.prototype._fillCircleWithRandom = function(tiles, centerX, centerY, radius, interiorTypesArray, outlineTileType, outlinePercent) {
+Game.Map.Surface.prototype._fillCircleWithRandom = function(tiles, centerX, centerY, radius, interiorTypesArray, outlineTileTypeOrArray, outlinePercent) {
     // Copied from the DrawFilledCircle algorithm
     // http://stackoverflow.com/questions/1201200/fast-algorithm-for-drawing-filled-circles
     var x = radius;
@@ -56,32 +52,59 @@ Game.Map.Surface.prototype._fillCircleWithRandom = function(tiles, centerX, cent
             tiles[i][centerY - x] = tile;   
         }
 
-        if (ROT.RNG.getUniform() < outlinePercent) {
-            tiles[centerX - x][centerY + y] = outlineTileType;
-        }
-        if (ROT.RNG.getUniform() < outlinePercent) {
-            tiles[centerX - x][centerY - y] = outlineTileType;
-        }
-        if (ROT.RNG.getUniform() < outlinePercent) {
-            tiles[centerX + x][centerY + y] = outlineTileType;
-        }
-        if (ROT.RNG.getUniform() < outlinePercent) {
-            tiles[centerX + x][centerY - y] = outlineTileType;
-        }
-        
-        if (ROT.RNG.getUniform() < outlinePercent) {
-            tiles[centerX - y][centerY + x] = outlineTileType;
-        }
-        if (ROT.RNG.getUniform() < outlinePercent) {
-            tiles[centerX - y][centerY - x] = outlineTileType;
-        }
-        if (ROT.RNG.getUniform() < outlinePercent) {
-            tiles[centerX + y][centerY + x] = outlineTileType;
-        }
-        if (ROT.RNG.getUniform() < outlinePercent) {
-            tiles[centerX + y][centerY - x] = outlineTileType;
-        }
+        if (outlineTileTypeOrArray instanceof Game.Tile) {
+            if (ROT.RNG.getUniform() < outlinePercent) {
+                tiles[centerX - x][centerY + y] = outlineTileTypeOrArray;
+            }
+            if (ROT.RNG.getUniform() < outlinePercent) {
+                tiles[centerX - x][centerY - y] = outlineTileTypeOrArray;
+            }
+            if (ROT.RNG.getUniform() < outlinePercent) {
+                tiles[centerX + x][centerY + y] = outlineTileTypeOrArray;
+            }
+            if (ROT.RNG.getUniform() < outlinePercent) {
+                tiles[centerX + x][centerY - y] = outlineTileTypeOrArray;
+            }
 
+            if (ROT.RNG.getUniform() < outlinePercent) {
+                tiles[centerX - y][centerY + x] = outlineTileTypeOrArray;
+            }
+            if (ROT.RNG.getUniform() < outlinePercent) {
+                tiles[centerX - y][centerY - x] = outlineTileTypeOrArray;
+            }
+            if (ROT.RNG.getUniform() < outlinePercent) {
+                tiles[centerX + y][centerY + x] = outlineTileTypeOrArray;
+            }
+            if (ROT.RNG.getUniform() < outlinePercent) {
+                tiles[centerX + y][centerY - x] = outlineTileTypeOrArray;
+            }
+        } else {
+            if (ROT.RNG.getUniform() < outlinePercent) {
+                tiles[centerX - x][centerY + y] = outlineTileTypeOrArray.random();
+            }
+            if (ROT.RNG.getUniform() < outlinePercent) {
+                tiles[centerX - x][centerY - y] = outlineTileTypeOrArray.random();
+            }
+            if (ROT.RNG.getUniform() < outlinePercent) {
+                tiles[centerX + x][centerY + y] = outlineTileTypeOrArray.random();
+            }
+            if (ROT.RNG.getUniform() < outlinePercent) {
+                tiles[centerX + x][centerY - y] = outlineTileTypeOrArray.random();
+            }
+
+            if (ROT.RNG.getUniform() < outlinePercent) {
+                tiles[centerX - y][centerY + x] = outlineTileTypeOrArray.random();
+            }
+            if (ROT.RNG.getUniform() < outlinePercent) {
+                tiles[centerX - y][centerY - x] = outlineTileTypeOrArray.random();
+            }
+            if (ROT.RNG.getUniform() < outlinePercent) {
+                tiles[centerX + y][centerY + x] = outlineTileTypeOrArray.random();
+            }
+            if (ROT.RNG.getUniform() < outlinePercent) {
+                tiles[centerX + y][centerY - x] = outlineTileTypeOrArray.random();
+            }
+        }
         
         y++;
         radiusError += yChange;
@@ -111,7 +134,7 @@ Game.Map.Surface.prototype._generateTiles = function(width, height) {
             var tile = surfaceTiles.random(); 
         
             if (ROT.RNG.getUniform() < .15) {
-                tile = Game.Tile.wallTile;
+                tile = Game.Tile.STANDARD_WALL_TILES.random();
             }
         
             tiles[x][y] = tile;
@@ -120,12 +143,12 @@ Game.Map.Surface.prototype._generateTiles = function(width, height) {
     
     // Now we determine the radius of the area to carve out.
 //    var radius = (Math.min(width, height) - 4) / 2;
-    this._fillCircleWithRandom(tiles, width / 2, height / 2, 14, [Game.Tile.sandTile], Game.Tile.wallTile,.6);
-    this._fillCircleWithRandom(tiles, width / 2, height / 2, 13, [Game.Tile.sandTile], Game.Tile.wallTile,.7);
-    this._fillCircleWithRandom(tiles, width / 2, height / 2, 12, [Game.Tile.sandTile], Game.Tile.wallTile,.8);
-    this._fillCircleWithRandom(tiles, width / 2, height / 2, 11, [Game.Tile.sandTile], Game.Tile.wallTile,.7);
+    this._fillCircleWithRandom(tiles, width / 2, height / 2, 14, [Game.Tile.sandTile], Game.Tile.STANDARD_WALL_TILES,.6);
+    this._fillCircleWithRandom(tiles, width / 2, height / 2, 13, [Game.Tile.sandTile], Game.Tile.STANDARD_WALL_TILES,.7);
+    this._fillCircleWithRandom(tiles, width / 2, height / 2, 12, [Game.Tile.sandTile], Game.Tile.basaltTile,.8);
+    this._fillCircleWithRandom(tiles, width / 2, height / 2, 11, [Game.Tile.sandTile], Game.Tile.STANDARD_WALL_TILES,.7);
 
-    this._fillCircleWithRandom(tiles, width / 2, height / 2, 10,surfaceTiles,Game.Tile.wallTile,.6);
+    this._fillCircleWithRandom(tiles, width / 2, height / 2, 10,surfaceTiles,Game.Tile.STANDARD_WALL_TILES,.6);
 
     // Return the tiles in an array as we only have 1 depth level.
     return [tiles];

@@ -53,7 +53,7 @@ Game.Builder.prototype._generateLevel = function() {
         if (v === 1) {
             levelMap[x][y] = Game.Tile.floorTile;
         } else {
-            levelMap[x][y] = Game.Tile.wallTile;
+            levelMap[x][y] = Game.Tile.STANDARD_WALL_TILES.random();
         }
     });
     

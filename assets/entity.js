@@ -219,6 +219,9 @@ Game.Entity.prototype.tryMove = function(x, y, z, map) {
     if (tile.isDiggable() && this.hasMixin('Digger')) {
         this.digAt(x, y, z);
         return true;
+    } else {
+        Game.sendMessage(this,'the %s seems not to be diggable',[tile.getName()]);
+        Game.refresh();
     }
     return false;
 }

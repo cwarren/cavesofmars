@@ -196,12 +196,57 @@ Game.EntityMixins.Babbler = {
 // This signifies our entity posseses a field of vision of a given radius.
 Game.EntityMixins.Digger = {
     name: 'Digger',
+    init: function(template) {
+        this._digRate = template['digRate'] || 2;
+    },
+    setDigRate: function(v) {
+        this._digRate = v;
+    },
+    getDigRate: function() {
+        var rate = this._digRate;
+        if (this.hasMixin(Game.EntityMixins.Equipper)) {
+            var digMults = [];
+            var digAdds = [];
+
+            var w = this.getWeapon();
+            if (w) {
+                digMults = digMults.concat(Game.util.scanEventResultsFor(w.raiseEvent('onDigging'),'digMultiplier'));
+                digAdds = digAdds.concat(Game.util.scanEventResultsFor(w.raiseEvent('onDigging'),'digAdder'));
+            }
+
+            var a = this.getArmor();
+            if (a) {
+                digMults = digMults.concat(Game.util.scanEventResultsFor(a.raiseEvent('onDigging'),'digMultiplier'));
+                digAdds = digAdds.concat(Game.util.scanEventResultsFor(a.raiseEvent('onDigging'),'digAdder'));
+            }
+
+            for (var j=0;j<digMults.length;j++) {
+                rate *= digMults[j];
+            }
+            for (var j=0;j<digAdds.length;j++) {
+                rate += digAdds[j];
+            }
+        }
+        return rate; // NOTE: this may be a decimal! That should be fine...
+    },
+    increaseDigRate: function(value) {
+        // If no value was passed, default to 2.
+        value = value || 3;
+        // Add to the defense value.
+        this._digRate += value;
+        Game.sendMessage(this, "You are a better digger!");
+    },
     digAt: function(x,y,z) {
-        this.getMap().dig(x, y, z);
+        this.getMap().dig(this,this.getDigRate(), x, y, z);
         this.setLastActionDuration(this.getDigDuration());
     },
     getDigDuration: function() {
-        return this.getDefaultActionDuration()*5;
+        return this.getDefaultActionDuration()*3;
+    },
+    listeners: {
+        details: function() {
+            return [{key: 'digRate', value: this.getDigRate()}];
+        }
     }
 }
 
@@ -954,6 +999,9 @@ Game.EntityMixins.ExperienceGainer = {
             this._statOptions.push(['Increase defense value', this.increaseDefenseValue]);   
             this._statOptions.push(['Increase max health', this.increaseMaxHp]);
         }
+        if (this.hasMixin('Digger') && this.hasMixin('PlayerActor')) {
+            this._statOptions.push(['Increase digging ability', this.increaseDigRate]);
+        }
         if (this.hasMixin('Seer')) {
             this._statOptions.push(['Increase sight range', this.increaseSightRadius]);
         }
@@ -969,7 +1017,10 @@ Game.EntityMixins.ExperienceGainer = {
         return this._experience;
     },
     getNextLevelExperience: function() {
-        return (1 + (this._level + 1) * this._level) * 10;
+        if (this.hasMixin('PlayerActor')) {
+            return (1 + (this._level + 1) * this._level) * 10;
+        }
+        return 10 + (((this._level - 1) * this._level) * 10); // mobs progress much faster!
     },
     getStatPoints: function() {
         return this._statPoints;

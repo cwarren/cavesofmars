@@ -80,3 +80,35 @@ Game.ItemMixins.Equippable = {
     }
 };
 
+Game.ItemMixins.DigTool = {
+    name: 'DigTool',
+    init: function(template) {
+        this._digMultiplier = template['digMultiplier'] || 1;
+        this._digAdder = template['digAdder'] || 1;
+    },
+    getDigMultiplier: function() {
+        return this._digMultiplier;
+    },
+    setDigMultiplier: function(v) {
+        this._digMultiplier = v;
+    },
+    getDigAdder: function() {
+        return this._digAdder;
+    },
+    setDigAdder: function(v) {
+        this._digAdder = v;
+    },
+    listeners: {
+        'details': function() {
+            return [{key: 'digMultiplier', value: this.getDigMultiplier()},
+                    {key: 'digAdder', value: this.getDigAdder()}
+                    ];
+        },
+    
+        'onDigging': function() {
+            return [{key: 'digMultiplier', value: this.getDigMultiplier()},
+                    {key: 'digAdder', value: this.getDigAdder()}
+                    ];
+        }
+    }
+};
