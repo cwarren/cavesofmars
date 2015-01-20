@@ -41,7 +41,6 @@ analyzer
 TODO NEXT:
 
 6. implement spore-y mass use (drop on corpse)
-7. tweak entity numbers so they scale w/ PC a bit better
 9. add new entity: small martian
 11.    which can pick up and equip items it finds
 12.    and which uses a more interesting / better wander mechanism

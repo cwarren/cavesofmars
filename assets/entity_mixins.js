@@ -350,6 +350,20 @@ Game.EntityMixins.NonRecuperatingDestructible = {
                 {key: 'defense', value: this.getDefenseValue()},
                 {key: 'hp', value: this.getHp()}
             ];
+        },
+        onDeath: function() {
+            if (this.hasMixin('PlayerActor')) {
+                return;
+            }
+
+            var player = this.getMap().getPlayer();
+            if (player.getZ() == 0) {
+                return;
+            }
+            var newZ = Game.util.getRandomInteger(0,player.getZ()-1);
+            
+            var entity = Game.EntityRepository.createRandom();
+            this.getMap().addEntityAtRandomPosition(entity,newZ);
         }
     }
 }
@@ -373,35 +387,25 @@ Game.EntityMixins.Destructible = Game.util.extendedObj(Game.EntityMixins.NonRecu
             Game.sendMessage(this,'You feel a little bit better');
             this.raiseEvent('onRecuperated');
         }
-    },
-    listeners: {
-        onActed: function() {
-            if (this.getHp() == this.getMaxHp()) {
-                this._healingTimeCounter = 0;
-                return;
-            }
-            this._healingTimeCounter += this.getLastActionDuration();
-            this.doRecuperation();
-        },
-        onEat: function(foodItem) {
-            if (this.getHp() == this.getMaxHp()) {
-                return;
-            }
-            this._healingTimeCounter += foodItem.getFoodValue();
-            this.doRecuperation();
-        },
-        onGainLevel: function() {
-            // Heal the entity.
-            this.setHp(this.getMaxHp());
-        },
-        details: function() {
-            return [
-                {key: 'defense', value: this.getDefenseValue()},
-                {key: 'hp', value: this.getHp()}
-            ];
-        }
     }
 });   
+
+Game.EntityMixins.Destructible.listeners.onActed= function() {
+    if (this.getHp() == this.getMaxHp()) {
+        this._healingTimeCounter = 0;
+        return;
+    }
+    this._healingTimeCounter += this.getLastActionDuration();
+    this.doRecuperation();
+}
+
+Game.EntityMixins.Destructible.listeners.onEat = function(foodItem) {
+    if (this.getHp() == this.getMaxHp()) {
+        return;
+    }
+    this._healingTimeCounter += foodItem.getFoodValue();
+    this.doRecuperation();
+}
 
 // CSW NOTE : maybe expand/extend this to a stack and/or hash instead of a simple single-target model
 Game.EntityMixins.Retaliator = {
@@ -487,7 +491,7 @@ Game.EntityMixins.RangedAttacker = {
     },
     increaseRangedAttackValue: function(value) {
             // If no value was passed, default to 1.
-            value = value || 2;
+            value = value || 4;
             // Add to the attack value.
             this._rangedAttackValue += value;
             Game.sendMessage(this, "You have better aim!");
@@ -499,16 +503,18 @@ Game.EntityMixins.RangedAttacker = {
             var attack = this.getRangedAttackValue(ammo);
             var defense = target.getDefenseValue();
             
-            var max = Math.max(0, attack - defense);
-            var damage = 1 + Math.floor(ROT.RNG.getUniform() * max);
+            var max = Math.max(1, attack - defense);
+            var damage = 1 + Math.floor((.3 + ROT.RNG.getUniform()*.7) * max);
 
             if (this.hasMixin('MessageRecipient')) {
                 Game.sendMessage(this, 'You hit the %s with the %s for %d damage', 
                     [target.getName(), ammo.getName(), damage]);
+                Game.refresh();
             }
             if (target.hasMixin('MessageRecipient')) {
                 Game.sendMessage(target, 'The %s hits you with the %s for %d damage', 
                     [this.getName(), ammo.getName(), damage]);
+                Game.refresh();
             }
 
             this.setLastActionDuration(this.getRangedAttackDuration());
@@ -1082,7 +1088,54 @@ Game.EntityMixins.ExperienceGainer = {
         },
         details: function() {
             return [{key: 'level', value: this.getLevel()}];
-        }        
+        },
+        onGainLevel: function() { 
+            // if monster gets too high a level, put it deeper down and replace it with a new random thing
+            if (this.hasMixin('PlayerActor')) {
+                return;
+            }
+                        
+            // if not already at bottom level, and if entity level > current dungeon depth + 1 (z is 0-based), then descend and replace
+            var map = this.getMap();
+            if (map) {
+                var player = map.getPlayer();
+                if ((this.getZ() < map.getDepth() -1) && (this.getLevel() > this.getZ()+2)) {
+                    var newZ = this.getZ()+1;
+                    if (((this.getZ() != player.getZ()) && (newZ != player.getZ())) || // not on level tied to the player
+                        ((Math.abs(this.getX()-player.getX()) > player.getSightRadius()) || (Math.abs(this.getY()-player.getY()) > player.getSightRadius())) // out of sight range
+                       ) {
+                        var oldX = this.getX();
+                        var oldY = this.getY();
+                        var oldZ = this.getZ();
+
+                        console.log(this.getName()+' is descending!');
+                        console.dir(this);
+
+                        // this descends
+                        var position = map.getRandomWalkablePosition(newZ);
+                        if (newZ == player.getZ()) {
+                            while (((Math.abs(position.x-player.getX()) <= player.getSightRadius()) && (Math.abs(position.y-player.getY()) <= player.getSightRadius()))) {
+                                position = map.getRandomWalkablePosition(newZ);
+                            }
+                        }
+                        this.setPosition(position.x,position.y,newZ);
+
+
+                        // add replacement
+                        var entity = Game.EntityRepository.createRandom();
+                        entity.setPosition(oldX,oldY,oldZ);
+                        if (entity.hasMixin('ExperienceGainer')) {
+                            entity.levelUpTo(oldZ);
+                        }
+                        map.addEntity(entity);
+                        
+                        console.log(entity.getName()+' added to replace');
+                        console.dir(entity);
+
+                    }
+                }
+            }
+        }
     }
 };
 

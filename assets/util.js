@@ -53,6 +53,9 @@ extendedObj: function (baseObj, extensions) {
 },
 
 getRandomInteger: function (minValInclusive, maxValInclusive) {
+    if (maxValInclusive <= minValInclusive) {
+        return minValInclusive;
+    }
     var randRange = maxValInclusive - minValInclusive + 1;
     return minValInclusive + Math.floor(ROT.RNG.getUniform() * randRange);
 },

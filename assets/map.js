@@ -224,14 +224,6 @@ Game.Map.prototype.getEntitiesWithinRadius = function(centerX, centerY, centerZ,
 }
 
 Game.Map.prototype.updateEntityPosition = function(entity, oldX, oldY, oldZ) {
-    // Delete the old key if it is the same entity
-    // and we have old positions.
-    if (typeof oldX === 'number') {
-        var oldKey = oldX + ',' + oldY + ',' + oldZ;
-        if (this._entities[oldKey] == entity) {
-            delete this._entities[oldKey];
-        }
-    }
     // Make sure the entity's position is within bounds
     if (entity.getX() < 0 || entity.getX() >= this._width ||
         entity.getY() < 0 || entity.getY() >= this._height ||
@@ -242,8 +234,19 @@ Game.Map.prototype.updateEntityPosition = function(entity, oldX, oldY, oldZ) {
     // Sanity check to make sure there is no entity at the new position.
     var key = entity.getX() + ',' + entity.getY() + ',' + entity.getZ();
     if (this._entities[key]) {
-        throw new Error('Tried to add an entity at an occupied position.');
+        //throw new Error('Tried to add an entity at an occupied position.');
+        this.removeEntity(this._entities[key]);
     }
+    
+    // Delete the old key if it is the same entity
+    // and we have old positions.
+    if (typeof oldX === 'number') {
+        var oldKey = oldX + ',' + oldY + ',' + oldZ;
+        if (this._entities[oldKey] == entity) {
+            delete this._entities[oldKey];
+        }
+    }
+
     // Add the entity to the table of entities
     this._entities[key] = entity;
 };
