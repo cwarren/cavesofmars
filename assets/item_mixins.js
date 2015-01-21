@@ -112,3 +112,123 @@ Game.ItemMixins.DigTool = {
         }
     }
 };
+
+
+Game.ItemMixins.Seeder = {
+    name: 'Seeder',
+    init: function(template) {
+        this._seedTargets = template['seedTargets'] || [];
+        this._seedExclusions = template['seedExclusions'] || [];
+        this._growthLiklihoodGood = template['growthLiklihoodGood'] || .15;
+        this._seedGoodResult = template['seedGoodResult'] || '';
+        this._seedBadResult = template['seedBadResult'] || '';
+    },
+    getSeedTargets: function() {
+        return this._seedTargets;
+    },
+    setSeedTargets: function(v) {
+        this._seedTargets = v;
+    },
+    getSeedExclusions: function() {
+        return this._seedExclusions;
+    },
+    setSeedExclusions: function(v) {
+        this._seedExclusions = v;
+    },
+    getGrowthLiklihoodGood: function() {
+        return this._growthLiklihoodGood;
+    },
+    setGrowthLiklihoodGood: function(v) {
+        this._growthLiklihoodGood = v;
+    },
+    getSeedGoodResult: function() {
+        return this._seedGoodResult;
+    },
+    setSeedGoodResult: function(v) {
+        this._seedGoodResult = v;
+    },
+    getSeedBadResult: function() {
+        return this._seedBadResult;
+    },
+    setSeedBadResult: function(v) {
+        this._seedBadResult = v;
+    },
+    canGrowOn: function(substrate) {        
+        var excludeRes = (this._seedExclusions.indexOf(substrate.getName()) > -1);
+        if (substrate instanceof Game.DynamicGlyph) {
+            excludeRes = excludeRes || (this._seedExclusions.indexOf(substrate.getGroup()) > -1) || (this._seedExclusions.indexOf(substrate.getSuperGroup()) > -1);
+        }
+        if (excludeRes) {
+            return false;
+        }
+        
+        var targetRes = (this._seedTargets.indexOf(substrate.getName()) > -1);
+        if (substrate instanceof Game.DynamicGlyph) {
+            targetRes = targetRes || (this._seedTargets.indexOf(substrate.getGroup()) > -1) || (this._seedTargets.indexOf(substrate.getSuperGroup()) > -1);
+        }
+        return targetRes;        
+    },
+    growAt: function(map,x,y,z) {
+        var newEntity;
+        if (ROT.RNG.getUniform() < this.getGrowthLiklihoodGood()) {
+            newEntity = Game.EntityRepository.create(this.getSeedGoodResult());
+        } else {
+            newEntity = Game.EntityRepository.create(this.getSeedBadResult());
+        }
+        newEntity.setPosition(x,y,z);
+        map.addEntity(newEntity);
+    },
+    listeners: {
+         'onPlanted': function(map,x,y,z) {
+            //console.log('onPlanted!');
+            //console.dir(this);
+         
+            map.removeItem(this,x,y,z);
+            
+            // check entity at that location
+            //    if a valid substrate, remove the entity from the map (don't kill it - this generate no XP), and do germination and place the result of that on the map at that location
+            var entity = map.getEntityAt(x,y,z);
+            if (entity && this.canGrowOn(entity)) {
+                map.removeEntity(entity);
+                this.growAt(map,x,y,z);
+                return;
+            }
+
+
+            // check items at that location
+            //    at first valid substrate, remove the item from the map, and do germination and place the result of that on the map at that location
+            var items = map.getItemsAt(x,y,z);
+            for (var i=0;i<items.length;i++) {
+                var item = items[i];
+                if (item && this.canGrowOn(item)) {
+                    map.removeItem(item,x,y,z);
+                    this.growAt(map,x,y,z);
+                    return;
+                }
+            }
+
+            // check the tile at that location
+            //    if a valid substrate, do germination and place the result of that on the map at that location
+            var tile = map.getTile(x,y,z);
+            if (tile && this.canGrowOn(tile)) {
+                if (tile.isDiggable()) {
+                    map.dig(null,1,x,y,z);
+                }
+                this.growAt(map,x,y,z);
+                return;
+            }
+        },
+        'onLanded': function(map,x,y,z) {
+            this.raiseEvent('onPlanted',map,x,y,z);
+        },
+//        'onDropped': function(map,x,y,z) {
+//            this.raiseEvent('onPlanted',map,x,y,z);
+//        },
+        'details': function() {
+            return [{key: 'goodGrowthRate', value: this.getGrowthLiklihoodGood()},
+                    {key: 'generallyValidSubstrates', value: this.getSeedTargets().join(',')},
+                    {key: 'willNotGrowOn', value: this.getSeedExclusions().join(',')},
+                    ];
+        }
+    }
+};

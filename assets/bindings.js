@@ -55,6 +55,8 @@ Game.Bindings = {
 /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
 
+// CSW NOTE: the bindings are below, as a nested hash for each binding set. This works well from a performance standpoint, but it's bug-prone from a maintenance and dev standpoint - there's no reverse checking to make sure that every action has a binding for eavery binding set. Consider ways to flip the relationship so the bindings are associated directly with the action, the ease of lookup by inputType and inputData is maintained, and there's no entry duplication required.
+
 ///////////////////////////
 // Numpad-oriented bindings
 Game.Bindings['BindingSet_Numpad'] = {};
@@ -109,6 +111,7 @@ Game.Bindings['BindingSet_Laptop']['isKeydown'][ROT.VK_C] = Game.Bindings.Action
 Game.Bindings['BindingSet_Laptop']['isKeydown'][ROT.VK_I] = Game.Bindings.Actions.Inventory.INVENTORY_LIST,
 Game.Bindings['BindingSet_Laptop']['isKeydown'][ROT.VK_H] = Game.Bindings.Actions.Inventory.INVENTORY_WIELD,
 Game.Bindings['BindingSet_Laptop']['isKeydown'][ROT.VK_G] = Game.Bindings.Actions.Inventory.INVENTORY_GET,
+Game.Bindings['BindingSet_Numpad']['isKeydown'][ROT.VK_F] = Game.Bindings.Actions.Inventory.INVENTORY_FLING,
 Game.Bindings['BindingSet_Numpad']['isKeydown'][ROT.VK_F] = Game.Bindings.Actions.Inventory.INVENTORY_FLING,
 
 Game.Bindings['BindingSet_Laptop']['isKeydown'][ROT.VK_L] = Game.Bindings.Actions.World.LOOK,

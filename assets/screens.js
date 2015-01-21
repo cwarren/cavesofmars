@@ -1155,18 +1155,24 @@ Game.Screen.rangedTargetScreen = new Game.Screen.TargetBasedScreen({
         //          else, set potential tile to be the next tile in the path
         
         var maxRange = player.getSightRadius()+2;
-        player.dropItem(player.getItems().indexOf(ammo));
+        
+        player.extractItem(player.getItems().indexOf(ammo));
         
         var path = Game.Geometry.getLine(player.getX(), player.getY(), x, y);
+        map.addItem(path[0].x,path[0].y,z,ammo);
 
         var pathIdx = 1;
         var rangeTraveled = 0;
+        var potentialPosition;
+        var hasLanded = false;
         while (path.length > pathIdx) {
-            var potentialPosition = path[pathIdx];
+            potentialPosition = path[pathIdx];
 
             var ent = map.getEntityAt(potentialPosition.x,potentialPosition.y,z);
             if (ent) {
                 if (player.isAlliedWith(ent)) {
+                    ammo.raiseEvent('onLanded',map,path[pathIdx-1].x,path[pathIdx-1].y,z);
+                    hasLanded = true;
                     setTimeout(function(){
                         Game.sendMessage(player,'You manage to avoid hitting your friend.');
                         Game.refresh();
@@ -1178,7 +1184,11 @@ Game.Screen.rangedTargetScreen = new Game.Screen.TargetBasedScreen({
                     } else {
                         map.removeItem(ammo,path[pathIdx-1].x,path[pathIdx-1].y,z);
                     }
-                    player.rangedAttack(ent,ammo);
+                    ammo.raiseEvent('onLanded',map,potentialPosition.x,potentialPosition.y,z);
+                    hasLanded = true;
+                    if (ammo.hasMixin('Ammo')) {
+                        player.rangedAttack(ent,ammo);
+                    }
                 }
                 Game.refresh();
                 break;
@@ -1186,6 +1196,8 @@ Game.Screen.rangedTargetScreen = new Game.Screen.TargetBasedScreen({
             
             var tile = map.getTile(potentialPosition.x,potentialPosition.y,z);
             if (! tile.isAirPassable()) {
+                ammo.raiseEvent('onLanded',map,path[pathIdx-1].x,path[pathIdx-1].y,z);
+                hasLanded = true;
                 break;
             }
 
@@ -1195,13 +1207,19 @@ Game.Screen.rangedTargetScreen = new Game.Screen.TargetBasedScreen({
 
             rangeTraveled++;
             Game.refresh();
-            // CSW NOTE: probably will need to turn this into a functional recursive process to deal with timeouts so the item is actually seen by the player in its new position
+            // CSW NOTE: probably will need to turn this whole thing into a functional recursive process to deal with timeouts so the item is actually seen by the player in its new position
             
             if (rangeTraveled >= maxRange) {
+                ammo.raiseEvent('onLanded',map,potentialPosition.x,potentialPosition.y,z);
+                hasLanded = true;
                 break;
             }
 
             pathIdx++;
+        }
+        
+        if (! hasLanded) {
+            ammo.raiseEvent('onLanded',map,potentialPosition.x,potentialPosition.y,z);
         }
 
         return true;

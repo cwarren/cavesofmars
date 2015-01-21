@@ -735,13 +735,25 @@ Game.EntityMixins.InventoryHolder = {
     dropItem: function(i) {
         // Drops an item to the current map tile
         if (this._items[i]) {
-            if (this._map) {
-                this._map.addItem(this.getX(), this.getY(), this.getZ(), this._items[i]);
-            }
+            var item = this._items[i];
             this.removeItem(i);
+            if (this._map) {
+                this._map.addItem(this.getX(), this.getY(), this.getZ(), item);
+                item.raiseEvent('onDropped',this._map,this.getX(), this.getY(), this.getZ());
+            }
             this.setLastActionDuration(this.getDefaultActionDuration());
+            
         }
-    }
+    },
+    extractItem: function(i) {
+        // removes the item from the inventory and returns it
+        if (this._items[i]) {
+            var item = this._items[i];
+            this.removeItem(i);
+            return item;
+        }
+        return;
+    }    
 };
 
 
@@ -838,11 +850,16 @@ Game.EntityMixins.CorpseDropper = {
             // Check if we should drop a corpse.
             if (Math.round(ROT.RNG.getUniform() * 100) <= this._corpseDropRate) {
                 // Create a new corpse item and drop it.
-                var newCorpse = Game.ItemRepository.create('corpse', {
-                    name: this._corpseName,
-                    foreground: this._foreground,
-                    foodValue: this._corpseFoodValue
-                });
+                var newCorpse;
+                if (Game.ItemRepository.has(this._corpseName)) {
+                    newCorpse = Game.ItemRepository.create(this._corpseName);
+                } else {
+                    newCorpse = Game.ItemRepository.create('corpse', {
+                        name: this._corpseName,
+                        foreground: this._foreground,
+                        foodValue: this._corpseFoodValue
+                    });
+                }
                 if (this.getGroup()) {
                     newCorpse.setGroup(this.getGroup()+' corpse');
                 }
@@ -1514,6 +1531,63 @@ Game.EntityMixins.FruitingFungusActor = {
     }
 }
 
+Game.EntityMixins.DocileFungusActor = {
+    name: 'DocileFungusActor',
+    groupName: 'Actor',
+    init: function() {
+        this._growthsRemaining = 15;
+    },
+    act: function() {
+        //console.log('GrowingFungusActor '+Math.random());
+        // Check if we are going to try growing this turn
+        if (this._growthsRemaining > 0) {
+            var adjCoords = Game.util.coordsNeighboring(this.getX(),this.getY());
+            var map = this.getMap();
+            var z = this.getZ();
+
+            var spreadCount = 0;
+
+            for (var i=0; i<adjCoords.length; i++) {
+                var x = adjCoords[i].x;
+                var y = adjCoords[i].y;
+
+                var adjEntity = map.getEntityAt(x,y,z);
+                var adjItems = map.getItemsAt(x,y,z);
+
+                // second, if there's no entity adjacent then see if there are any adjacent corpses to spread to
+                if (!adjEntity && adjItems) {
+                    for (var j=0;j<adjItems.length;j++) {                    
+                        if ((adjItems[j].getSuperGroup() == 'corpse') && (adjItems[j].getGroup() != 'fungus corpse')) {
+                        
+                            if (ROT.RNG.getUniform() < .4) {
+
+                                // remove the corpse
+                                map.removeItem(adjItems[j],x,y,z);
+
+                                // spawn a docile fungus entity
+                                var entity = Game.EntityRepository.create('docile fungus');
+                                entity.setPosition(x,y,z);
+                                this.getMap().addEntity(entity);
+                                this._growthsRemaining--;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            this.getMap().getScheduler().setDuration(this.getLastActionDuration());
+            this.setLastActionDuration(this.getDefaultActionDuration());
+        }
+    },
+    getGrowthsRemaining: function() {
+        return this._growthsRemaining;
+    },
+    setGrowthsRemaining: function(numGrowths) {
+        this._growthsRemaining = numGrowths;
+    }
+}
+
 Game.EntityMixins.SpreadingFungusActor = {
     name: 'SpreadingFungusActor',
     groupName: 'Actor',
@@ -1566,7 +1640,7 @@ Game.EntityMixins.SpreadingFungusActor = {
         }
 
         // then do senescence check
-        if (ROT.RNG.getUniform() <= 0.005) {
+        if (ROT.RNG.getUniform() <= 0.02) {
             this._senescence_countdown--;
         }
         this._senescence_countdown -= spreadCount;

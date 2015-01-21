@@ -73,6 +73,23 @@ Game.ItemRepository.define('human corpse', {
     disableRandomCreation: true
 });
 
+Game.ItemRepository.define('spore-y mass', {
+    name: 'spore-y mass',
+    group: 'fungus corpse',
+    supergroup: 'corpse',
+    character: '@',
+    foreground: 'grey',
+    description: "a pod-like thing full of a greenish-grey powder and goo",
+    seedTargets: ['corpse'],
+    seedExclusions: ['fungus corpse'],
+    seedGoodResult: 'docile fungus',
+    seedBadResult: 'quiescent fungus',
+    mixins: [Game.ItemMixins.Seeder]
+}, {
+    disableRandomCreation: true
+});
+
+
 // ----------------------------------------------
 
 // minerals

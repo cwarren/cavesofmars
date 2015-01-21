@@ -112,10 +112,25 @@ Game.EntityRepository.define('fruiting fungus', {
     description: "You're not sure about the chemical and biological details, but on the surface this looks very much like a large mushroom patch. Occasionally a puff of spores is visible in the air near it.",
     foreground: 'brown',
     maxHp: 15,
-    corpseName: 'pile of mushroom caps',
-    corpseFoodValue: 10,
+    corpseName: 'pile of slimey mushroom caps',
+    corpseFoodValue: 15,
     suicideSpawnEntityName: 'quiescent fungus',
     mixins: [Game.EntityMixins.FruitingFungusActor, Game.EntityMixins.Destructible, Game.EntityMixins.CorpseDropper, Game.EntityMixins.SuicideSpawner]
+});
+
+Game.EntityRepository.define('docile fungus', {
+    name: 'docile fungus',
+    group: 'fungus',
+    character: '%',
+    description: "You're not sure about the chemical and biological details, but on the surface this looks very much like a large mushroom patch. Occasionally a puff of spores is visible in the air near it.",
+    foreground: 'yellow',
+    maxHp: 10,
+    corpseName: 'pile of firm mushroom caps',
+    corpseFoodValue: 60,
+    defaultActionDuration: 10000,
+    mixins: [Game.EntityMixins.DocileFungusActor, Game.EntityMixins.Destructible, Game.EntityMixins.CorpseDropper]
+}, {
+    disableRandomCreation: true
 });
 
 Game.EntityRepository.define('spreading fungus', {
@@ -131,8 +146,10 @@ Game.EntityRepository.define('spreading fungus', {
     corpseFoodValue: 1,
     defaultActionDuration: 1250,
     suicideSpawnEntityName: 'fruiting fungus',
+    awakenPercentRate: 6,
+    awakenSpawnEntityName: 'fungus zombie',
     allies: ['fungus'],
-    mixins: [Game.EntityMixins.SpreadingFungusActor, Game.EntityMixins.MeleeAttacker, Game.EntityMixins.Destructible, Game.EntityMixins.CorpseDropper, Game.EntityMixins.Allier, Game.EntityMixins.SuicideSpawner]
+    mixins: [Game.EntityMixins.SpreadingFungusActor, Game.EntityMixins.MeleeAttacker, Game.EntityMixins.Destructible, Game.EntityMixins.CorpseDropper, Game.EntityMixins.Allier, Game.EntityMixins.SuicideSpawner, Game.EntityMixins.DamageAwakener]
 });
 
 
@@ -145,7 +162,7 @@ Game.EntityRepository.define('quiescent fungus', {
     maxHp: 5,
     corpseName: 'spore-y mass',
     corpseFoodValue: 1,
-    awakenPercentRate: 10,
+    awakenPercentRate: 12,
     awakenSpawnEntityName: 'spreading fungus',
     mixins: [Game.EntityMixins.Destructible,Game.EntityMixins.CorpseDropper, Game.EntityMixins.DamageAwakener]
 });

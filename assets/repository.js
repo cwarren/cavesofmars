@@ -20,10 +20,15 @@ Game.Repository.prototype.define = function(name, template, options) {
     }
 };
 
+Game.Repository.prototype.has = function(name) {
+    if (this._templates[name]) { return true; }
+    return false;
+}
+
 
 // Create an object based on a template.
 Game.Repository.prototype.create = function(name, extraProperties) {
-    if (!this._templates[name]) {
+    if (!this.has(name)) {
         throw new Error("No template named '" + name + "' in repository '" +
             this._name + "'");
     }
