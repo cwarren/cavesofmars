@@ -114,6 +114,28 @@ Game.ItemMixins.DigTool = {
 };
 
 
+Game.ItemMixins.Ammo = {
+    name: 'Ammo',
+    init: function(template) {
+        // jump through some hoops to allow spec of 0 xp
+        this._rangedAttackDamageBonus = 0;
+        if ('rangedAttackDamageBonus' in template) {
+            this._rangedAttackDamageBonus = template['rangedAttackDamageBonus'];
+        }
+    },
+    getRangedAttackDamageBonus: function () {
+        return this._rangedAttackDamageBonus;
+    },
+    setRangedAttackDamageBonus: function (v) {
+        this._rangedAttackDamageBonus = v;
+    },
+    listeners: {
+        'details': function() {
+            return [{key: 'rangedAttackDamageBonus', value: this.getRangedAttackDamageBonus()}];
+        }
+    }
+};
+    
 Game.ItemMixins.Seeder = {
     name: 'Seeder',
     init: function(template) {

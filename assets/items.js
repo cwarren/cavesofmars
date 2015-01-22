@@ -43,7 +43,8 @@ Game.ItemRepository.define('geodic nut', {
     foodValue: 35,
     consumptions: 4,
     description: "This reminds you of a cross between a coconut and a geode. When you open it up the inside is filled with a soft greyish material that tastes bland and feels a bit chalky, but at least it's apparently nutritious.",
-    mixins: [Game.ItemMixins.Edible]
+    rangedAttackDamageBonus: 6,
+    mixins: [Game.ItemMixins.Edible,Game.ItemMixins.Ammo]
 });
 
 Game.ItemRepository.define('corpse', {
@@ -98,7 +99,24 @@ Game.ItemRepository.define('spore-y mass', {
 Game.ItemRepository.define('rock', {
     name: 'rock',
     character: Game.ItemRepository.Symbol['mineral'],
-    foreground: 'lightGrey'
+    foreground: 'lightGrey',
+    rangedAttackDamageBonus: 1,
+    mixins: [Game.ItemMixins.Ammo]
+});
+
+
+// ----------------------------------------------
+
+// specialized ammo
+
+Game.ItemRepository.define('stone shot', {
+    name: 'stone shot',
+    group: 'shot',
+    character: Game.ItemRepository.Symbol['ammo'],
+    foreground: 'lightGrey',
+    description: "a small-ish, rounded piece of dense stone. Perhaps intentionally shaped?",
+    rangedAttackDamageBonus: 3,
+    mixins: [Game.ItemMixins.Ammo]
 });
 
 

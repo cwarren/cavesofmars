@@ -186,7 +186,8 @@ Game.EntityRepository.define('fungus zombie', {
     baseBehavior: Game.EntityBehaviors.AggressiveWanderBehavior,
     allies: ['fungus'],
     mixins: [Game.EntityMixins.AggressiveRoamingBehaviorController, Game.EntityMixins.MeleeAttacker, Game.EntityMixins.Destructible, Game.EntityMixins.CorpseDropper, Game.EntityMixins.Allier, 
-             Game.EntityMixins.ExperienceGainer, Game.EntityMixins.RandomStatGainer, Game.EntityMixins.Seer, Game.EntityMixins.SuicideSpawner, Game.EntityMixins.AutoDegrader, Game.EntityMixins.Suicider]
+             Game.EntityMixins.ExperienceGainer, Game.EntityMixins.RandomStatGainer, Game.EntityMixins.Seer, Game.EntityMixins.SuicideSpawner, Game.EntityMixins.AutoDegrader, Game.EntityMixins.Suicider,
+             Game.EntityMixins.IsFungusZombie]
 });
 
 Game.EntityRepository.define('bat', {

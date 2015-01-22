@@ -1178,15 +1178,15 @@ Game.Screen.rangedTargetScreen = new Game.Screen.TargetBasedScreen({
                         Game.refresh();
                         },100);
                 } else {
-                    if (ROT.RNG.getUniform() < .25) {
-                        map.extractItem(ammo,path[pathIdx-1].x,path[pathIdx-1].y,z);
-                        map.addItem(potentialPosition.x,potentialPosition.y,z,ammo);
-                    } else {
-                        map.removeItem(ammo,path[pathIdx-1].x,path[pathIdx-1].y,z);
-                    }
                     ammo.raiseEvent('onLanded',map,potentialPosition.x,potentialPosition.y,z);
                     hasLanded = true;
                     if (ammo.hasMixin('Ammo')) {
+                        if (ROT.RNG.getUniform() < .25) {
+                            map.extractItem(ammo,path[pathIdx-1].x,path[pathIdx-1].y,z);
+                            map.addItem(potentialPosition.x,potentialPosition.y,z,ammo);
+                        } else {
+                            map.removeItem(ammo,path[pathIdx-1].x,path[pathIdx-1].y,z);
+                        }
                         player.rangedAttack(ent,ammo);
                     }
                 }

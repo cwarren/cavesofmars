@@ -255,7 +255,7 @@ Game.EntityMixins.FixedExperiencePoints = {
     init: function(template) {
         // jump through some hoops to allow spec of 0 xp
         this._fixedXp = 1;
-        if (template.hasOwnProperty('fixedXp')) {
+        if ('fixedXp' in template) {
             this._fixedXp = template['fixedXp'];
         }
     },
@@ -508,6 +508,10 @@ Game.EntityMixins.RangedAttacker = {
         //        modifier += this.getLauncher().getRangedAttackValue();
         //    }
         //}
+        if (ammo && ammo.hasMixin('Ammo')) {
+            modifier += ammo.getRangedAttackDamageBonus();
+        }
+        
         return this._rangedAttackValue + modifier;
     },
     increaseRangedAttackValue: function(value) {
@@ -850,6 +854,15 @@ Game.EntityMixins.CorpseDropper = {
         this._corpseName = template['corpseName'] || (this._name + ' corpse');
         this._corpseFoodValue = template['corpseFoodValue'] || 0;
     },
+    getCorpseFoodValue: function() {
+        return this._corpseFoodValue;
+    },
+    setCorpseFoodValue: function(v) {
+        this._corpseFoodValue = v;
+    },
+    adjustCorpseFoodValue: function(delta) {
+        this._corpseFoodValue += delta;
+    },
 /*
     tryDropCorpse: function(corpse_name) {
         if (Math.round(Math.random() * 100) <= this._corpseDropRate) {
@@ -909,9 +922,11 @@ Game.EntityMixins.SuicideSpawner = {
                 if (conflictEntity && conflictEntity.getId() == this.getId()) {
                     this.getMap().removeEntity(this);
                     entity.setPosition(oX,oY,oZ);
+                    entity.raiseEvent('onSpawned',[oZ-1,oZ].random());
                     this.getMap().addEntity(entity);
                 } else if (! conflictEntity) {
                     entity.setPosition(oX,oY,oZ);
+                    entity.raiseEvent('onSpawned',[oZ-1,oZ].random());
                     this.getMap().addEntity(entity);
                 }
             }    
@@ -943,9 +958,11 @@ Game.EntityMixins.DamageAwakener = {
                 if (conflictEntity && conflictEntity.getId() == this.getId()) {
                     this.getMap().removeEntity(this);
                     entity.setPosition(oX,oY,oZ);
+                    entity.raiseEvent('onSpawned',[oZ-1,oZ].random());
                     this.getMap().addEntity(entity);
                 } else if (! conflictEntity) {
                     entity.setPosition(oX,oY,oZ);
+                    entity.raiseEvent('onSpawned',[oZ-1,oZ].random());
                     this.getMap().addEntity(entity);
                 }
             }    
@@ -1126,6 +1143,9 @@ Game.EntityMixins.ExperienceGainer = {
         },
         details: function() {
             return [{key: 'level', value: this.getLevel()}];
+        },
+        onSpawned: function(startLevel) {
+            this.levelUpTo(startLevel);
         },
         onGainLevel: function() { 
             // if monster gets too high a level, put it deeper down and replace it with a new random thing
@@ -1476,11 +1496,12 @@ Game.EntityMixins.GiantZombieActor = Game.util.extendedObj(Game.EntityMixins.Agg
         }
 
         // Create the entity
-        var slime = Game.EntityRepository.create('ooze');
-        slime.setX(this.getX() + xOffset);
-        slime.setY(this.getY() + yOffset)
-        slime.setZ(this.getZ());
-        this.getMap().addEntity(slime);
+        var ooze = Game.EntityRepository.create('ooze');
+        ooze.setX(this.getX() + xOffset);
+        ooze.setY(this.getY() + yOffset)
+        ooze.setZ(this.getZ());
+        ooze.raiseEvent('onSpawned',[2,3,3,4,4,4,5,6].random());
+        this.getMap().addEntity(ooze);
     },
     listeners: {
         onDamaged: function(attacker) {
@@ -1532,6 +1553,7 @@ Game.EntityMixins.FruitingFungusActor = {
                             entity = Game.EntityRepository.create('quiescent fungus'); //    new Game.Entity(Game.StaticFungusTemplate);
                         }
                         entity.setPosition(this.getX() + xOffset,this.getY() + yOffset,this.getZ());
+                        entity.raiseEvent('onSpawned',this.getZ());
                         this.getMap().addEntity(entity);
                         this._growthsRemaining--;
                     }
@@ -1549,6 +1571,12 @@ Game.EntityMixins.FruitingFungusActor = {
     },
     setGrowthsRemaining: function(numGrowths) {
         this._growthsRemaining = numGrowths;
+    },
+    listeners: {
+        onSpawned: function(onLevel) {
+            this.increaseDefenseValue(Math.max(0,onLevel-1));
+            this.increaseMaxHp(Math.max(0,4*(onLevel-1)));
+        }
     }
 }
 
@@ -1575,18 +1603,21 @@ Game.EntityMixins.DocileFungusActor = {
                 var adjEntity = map.getEntityAt(x,y,z);
                 var adjItems = map.getItemsAt(x,y,z);
 
-                // second, if there's no entity adjacent then see if there are any adjacent corpses to spread to
+                // if there's no entity in the way then see if there are any adjacent corpses to spread to
                 if (!adjEntity && adjItems) {
                     for (var j=0;j<adjItems.length;j++) {                    
                         if ((adjItems[j].getSuperGroup() == 'corpse') && (adjItems[j].getGroup() != 'fungus corpse')) {
                         
                             if (ROT.RNG.getUniform() < .4) {
-
+                                
+                                var corpse = adjItems[j];
+                                
                                 // remove the corpse
                                 map.removeItem(adjItems[j],x,y,z);
 
                                 // spawn a docile fungus entity
                                 var entity = Game.EntityRepository.create('docile fungus');
+                                entity.raiseEvent('onSpawnedFromCorpse',corpse);
                                 entity.setPosition(x,y,z);
                                 this.getMap().addEntity(entity);
                                 this._growthsRemaining--;
@@ -1606,6 +1637,11 @@ Game.EntityMixins.DocileFungusActor = {
     },
     setGrowthsRemaining: function(numGrowths) {
         this._growthsRemaining = numGrowths;
+    },
+    listeners: {
+        onSpawnedFromCorpse: function(corpse) {
+            this.adjustCorpseFoodValue(Game.util.getRandomInteger(1,2*corpse.getFoodValue()));
+        }
     }
 }
 
@@ -1638,6 +1674,8 @@ Game.EntityMixins.SpreadingFungusActor = {
                 if (!adjEntity && adjItems) {
                     for (var j=0;j<adjItems.length;j++) {
                         if ((adjItems[j].getSuperGroup() == 'corpse') && (adjItems[j].getGroup() != 'fungus corpse')){
+                            var corpse = adjItems[j];
+                            
                             // remove the corpse
                             map.removeItem(adjItems[j],x,y,z);
                             
@@ -1645,11 +1683,14 @@ Game.EntityMixins.SpreadingFungusActor = {
                             var entity;
                             if (ROT.RNG.getUniform() < .25) {
                                 entity = Game.EntityRepository.create('fungus zombie');
+                                entity.raiseEvent('onSpawned',[1,z-1,z].random());
+
                                 spreadCount++;
                             } else {
                                 entity = Game.EntityRepository.create('spreading fungus');
                             }
                             entity.setPosition(x,y,z);
+                            entity.raiseEvent('onSpawnedFromCorpse',corpse);
                             this.getMap().addEntity(entity);
 
                             spreadCount++;
@@ -1687,8 +1728,23 @@ Game.EntityMixins.SpreadingFungusActor = {
     },
     setSenescenceCountdown: function(c) {
         this._senescence_countdown = c;
+    },
+    listeners: {
+        onSpawnedFromCorpse: function(corpse) {
+            this.increaseMaxHp(Game.util.getRandomInteger(1,  Math.floor(corpse.getFoodValue()/4) ));
+        }
     }
 }
+
+Game.EntityMixins.IsFungusZombie = {
+    name: 'IsFungusZombie',
+    listeners: {
+        onSpawnedFromCorpse: function(corpse) {
+            this.increaseMaxHp(Game.util.getRandomInteger(1, corpse.getFoodValue()) );
+        }
+    }
+}
+    
 
 ////////////////////////////////////////////////////////////////
 
