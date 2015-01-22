@@ -35,6 +35,9 @@ Game.ItemMixins.Edible = {
     getFoodValue: function() {
         return this._foodValue;
     },
+    alterFoodValue: function(delta) {
+        this._foodValue += delta;
+    },
     listeners: {
         'details': function() {
             var det = [{key: 'food', value: this._foodValue}];

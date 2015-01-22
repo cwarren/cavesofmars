@@ -40,31 +40,36 @@ analyzer
 
 TODO NEXT:
 
-0. implement spore-y mass use (drop on corpse)
-
-
-
-5. when spreading fungi awaken into or spawn a zombie, check depth and consider giving the zombie a level or two
-
-6. when a corpse is dropped, increase its food value by some amount dependent on the max hp of the source entity
-
-
-7. new item: sling, which uses rocks as ammo (and uses a different equipment slot? refactor the wear/wield process to support generalized equipment slots?)
+0. new item: sling, which uses rocks as ammo (and uses a different equipment slot? refactor the wear/wield process to support generalized equipment slots?)
     (launcher mixin)
-    
-8. ammo item mixin
-
-8.5 ranged damage bonus when using matching ammo and launcher
+0.5 ranged damage bonus when using matching ammo and launcher
 
 
-9. add new entity: small martian
+1. make help & messages external to the game window
+1.5.  persistent common key bindings
 
-11.    which can pick up and equip items it finds
+2. inventory drop support multi-select
 
+3. richer inventory management system - weight and volume attributes
+4. automatic sorting/grouping of things in inventory
+5. arbitrarily many slots
+6. stacking of items
+
+
+9. ranged combat system remembers last target and ammo, offers default options for each
+
+10. add new entity: small martian
+11.    which can pick up and equip items it finds (5 inven slots)
+11.5      need a value metric function for things that can be found/gotten - should have option of spec-ing direct values for items, but the function shoudl also support inspection-based valuation)
 12.    and which uses a more interesting / better wander mechanism
+13.    and drop inventory on death
 
+15. LOOT (loot tables (re-read blog post); drop rate; etc.)
+        oozes sometimes drop loot
+        give small martians some starting loot
 
 20. crafting system!
+
 
 
 42.5 consider a spore-y mass repository w/ different kinds of spore-y masses that grow on different things (even consider making this prodecurally generated - can dynamically set targets, exclusions, rates, etc.)

@@ -897,6 +897,9 @@ Game.EntityMixins.CorpseDropper = {
                 if (this.getGroup()) {
                     newCorpse.setGroup(this.getGroup()+' corpse');
                 }
+                if (this.hasMixin('Destructible')) {
+                    newCorpse.alterFoodValue(Game.util.getRandomInteger(Math.floor(this.getMaxHp()*.25),Math.floor(this.getMaxHp()*.75)));
+                }
                 this._map.addItem(this.getX(), this.getY(), this.getZ(),newCorpse);
             }    
         }
