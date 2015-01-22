@@ -250,6 +250,22 @@ Game.EntityMixins.Digger = {
     }
 }
 
+Game.EntityMixins.FixedExperiencePoints = {
+    name: 'FixedExperiencePoints',
+    init: function(template) {
+        // jump through some hoops to allow spec of 0 xp
+        this._fixedXp = 1;
+        if (template.hasOwnProperty('fixedXp')) {
+            this._fixedXp = template['fixedXp'];
+        }
+    },
+    getFixedXp: function() {
+        return this._fixedXp;
+    },
+    setFixedXp: function(v) {
+        this._fixedXp = v;
+    },
+}
 
 Game.EntityMixins.NonRecuperatingDestructible = {
     name: 'NonRecuperatingDestructible',
@@ -304,29 +320,34 @@ Game.EntityMixins.NonRecuperatingDestructible = {
         return this._defenseValue + modifier;
     },
     getExpValueFor: function(attacker) {
-        var exp = this.getMaxHp() + this.getDefenseValue();
+        if (this.hasMixin('FixedExperiencePoints')) {
+            return this.getFixedXp();
+        }
+        
+        var exp = this.getMaxHp()*.2 + this.getDefenseValue();
 
         if (this.hasMixin('Attacker')) {
             exp += this.getAttackValue();
         }
 
+        var ratio = 1;
         // Account for level differences
         if (this.hasMixin('ExperienceGainer')) {
             if (attacker.hasMixin('ExperienceGainer')) {
-                exp -= (attacker.getLevel() - this.getLevel()) * 3;
+                ratio = this.getLevel()/attacker.getLevel();
             } else {
                 return 0;
             }
         } else {
             if (attacker.hasMixin('ExperienceGainer')) {
-                exp -= attacker.getLevel();
+                ratio = 1/attacker.getLevel();
             } else {
                 return 0;
             }
         }
         
 //        return Math.max(1,exp); // always at least 1 experience
-        return exp; // always at least 1 experience
+        return 1+exp*ratio; // always at least 1 experience
     },
     takeDamage: function(attacker, damage) {
         damage = Math.max(0,damage); // no healing via negative damage!

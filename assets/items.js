@@ -82,6 +82,7 @@ Game.ItemRepository.define('spore-y mass', {
     description: "a pod-like thing full of a greenish-grey powder and goo",
     seedTargets: ['corpse'],
     seedExclusions: ['fungus corpse'],
+    growthLiklihoodGood: .23,
     seedGoodResult: 'docile fungus',
     seedBadResult: 'quiescent fungus',
     mixins: [Game.ItemMixins.Seeder]

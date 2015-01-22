@@ -43,13 +43,6 @@ TODO NEXT:
 0. implement spore-y mass use (drop on corpse)
 
 
-2. when an item is thrown or dropped raise its onLanded event (needed for seeds, but will also be useful for anything else that has an effect when thrown (e.g. grenade-like, etc.))
-
-2.5 consider a spore-y mass repository w/ different kinds of spore-y masses that grow on different things (even consider making this prodecurally generated - can dynamically set targets, exclusions, rates, etc.)
-2.75 consider docile fungi occasionally spawning nearby spore-y masses that share the same traits
-
-3. add a fixedExperience entity mixin, and set it up for docile fungi with an xp of 0, and quiescent fungi with an xp of 1
-
 
 5. when spreading fungi awaken into or spawn a zombie, check depth and consider giving the zombie a level or two
 
@@ -74,4 +67,9 @@ TODO NEXT:
 20. crafting system!
 
 
-50. design/implement alternate path to victory(ish) - post death, if killed at least one ooze and at least one fungus, or if killed by fungus, option to revive and play as a fungal zombie - food consumption increases dramatically, allied with fungus, no further equipping, but still can level/improve
+42.5 consider a spore-y mass repository w/ different kinds of spore-y masses that grow on different things (even consider making this prodecurally generated - can dynamically set targets, exclusions, rates, etc.)
+42.75 consider docile fungi occasionally spawning nearby spore-y masses that share the same traits
+
+
+
+70. design/implement alternate path to victory(ish) - post death, if killed at least one ooze and at least one fungus, or if killed by fungus, option to revive and play as a fungal zombie - food consumption increases dramatically, allied with fungus, no further equipping, but still can level/improve

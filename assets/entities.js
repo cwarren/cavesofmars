@@ -128,7 +128,8 @@ Game.EntityRepository.define('docile fungus', {
     corpseName: 'pile of firm mushroom caps',
     corpseFoodValue: 60,
     defaultActionDuration: 10000,
-    mixins: [Game.EntityMixins.DocileFungusActor, Game.EntityMixins.Destructible, Game.EntityMixins.CorpseDropper]
+    fixedXp: 0,
+    mixins: [Game.EntityMixins.DocileFungusActor, Game.EntityMixins.Destructible, Game.EntityMixins.CorpseDropper, Game.EntityMixins.FixedExperiencePoints]
 }, {
     disableRandomCreation: true
 });
@@ -163,8 +164,9 @@ Game.EntityRepository.define('quiescent fungus', {
     corpseName: 'spore-y mass',
     corpseFoodValue: 1,
     awakenPercentRate: 12,
+    fixedXp: 1,
     awakenSpawnEntityName: 'spreading fungus',
-    mixins: [Game.EntityMixins.Destructible,Game.EntityMixins.CorpseDropper, Game.EntityMixins.DamageAwakener]
+    mixins: [Game.EntityMixins.Destructible,Game.EntityMixins.CorpseDropper, Game.EntityMixins.DamageAwakener, Game.EntityMixins.FixedExperiencePoints]
 });
 
 Game.EntityRepository.define('fungus zombie', {
@@ -263,12 +265,12 @@ Game.EntityRepository.define('giant zombie symbiote', {
     character: 'Z',
     description: "It looks like oozes and the local fungus have developed some kind of terrifying symbiotic relationship in the process of consuming the poor creature that.... GOOD GOD! IT'S MICAH!",
     foreground: 'teal',
-    maxHp: 40,
-    attackValue: 14,
-    defenseValue: 9,
+    maxHp: 80,
+    attackValue: 24,
+    defenseValue: 16,
     level: 5,
-    sightRadius: 6,
-    moveDuration: 1100,
+    sightRadius: 4,
+    moveDuration: 1250,
     meleeDuration: 900,
     allies: ['ooze'],
     baseBehavior: Game.EntityBehaviors.AggressiveWanderBehavior,
