@@ -23,7 +23,7 @@ Game Jam Goals:
 - design and implement a simple loot system (or, rather, give appropriate items to appropriate NPCs, and have those items be used)
 
 - design and implement a simple keyed-door system
-
+  
 - boss key gives you access to win state
 
 

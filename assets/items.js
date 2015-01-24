@@ -85,7 +85,7 @@ Game.ItemRepository.define('spore-y mass', {
     seedExclusions: ['fungus corpse'],
     growthLiklihoodGood: .23,
     seedGoodResult: 'docile fungus',
-    seedBadResult: 'quiescent fungus',
+    seedBadResult: 'stunted fungus',
     mixins: [Game.ItemMixins.Seeder]
 }, {
     disableRandomCreation: true
@@ -113,10 +113,38 @@ Game.ItemRepository.define('stone shot', {
     name: 'stone shot',
     group: 'shot',
     character: Game.ItemRepository.Symbol['ammo'],
-    foreground: 'lightGrey',
+    foreground: '#bbb',
     description: "a small-ish, rounded piece of dense stone. Perhaps intentionally shaped?",
-    rangedAttackDamageBonus: 3,
+    rangedAttackDamageBonus: 1,
     mixins: [Game.ItemMixins.Ammo]
+});
+
+Game.ItemRepository.define('iron shot', {
+    name: 'iron shot',
+    group: 'shot',
+    character: Game.ItemRepository.Symbol['ammo'],
+    foreground: '#dcb',
+    description: "a large pellet of iron - slightly rusted, but aerodynamically sound",
+    rangedAttackDamageBonus: 4,
+    mixins: [Game.ItemMixins.Ammo]
+});
+
+
+// ----------------------------------------------
+
+// ammo launchers
+
+Game.ItemRepository.define('sling', {
+    name: 'sling',
+    group: 'shooter',
+    character: Game.ItemRepository.Symbol['shooter'],
+    foreground: 'lightGrey',
+    description: "a few feet of strong cord with a pocket in the middle to hold some ammo",
+    rangedAttackDamageAdder: 3,
+    rangedAttackDamageMultipler: 1.5,
+    allowedAmmo: ['shot'],
+    wieldable: true,
+    mixins: [Game.ItemMixins.Equippable, Game.ItemMixins.Shooter]
 });
 
 

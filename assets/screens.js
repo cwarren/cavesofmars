@@ -1382,6 +1382,20 @@ Game.Screen.storyScreen = {
                 var h = Game.ItemRepository.create('HEM suit, damaged');
                 player.addItem(h);
                 player.wear(h);
+                
+                /////////////////////////////
+                /// CODE FOR ITEM TESTING!!!!
+                console.log('item testing code is active');
+
+                player.addItem(Game.ItemRepository.create('sling'));
+                player.addItem(Game.ItemRepository.create('stone shot'));
+                player.addItem(Game.ItemRepository.create('stone shot'));
+                player.addItem(Game.ItemRepository.create('iron shot'));
+                player.addItem(Game.ItemRepository.create('iron shot'));
+
+                /// CODE FOR ITEM TESTING!!!!
+                /////////////////////////////
+
 
                 // place the damaged tool
                 var map = player.getMap();

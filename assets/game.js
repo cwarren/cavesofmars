@@ -9,10 +9,10 @@ var Game =  {
     init: function() {
         // Any necessary initialization will go here.
         this._randomSeed = 5 + Math.floor(Math.random()*100000);
+        this._randomSeed = 59499;
         console.log(this._randomSeed);
         
         ROT.RNG.setSeed(this._randomSeed);
-        //ROT.RNG.setSeed(30276);
         
         
         this._display = new ROT.Display({width: this._screenWidth, height: this._screenHeight+1});

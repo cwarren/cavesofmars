@@ -113,6 +113,7 @@ Game.EntityRepository.define('fruiting fungus', {
     foreground: 'brown',
     maxHp: 15,
     corpseName: 'pile of slimey mushroom caps',
+    defaultActionDuration: 4600,
     corpseFoodValue: 15,
     suicideSpawnEntityName: 'quiescent fungus',
     mixins: [Game.EntityMixins.FruitingFungusActor, Game.EntityMixins.Destructible, Game.EntityMixins.CorpseDropper, Game.EntityMixins.SuicideSpawner]
@@ -122,10 +123,10 @@ Game.EntityRepository.define('docile fungus', {
     name: 'docile fungus',
     group: 'fungus',
     character: '%',
-    description: "You're not sure about the chemical and biological details, but on the surface this looks very much like a large mushroom patch. Occasionally a puff of spores is visible in the air near it.",
+    description: "This looks like a very healthy patch of mushrooms. The hyphae at the edge squirm a bit, but aren't aggressive... at least not towards anything living.",
     foreground: 'yellow',
     maxHp: 10,
-    corpseName: 'pile of firm mushroom caps',
+    corpseName: 'pile of firm, aromatic mushroom caps',
     corpseFoodValue: 60,
     defaultActionDuration: 10000,
     fixedXp: 0,
@@ -168,6 +169,18 @@ Game.EntityRepository.define('quiescent fungus', {
     awakenSpawnEntityName: 'spreading fungus',
     mixins: [Game.EntityMixins.Destructible,Game.EntityMixins.CorpseDropper, Game.EntityMixins.DamageAwakener, Game.EntityMixins.FixedExperiencePoints]
 });
+
+Game.EntityRepository.define('stunted fungus', {
+    name: 'stunted fungus',
+    group: 'fungus',
+    character: '%',
+    description: "a twisted mass of thin, weak strands - it looks like something went wrong with its growth",
+    foreground: '#987',
+    maxHp: 2,
+    fixedXp: .25,
+    mixins: [Game.EntityMixins.Destructible, Game.EntityMixins.FixedExperiencePoints]
+});
+
 
 Game.EntityRepository.define('fungus zombie', {
     name: 'fungus zombie',

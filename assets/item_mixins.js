@@ -120,7 +120,7 @@ Game.ItemMixins.DigTool = {
 Game.ItemMixins.Ammo = {
     name: 'Ammo',
     init: function(template) {
-        // jump through some hoops to allow spec of 0 xp
+        // jump through some hoops to allow spec of 0
         this._rangedAttackDamageBonus = 0;
         if ('rangedAttackDamageBonus' in template) {
             this._rangedAttackDamageBonus = template['rangedAttackDamageBonus'];
@@ -138,6 +138,58 @@ Game.ItemMixins.Ammo = {
         }
     }
 };
+
+
+Game.ItemMixins.Shooter = {
+    name: 'Shooter',
+    init: function(template) {
+        this._allowedAmmo = template['allowedAmmo'] || [];
+        
+        // jump through some hoops to allow spec of 0
+
+        this._rangedAttackDamageAdder = 0;
+        if ('rangedAttackDamageAdder' in template) {
+            this._rangedAttackDamageAdder = template['rangedAttackDamageAdder'];
+        }
+
+        this._rangedAttackDamageMultipler = 0;
+        if ('rangedAttackDamageMultipler' in template) {
+            this._rangedAttackDamageMultipler = template['rangedAttackDamageMultipler'];
+        }
+    },
+    getRangedAttackDamageAdder: function () {
+        return this._rangedAttackDamageAdder;
+    },
+    setRangedAttackDamageAdder: function (v) {
+        this._rangedAttackDamageAdder = v;
+    },
+    getRangedAttackDamageMultipler: function () {
+        return this._rangedAttackDamageMultipler;
+    },
+    setRangedAttackDamageMultipler: function (v) {
+        this._rangedAttackDamageMultipler = v;
+    },
+    canUseAmmo: function(ammo) {
+        return (this._allowedAmmo.indexOf(ammo.getName())>-1) 
+               || (this._allowedAmmo.indexOf(ammo.getGroup())>-1)
+               || (this._allowedAmmo.indexOf(ammo.getSuperGroup())>-1);
+    },
+    listeners: {
+        'details': function() {
+            return [{key: 'rangedAttackDamageAdder', value: this.getRangedAttackDamageAdder()},
+                    {key: 'rangedAttackDamageMultipler', value: this.getRangedAttackDamageMultipler()}];
+        },
+        'onShooting': function(ammo) {
+            if (ammo && this.canUseAmmo(ammo)) {
+//            if (this.canUseAmmo(ammo)) {
+                return [{key: 'rangedAttackDamageAdder', value: this.getRangedAttackDamageAdder()},
+                        {key: 'rangedAttackDamageMultipler', value: this.getRangedAttackDamageMultipler()}];
+            }
+            return [];
+        }
+    }
+};
+    
     
 Game.ItemMixins.Seeder = {
     name: 'Seeder',

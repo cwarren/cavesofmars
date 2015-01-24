@@ -500,6 +500,9 @@ Game.EntityMixins.RangedAttacker = {
     init: function(template) {
         this._rangedAttackValue = template['rangedAttackValue'] || 1;
     },
+    getBaseRangedAttackValue: function(ammo) {
+        return this._rangedAttackValue;
+    },
     getRangedAttackValue: function(ammo) {
         var modifier = 0;
         // If we can equip items, then have to take into consideration launchers (if matched with approp ammo)
@@ -512,11 +515,32 @@ Game.EntityMixins.RangedAttacker = {
             modifier += ammo.getRangedAttackDamageBonus();
         }
         
-        return this._rangedAttackValue + modifier;
+        var rangedAtk = this._rangedAttackValue + modifier;
+        
+        if (this.hasMixin('Equipper')) {
+            var weapon = this.getWeapon();
+            if (weapon) {
+                var weaponShootEffects = weapon.raiseEvent('onShooting',ammo);
+
+                var mults = Game.util.scanEventResultsFor(weaponShootEffects,'rangedAttackDamageMultipler');
+                for (var i=0;i<mults.length;i++) {
+                    rangedAtk *= mults[i];
+                }
+
+                var adds = Game.util.scanEventResultsFor(weaponShootEffects,'rangedAttackDamageMultipler');
+                for (var i=0;i<adds.length;i++) {
+                    rangedAtk += adds[i];
+                }
+            }
+        }
+        
+        console.log('rangedAtk: '+rangedAtk);
+        
+        return rangedAtk;
     },
     increaseRangedAttackValue: function(value) {
-            // If no value was passed, default to 1.
-            value = value || 4;
+            // If no value was passed, default to 2.5
+            value = value || 2.5;
             // Add to the attack value.
             this._rangedAttackValue += value;
             Game.sendMessage(this, "You have better aim!");
@@ -529,7 +553,7 @@ Game.EntityMixins.RangedAttacker = {
             var defense = target.getDefenseValue();
             
             var max = Math.max(1, attack - defense);
-            var damage = 1 + Math.floor((.3 + ROT.RNG.getUniform()*.7) * max);
+            var damage = 1 + Math.floor((.5 + ROT.RNG.getUniform()) * max);
 
             if (this.hasMixin('MessageRecipient')) {
                 Game.sendMessage(this, 'You hit the %s with the %s for %d damage', 
@@ -564,7 +588,7 @@ Game.EntityMixins.RangedAttacker = {
 //            this._currentBehavior = Game.EntityBehaviors.MeleeAttackerBehavior;
 //        },
         details: function() {
-            return [{key: 'ranged attack', value: this.getRangedAttackValue()}];
+            return [{key: 'base ranged attack', value: this.getBaseRangedAttackValue()}];
         }
     }
 }
@@ -897,7 +921,8 @@ Game.EntityMixins.CorpseDropper = {
                 if (this.getGroup()) {
                     newCorpse.setGroup(this.getGroup()+' corpse');
                 }
-                if (this.hasMixin('Destructible')) {
+//                console.dir(newCorpse);
+                if (this.hasMixin('Destructible') && newCorpse.hasMixin('Edible')) {
                     newCorpse.alterFoodValue(Game.util.getRandomInteger(Math.floor(this.getMaxHp()*.25),Math.floor(this.getMaxHp()*.75)));
                 }
                 this._map.addItem(this.getX(), this.getY(), this.getZ(),newCorpse);
