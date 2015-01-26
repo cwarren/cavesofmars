@@ -40,11 +40,6 @@ analyzer
 
 TODO NEXT:
 
-0. new item: sling, which uses rocks as ammo (and uses a different equipment slot? refactor the wear/wield process to support generalized equipment slots?)
-    (launcher mixin)
-0.5 ranged damage bonus when using matching ammo and launcher
-
-
 1. make help & messages external to the game window
 1.5.  persistent common key bindings
 
@@ -57,6 +52,7 @@ TODO NEXT:
 
 
 9. ranged combat system remembers last target and ammo, offers default options for each
+9.5 ammo has individual destruction chance, modified by the shooter (using same stats as for damage?)
 
 10. add new entity: small martian
 11.    which can pick up and equip items it finds (5 inven slots)

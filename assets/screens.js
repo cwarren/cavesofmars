@@ -227,6 +227,7 @@ Game.Screen.playScreen = {
         }
         
         this.renderTiles(display);
+        
         this.renderPlayerMessages(display);
         this.renderPlayerStats(display);
 

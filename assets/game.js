@@ -1,5 +1,9 @@
 var Game =  {
-    _display: null,
+    _display_avatar: null,
+    _display_main: null,
+    _display_help: null,
+    _display_message: null,
+    _display_info: null,
     _currentScreen: null, // CSW NOTE: a some point refactor this to a stack of screens....?
     _screenWidth: 80,
     _screenHeight: 24,
@@ -15,7 +19,14 @@ var Game =  {
         ROT.RNG.setSeed(this._randomSeed);
         
         
-        this._display = new ROT.Display({width: this._screenWidth, height: this._screenHeight+1});
+        this._display_avatar  = new ROT.Display({width: Math.floor(this._screenWidth*.25), height: this._screenHeight});
+        this._display_main    = new ROT.Display({width: this._screenWidth,                 height: this._screenHeight});
+        this._display_help    = new ROT.Display({width: Math.floor(this._screenWidth*.25), height: this._screenHeight});
+        
+        this._display_message = new ROT.Display({width: Math.floor(this._screenWidth*.75), height: Math.floor(this._screenHeight*.5)});
+        this._display_info    = new ROT.Display({width: Math.floor(this._screenWidth*.75), height: Math.floor(this._screenHeight*.5)});
+        
+        
         // Create a helper function for binding to an event
         // and making it send it to the screen
         var game = this; // So that we don't lose this
@@ -30,8 +41,6 @@ var Game =  {
                 if (game._currentScreen !== null) {
                     // Send the event type and data to the screen
                     game._currentScreen.handleInput(event, e);
-//                    game._display.clear();
-//                    game._currentScreen.render(game._display);
                 }
             });
         }
@@ -42,13 +51,27 @@ var Game =  {
     },
     refresh: function() {
         // Clear the screen
-        this._display.clear();
+        this._display_main.clear();
         // Render the screen
-        this._currentScreen.render(this._display);
+        this._currentScreen.render(this._display_main);
     },
-    getDisplay: function() {
-        return this._display;
+    getDisplayAvatar: function() {
+        return this._display_avatar;
     },
+    getDisplayMain: function() {
+        return this._display_main;
+    },
+    getDisplayHelp: function() {
+        return this._display_help;
+    },
+    getDisplayMessage: function() {
+        return this._display_message;
+    },
+    getDisplayInfo: function() {
+        return this._display_info;
+    },
+
+
     getScreenWidth: function() {
         return this._screenWidth;
     },
@@ -75,7 +98,7 @@ var Game =  {
             this._currentScreen.exit();
         }
         // Clear the display
-        this.getDisplay().clear();
+        this.getDisplayMain().clear();
         
         // Update our current screen, notify it we entered
         // and then render it
@@ -95,9 +118,16 @@ window.onload = function() {
     } else {
         // Initialize the game
         Game.init();
-        // Add the container to our HTML page
-//        document.body.appendChild(Game.getDisplay().getContainer());
-        document.getElementById('main-display-area').appendChild(Game.getDisplay().getContainer());
+        
+        // Add the containers to our HTML page
+
+        document.getElementById('avatar-display-area').appendChild( Game.getDisplayAvatar().getContainer());
+        document.getElementById('main-display-area').appendChild(   Game.getDisplayMain().getContainer());
+        document.getElementById('help-display-area').appendChild(   Game.getDisplayHelp().getContainer());
+
+        document.getElementById('message-display-area').appendChild(Game.getDisplayMessage().getContainer());
+        document.getElementById('info-display-area').appendChild(   Game.getDisplayInfo().getContainer());
+        
         // Load the start screen
         Game.switchScreen(Game.Screen.startScreen);
     }
