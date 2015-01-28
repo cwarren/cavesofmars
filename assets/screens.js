@@ -32,8 +32,12 @@ display.drawText(2,15, "........................................................
         // When [Enter] is pressed, go to the play screen
         if (inputType === 'keydown') {
             if (inputData.keyCode === ROT.VK_RETURN) {
-                Game.Screen.playScreen.setSubScreen(Game.Screen.helpScreenNumpad);
-                Game.switchScreen(Game.Screen.playScreen);
+                setTimeout(function(){
+                    Game.Screen.playScreen.setSubScreen(Game.Screen.storyScreen);
+                    Game.switchScreen(Game.Screen.playScreen);
+                },40);
+                
+                //Game.Screen.playScreen.setSubScreen(Game.Screen.helpScreenNumpad);
             }
         }
     }
@@ -55,7 +59,7 @@ Game.Screen.playScreen = {
             
             // Refresh screen on changing the subscreen
             if (this._player) {
-                this._player.clearMessages();
+                //this._player.clearMessages();
             }
             Game.refresh();
     },
@@ -63,7 +67,7 @@ Game.Screen.playScreen = {
         return this._player;
     },
     enter: function() {
-        
+        console.log('entered play screen');        
 
 //        width = 80;
 //        height = 24;
@@ -197,6 +201,8 @@ Game.Screen.playScreen = {
         Game.AuxScreen.messageScreen.render();
     },
     renderPlayerStats: function(display) {
+        Game.AuxScreen.avatarScreen.render();
+    /*
         var screenWidth = Game.getScreenWidth();
         var screenHeight = Game.getScreenHeight();
 
@@ -218,6 +224,7 @@ Game.Screen.playScreen = {
         // current level
         var curLevelText = Game.Screen.DEFAULT_COLOR_SETTER + vsprintf('Depth %d ', [this._player.getZ()+1]);
         display.drawText(screenWidth-12, screenHeight, curLevelText);
+    */
     },
     render: function(display) {
         var screenWidth = Game.getScreenWidth();
@@ -253,7 +260,7 @@ Game.Screen.playScreen = {
         }
 
         if ((inputData.keyCode === ROT.VK_ESCAPE) || (inputData.keyCode === ROT.VK_SPACE)) {
-            this._player.clearMessages();
+            //this._player.clearMessages();
             Game.refresh();
             return;
         }
@@ -377,6 +384,9 @@ Game.Screen.playScreen = {
             }
         }
 
+        Game.AuxScreen.infoScreen.setCurrentShortInfo('');
+        Game.AuxScreen.infoScreen.setCurrentDetailInfo('');
+
         if (tookAction) {
             this._player.finishAction();
             return true;
@@ -462,7 +472,7 @@ Game.Screen.ItemListScreen.prototype.setup = function(player, items) {
 };
 
 Game.Screen.ItemListScreen.prototype.render = function(display) {
-    this._player.clearMessages();
+    //this._player.clearMessages();
 
     if (this._parentScreen) {
         this._parentScreen.renderTiles(display);
@@ -752,12 +762,15 @@ Game.Screen.examineScreen = new Game.Screen.ItemListScreen({
         var keys = Object.keys(selectedItems);
         if (keys.length > 0) {
             var item = selectedItems[keys[0]];
-            Game.sendMessage(this._player, item.details());
+//            Game.sendMessage(this._player, item.details());
+            Game.AuxScreen.infoScreen.setCurrentShortInfo(item.details());
             var descr = item.getDescription();
             if (descr) {
-                Game.sendMessage(this._player, descr);
+//                Game.sendMessage(this._player, descr);
+                Game.AuxScreen.infoScreen.setCurrentDetailInfo(descr);
+
             }
-            Game.sendMessage(this._player, '');
+            //Game.sendMessage(this._player, '');
 
         }
         return true;
@@ -784,15 +797,15 @@ Game.Screen.gainStatScreen = {
             this._parentScreen.renderPlayerStats(display);
         }
         
-        if (this._entity.hasMixin('MessageRecipient')) {
-            if (this._entity.hasAnyMessages()) {
-                var localEntity = this._entity;
-                setTimeout(function(){
-                    localEntity.clearMessages();
-                    Game.refresh();
-                }, 1000);
-            }
-        }
+//        if (this._entity.hasMixin('MessageRecipient')) {
+//            if (this._entity.hasAnyMessages()) {
+//                var localEntity = this._entity;
+//                setTimeout(function(){
+//                    localEntity.clearMessages();
+//                    Game.refresh();
+//                }, 1000);
+//            }
+//        }
 
         var lines = display.drawText(0, 0, "Your nano-docs are really working overtime, scavenging whatever bio-compatible materials they can from the environment to patch you together and help you adapt. It's actually a little scary how effective they are - they weren't described  during your mission prep as being this pro-active. Hopefully nothing has gone wrong...");
         
@@ -883,6 +896,7 @@ Game.Screen.TargetBasedScreen.prototype.setup = function(player, startX, startY,
     this._visibleCells = visibleCells;
 };
 
+/*
 Game.Screen.TargetBasedScreen.prototype.renderPlayerMessages = function(display) {
     // Get the messages in the player's queue and render them
     var messages = this._player.getMessages();
@@ -896,11 +910,12 @@ Game.Screen.TargetBasedScreen.prototype.renderPlayerMessages = function(display)
         );
     }
 }
+*/
 
 Game.Screen.TargetBasedScreen.prototype.render = function(display) {
     Game.Screen.playScreen.renderTiles.call(Game.Screen.playScreen, display);
-    this.renderPlayerMessages(display);
-    this._player.clearMessages();
+//    this.renderPlayerMessages(display);
+//    this._player.clearMessages();
 
 //    // Draw a line from the start to the cursor.
 //    var points = Game.Geometry.getLine(this._startX, this._startY, this._cursorX,
@@ -917,9 +932,11 @@ Game.Screen.TargetBasedScreen.prototype.render = function(display) {
         display.drawText(points[i].x, points[i].y, '%c{magenta}*');
     }
 
-    // Render the caption at the bottom.
-    display.drawText(0, Game.getScreenHeight() - 1, 
-        this._captionFunction(this._cursorX + this._offsetX, this._cursorY + this._offsetY));
+//    // Render the caption at the bottom.
+//    display.drawText(0, Game.getScreenHeight() - 1, 
+//        this._captionFunction(this._cursorX + this._offsetX, this._cursorY + this._offsetY));
+    
+    Game.AuxScreen.infoScreen.setCurrentShortInfo(this._captionFunction(this._cursorX + this._offsetX, this._cursorY + this._offsetY));
 };
 
 Game.Screen.TargetBasedScreen.prototype.handleInput = function(inputType, inputData) {
@@ -943,6 +960,8 @@ Game.Screen.TargetBasedScreen.prototype.handleInput = function(inputType, inputD
     } else if (gameAction === Game.Bindings.Actions.Moves.MOVE_DR) {
         tookAction = this.moveCursor(1, 1);
     } else if (inputData.keyCode === ROT.VK_ESCAPE) {
+        Game.AuxScreen.infoScreen.setCurrentShortInfo('');
+        Game.AuxScreen.infoScreen.setCurrentDetailInfo('');
         this._parentScreen.setSubScreen(undefined);
         this.setParentScreen(undefined);
     } else if (inputData.keyCode === ROT.VK_RETURN) {
@@ -973,6 +992,9 @@ Game.Screen.TargetBasedScreen.prototype.moveCursor = function(dx, dy) {
 
 Game.Screen.TargetBasedScreen.prototype.executeOkFunction = function() {
     // Switch back to the play screen.
+    Game.AuxScreen.infoScreen.setCurrentShortInfo('');
+    Game.AuxScreen.infoScreen.setCurrentDetailInfo('');
+    
     this._parentScreen.setSubScreen(undefined);
     this.setParentScreen(undefined);
     
@@ -1002,7 +1024,8 @@ Game.Screen.lookScreen = new Game.Screen.TargetBasedScreen({
                 if (map.getEntityAt(x, y, z)) {
                     var entity = map.getEntityAt(x, y, z);
 
-                    Game.sendMessage(this._player,entity.getDescription());
+                        Game.AuxScreen.infoScreen.setCurrentDetailInfo(entity.getDescription());
+                        //Game.sendMessage(this._player,entity.getDescription());
 
                     if (entity.details()) {
                         return String.format("%s - %s (%s)",
@@ -1021,7 +1044,8 @@ Game.Screen.lookScreen = new Game.Screen.TargetBasedScreen({
                     if (items.length > 1) {
                         Game.sendMessage(this._player,'there are several things piled up here - you can only see clearly the one on the top');
                     }
-                    Game.sendMessage(this._player,item.getDescription());
+                    Game.AuxScreen.infoScreen.setCurrentDetailInfo(item.getDescription());
+//                    Game.sendMessage(this._player,item.getDescription());
 
                     if (item.details()) {
                         return String.format('%s - %s (%s)',
@@ -1185,13 +1209,15 @@ Game.Screen.rangedTargetScreen = new Game.Screen.TargetBasedScreen({
                     ammo.raiseEvent('onLanded',map,potentialPosition.x,potentialPosition.y,z);
                     hasLanded = true;
                     if (ammo.hasMixin('Ammo')) {
-                        if (ROT.RNG.getUniform() < .25) {
+                        player.rangedAttack(ent,ammo);
+                        if (ROT.RNG.getUniform() < ammo.getReuseChance()) {
                             map.extractItem(ammo,path[pathIdx-1].x,path[pathIdx-1].y,z);
                             map.addItem(potentialPosition.x,potentialPosition.y,z,ammo);
+                            Game.sendMessage(player,"The %s can probably be recovered",[ammo.getName()]);
                         } else {
                             map.removeItem(ammo,path[pathIdx-1].x,path[pathIdx-1].y,z);
+                            Game.sendMessage(player,"Well, that %s certainly won't be used again",[ammo.getName()]);
                         }
-                        player.rangedAttack(ent,ammo);
                     }
                 }
                 Game.refresh();
@@ -1428,11 +1454,14 @@ Game.Screen.storyScreen = {
                 player.takeDamage(player,Math.floor(player.getMaxHp()*(.3+ROT.RNG.getUniform()/2)));                
                 Game.Screen.playScreen.setSubScreen(null);
 
-                setTimeout(function() {
-                    Game.sendMessage(Game.Screen.playScreen.getPlayer(),"OW! You awake battered and bruised, surrounded by fallen rocks, and lying on something distinctly uncomfortable.");
-                    Game.sendMessage(Game.Screen.playScreen.getPlayer(),"Through some combination of luck and quality nano-docs you're at least still alive...");
-                    Game.refresh();
-                },50);
+//                setTimeout(function() {
+//                    Game.sendMessage(Game.Screen.playScreen.getPlayer(),"OW! You awake battered and bruised, surrounded by fallen rocks, and lying on something distinctly uncomfortable.");
+//                    Game.sendMessage(Game.Screen.playScreen.getPlayer(),"Through some combination of luck and quality nano-docs you're at least still alive...");
+//                    Game.refresh();
+//                },50);
+                
+                Game.AuxScreen.infoScreen.setCurrentShortInfo("OW! You awake battered and bruised, surrounded by fallen rocks, and lying on something distinctly uncomfortable.");
+                Game.AuxScreen.infoScreen.setCurrentDetailInfo("Through some combination of luck and quality nano-docs you're at least still alive...");
 
                 return;
             }

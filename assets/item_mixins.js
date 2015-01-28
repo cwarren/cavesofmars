@@ -125,6 +125,7 @@ Game.ItemMixins.Ammo = {
         if ('rangedAttackDamageBonus' in template) {
             this._rangedAttackDamageBonus = template['rangedAttackDamageBonus'];
         }
+        this._reuseChance = template['reuseChance'] || .25;
     },
     getRangedAttackDamageBonus: function () {
         return this._rangedAttackDamageBonus;
@@ -132,9 +133,24 @@ Game.ItemMixins.Ammo = {
     setRangedAttackDamageBonus: function (v) {
         this._rangedAttackDamageBonus = v;
     },
+    getReuseChance: function () {
+        return this._reuseChance;
+    },
+    setReuseChance: function (v) {
+        this._reuseChance = v;
+    },
     listeners: {
         'details': function() {
-            return [{key: 'rangedAttackDamageBonus', value: this.getRangedAttackDamageBonus()}];
+            var det = [{key: 'rangedAttackDamageBonus', value: this.getRangedAttackDamageBonus()}];
+            var ammoTypes = [this._name];
+            if (this._group) {
+                ammoTypes.push(this._group);
+            }
+            if (this._supergroup) {
+                ammoTypes.push(this._supergroup);
+            }
+            det.push({key: 'ammo type', value: ammoTypes.join()})
+            return det;
         }
     }
 };
@@ -177,7 +193,8 @@ Game.ItemMixins.Shooter = {
     listeners: {
         'details': function() {
             return [{key: 'rangedAttackDamageAdder', value: this.getRangedAttackDamageAdder()},
-                    {key: 'rangedAttackDamageMultipler', value: this.getRangedAttackDamageMultipler()}];
+                    {key: 'rangedAttackDamageMultipler', value: this.getRangedAttackDamageMultipler()},
+                    {key: 'uses ammo', value: this._allowedAmmo.join()}];
         },
         'onShooting': function(ammo) {
             if (ammo && this.canUseAmmo(ammo)) {
@@ -254,6 +271,8 @@ Game.ItemMixins.Seeder = {
         }
         newEntity.setPosition(x,y,z);
         map.addEntity(newEntity);
+        
+        Game.sendMessageNearby(map,x,y,z, 'The %s grows into %s', [this.getName(),newEntity.describeA(false)]);
     },
     listeners: {
          'onPlanted': function(map,x,y,z) {

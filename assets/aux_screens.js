@@ -91,6 +91,9 @@ Game.AuxScreen.helpScreen = {
     _display: null,
     _width: 1,
     _height: 1,
+    _characterLookups: null,
+    _bindingSet: null,
+    _color: '%c{#ddd}%b{darkBlue}',
     init: function(w,h) {
         this._width = w;
         this._height = h;
@@ -99,8 +102,96 @@ Game.AuxScreen.helpScreen = {
     getDisplay: function(display) {
         return this._display;
     },
+    setForBinding: function(bindingSet) {
+        this._bindingSet = bindingSet;
+        this._characterLookups = Game.Bindings.getDisplayStringsForActions(bindingSet);
+        this.render();
+    },
     render: function() {
-        this._display.drawText(2,2,'help screen');
+        if (! this._bindingSet) {
+            return;
+        }
+
+        var y = 0;        
+        //this._display.drawText(4,y,'Movement');
+        
+        //y++;
+        this._display.drawText(1,y,this._color+this._characterLookups[Game.Bindings.Actions.Moves.MOVE_UL.unique_id]);
+        this._display.drawText(3,y,this._color+this._characterLookups[Game.Bindings.Actions.Moves.MOVE_U.unique_id]);
+        this._display.drawText(5,y,this._color+this._characterLookups[Game.Bindings.Actions.Moves.MOVE_UR.unique_id]);
+
+        y++;
+        this._display.drawText(2,y,'\\');
+        this._display.drawText(3,y,'|');
+        this._display.drawText(4,y,'/');
+        this._display.drawText(8,y,this._color+this._characterLookups[Game.Bindings.Actions.Moves.MOVE_ASCEND.unique_id]);
+        this._display.drawText(10,y,Game.Bindings.Actions.Moves.MOVE_ASCEND.word);
+
+        y++;
+        this._display.drawText(1,y,this._color+this._characterLookups[Game.Bindings.Actions.Moves.MOVE_L.unique_id]);
+        this._display.drawText(2,y,'-');
+        this._display.drawText(3,y,this._color+this._characterLookups[Game.Bindings.Actions.Moves.MOVE_WAIT.unique_id]);
+        this._display.drawText(4,y,'-');
+        this._display.drawText(5,y,this._color+this._characterLookups[Game.Bindings.Actions.Moves.MOVE_R.unique_id]);
+
+        y++;
+        this._display.drawText(2,y,'/');
+        this._display.drawText(3,y,'|');
+        this._display.drawText(4,y,'\\');
+        this._display.drawText(8,y,this._color+this._characterLookups[Game.Bindings.Actions.Moves.MOVE_DESCEND.unique_id]);
+        this._display.drawText(10,y,Game.Bindings.Actions.Moves.MOVE_DESCEND.word);
+
+        y++;
+        this._display.drawText(1,y,this._color+this._characterLookups[Game.Bindings.Actions.Moves.MOVE_DL.unique_id]);
+        this._display.drawText(3,y,this._color+this._characterLookups[Game.Bindings.Actions.Moves.MOVE_D.unique_id]);
+        this._display.drawText(5,y,this._color+this._characterLookups[Game.Bindings.Actions.Moves.MOVE_DR.unique_id]);
+        
+        
+        y += 2;
+        this._display.drawText(1,y,this._color+this._characterLookups[Game.Bindings.Actions.Inventory.INVENTORY_LIST.unique_id]);
+        this._display.drawText(4,y,Game.Bindings.Actions.Inventory.INVENTORY_LIST.word);
+
+        y++;
+        this._display.drawText(1,y,this._color+this._characterLookups[Game.Bindings.Actions.Inventory.INVENTORY_GET.unique_id]);
+        this._display.drawText(4,y,Game.Bindings.Actions.Inventory.INVENTORY_GET.word);
+
+        y++;
+        this._display.drawText(1,y,this._color+this._characterLookups[Game.Bindings.Actions.Inventory.INVENTORY_DROP.unique_id]);
+        this._display.drawText(4,y,Game.Bindings.Actions.Inventory.INVENTORY_DROP.word);
+
+        y++;
+        this._display.drawText(1,y,this._color+this._characterLookups[Game.Bindings.Actions.Inventory.INVENTORY_WEAR.unique_id]);
+        this._display.drawText(4,y,Game.Bindings.Actions.Inventory.INVENTORY_WEAR.word);
+
+        y++;
+        this._display.drawText(1,y,this._color+this._characterLookups[Game.Bindings.Actions.Inventory.INVENTORY_WIELD.unique_id]);
+        this._display.drawText(4,y,Game.Bindings.Actions.Inventory.INVENTORY_WIELD.word);
+
+        y++;
+        this._display.drawText(1,y,this._color+this._characterLookups[Game.Bindings.Actions.Inventory.INVENTORY_EXAMINE.unique_id]);
+        this._display.drawText(4,y,Game.Bindings.Actions.Inventory.INVENTORY_EXAMINE.word);
+
+        y++;
+        this._display.drawText(1,y,this._color+this._characterLookups[Game.Bindings.Actions.Inventory.INVENTORY_EAT.unique_id]);
+        this._display.drawText(4,y,Game.Bindings.Actions.Inventory.INVENTORY_EAT.word);
+
+        y++;
+        this._display.drawText(1,y,this._color+this._characterLookups[Game.Bindings.Actions.Inventory.INVENTORY_FLING.unique_id]);
+        this._display.drawText(4,y,Game.Bindings.Actions.Inventory.INVENTORY_FLING.word);
+
+
+        y += 2;
+        this._display.drawText(1,y,this._color+this._characterLookups[Game.Bindings.Actions.World.LOOK.unique_id]);
+        this._display.drawText(4,y,Game.Bindings.Actions.World.LOOK.word);
+
+
+        y += 2;
+        this._display.drawText(1,y,this._color+this._characterLookups[Game.Bindings.Actions.Meta.SWITCH_KEYBINDING.unique_id]);
+        this._display.drawText(4,y,Game.Bindings.Actions.Meta.SWITCH_KEYBINDING.word);
+
+        y++;
+        this._display.drawText(1,y,this._color+this._characterLookups[Game.Bindings.Actions.Meta.HELP.unique_id]);
+        this._display.drawText(4,y,Game.Bindings.Actions.Meta.HELP.word);
     },
     refresh: function() {
         this._display.clear();
@@ -161,6 +252,8 @@ Game.AuxScreen.infoScreen = {
     _display: null,
     _width: 1,
     _height: 1,
+    _current_short_info: '',
+    _current_detail_info: '',
     init: function(w,h) {
         this._width = w;
         this._height = h;
@@ -169,8 +262,21 @@ Game.AuxScreen.infoScreen = {
     getDisplay: function(display) {
         return this._display;
     },
+    setCurrentShortInfo: function(info) {
+        this._current_short_info = info;
+    },
+    setCurrentDetailInfo: function(info) {
+        this._current_detail_info = info;
+    },
     render: function() {
-        this._display.drawText(2,2,'info screen');
+        var displayY = 0;
+        if (this._current_short_info) {
+            displayY += this._display.drawText(0,displayY,this._current_short_info);
+            displayY++;
+        }
+        if (this._current_detail_info) {
+            displayY += this._display.drawText(0,displayY,this._current_detail_info);
+        }
     },
     refresh: function() {
         this._display.clear();

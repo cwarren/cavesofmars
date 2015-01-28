@@ -21,6 +21,7 @@ var Game =  {
         ROT.RNG.setSeed(this._randomSeed);
 
         this._player = new Game.Entity(Game.PlayerTemplate);
+        
         this._display_main    = new ROT.Display({width: this._screenWidth,                 height: this._screenHeight});
         
         this._aux_screen_avatar = Game.AuxScreen.avatarScreen;
@@ -119,6 +120,7 @@ var Game =  {
     },
     setControlScheme: function(newScheme) {
         this._controlScheme = newScheme;
+        Game.AuxScreen.helpScreen.setForBinding(this._controlScheme);
     },
     
     switchScreen: function(screen) {

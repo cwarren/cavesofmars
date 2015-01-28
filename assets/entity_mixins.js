@@ -534,7 +534,7 @@ Game.EntityMixins.RangedAttacker = {
             }
         }
         
-        console.log('rangedAtk: '+rangedAtk);
+        //console.log('rangedAtk: '+rangedAtk);
         
         return rangedAtk;
     },
@@ -694,7 +694,7 @@ Game.EntityMixins.MessageRecipient = {
         
         // new ones are moved to the archive
         while (this._messages.length > 0) {
-            this.archiveMessage(this._messages.shift());
+            this.archiveMessage(this._messages.pop());
         }
     },
     archiveMessage: function(msg) {
@@ -1523,11 +1523,11 @@ Game.EntityMixins.GiantZombieActor = Game.util.extendedObj(Game.EntityMixins.Agg
     },
     growArm: function() {
         this._hasGrownArm = true;
-        this.increaseAttackValue(5);
+        this.increaseAttackValue(12);
         // Send a message saying the zombie grew an arm.
         Game.sendMessageNearby(this.getMap(),
             this.getX(), this.getY(), this.getZ(),
-            'An extra arm appears on the giant zombie!');
+            'Whip-like appendages suddenly appear on the giant zombie!');
     },
     spawnOoze: function() {
         // Generate a random position nearby.

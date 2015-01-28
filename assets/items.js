@@ -100,7 +100,7 @@ Game.ItemRepository.define('rock', {
     name: 'rock',
     character: Game.ItemRepository.Symbol['mineral'],
     foreground: 'lightGrey',
-    rangedAttackDamageBonus: 1,
+    rangedAttackDamageBonus: 2,
     mixins: [Game.ItemMixins.Ammo]
 });
 
@@ -114,8 +114,9 @@ Game.ItemRepository.define('stone shot', {
     group: 'shot',
     character: Game.ItemRepository.Symbol['ammo'],
     foreground: '#bbb',
-    description: "a small-ish, rounded piece of dense stone. Perhaps intentionally shaped?",
+    description: "A small-ish, rounded piece of dense stone. Perhaps intentionally shaped?",
     rangedAttackDamageBonus: 1,
+    reuseChance: .3,
     mixins: [Game.ItemMixins.Ammo]
 });
 
@@ -124,8 +125,9 @@ Game.ItemRepository.define('iron shot', {
     group: 'shot',
     character: Game.ItemRepository.Symbol['ammo'],
     foreground: '#dcb',
-    description: "a large pellet of iron - slightly rusted, but aerodynamically sound",
+    description: "A large pellet of iron - slightly rusted, but aerodynamically sound",
     rangedAttackDamageBonus: 4,
+    reuseChance: .6,
     mixins: [Game.ItemMixins.Ammo]
 });
 
@@ -139,7 +141,7 @@ Game.ItemRepository.define('sling', {
     group: 'shooter',
     character: Game.ItemRepository.Symbol['shooter'],
     foreground: 'lightGrey',
-    description: "a few feet of strong cord with a pocket in the middle to hold some ammo",
+    description: "A few feet of strong cord with a pocket in the middle to hold some ammo",
     rangedAttackDamageAdder: 3,
     rangedAttackDamageMultipler: 1.5,
     allowedAmmo: ['shot'],
