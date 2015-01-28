@@ -11,6 +11,7 @@ Game.PlayerTemplate = {
     sightRadius: 4,
     inventorySlots: 12,
     statPointsPerLevel: 2,
+    messageArchiveLimit: 50,
 //    fullness: 1000,
     allies: ['teammate'],
     mixins: [Game.EntityMixins.PlayerActor, Game.EntityMixins.MeleeAttacker, Game.EntityMixins.RangedAttacker, Game.EntityMixins.MessageRecipient, 

@@ -4,12 +4,14 @@ var Game =  {
     _display_help: null,
     _display_message: null,
     _display_info: null,
+    _aux_screen_avatar: null,
     _currentScreen: null, // CSW NOTE: a some point refactor this to a stack of screens....?
     _screenWidth: 80,
     _screenHeight: 24,
     _randomSeed: 12,
     _game_stage: 'start',
     _controlScheme: '',
+    _player: null,
     init: function() {
         // Any necessary initialization will go here.
         this._randomSeed = 5 + Math.floor(Math.random()*100000);
@@ -17,14 +19,28 @@ var Game =  {
         console.log(this._randomSeed);
         
         ROT.RNG.setSeed(this._randomSeed);
-        
-        
-        this._display_avatar  = new ROT.Display({width: Math.floor(this._screenWidth*.25), height: this._screenHeight});
+
+        this._player = new Game.Entity(Game.PlayerTemplate);
         this._display_main    = new ROT.Display({width: this._screenWidth,                 height: this._screenHeight});
-        this._display_help    = new ROT.Display({width: Math.floor(this._screenWidth*.25), height: this._screenHeight});
         
-        this._display_message = new ROT.Display({width: Math.floor(this._screenWidth*.75), height: Math.floor(this._screenHeight*.5)});
-        this._display_info    = new ROT.Display({width: Math.floor(this._screenWidth*.75), height: Math.floor(this._screenHeight*.5)});
+        this._aux_screen_avatar = Game.AuxScreen.avatarScreen;
+        this._aux_screen_avatar.init(Math.floor(this._screenWidth*.25),this._screenHeight,this._player);
+        
+        this._aux_screen_help = Game.AuxScreen.helpScreen;
+        this._aux_screen_help.init(Math.floor(this._screenWidth*.25),this._screenHeight);
+
+        this._aux_screen_message = Game.AuxScreen.messageScreen;
+        this._aux_screen_message.init(Math.floor(this._screenWidth*.75),Math.floor(this._screenHeight*.5),this._player);
+
+        this._aux_screen_info = Game.AuxScreen.infoScreen;
+        this._aux_screen_info.init(Math.floor(this._screenWidth*.75),Math.floor(this._screenHeight*.5));
+
+        //this._display_avatar  = new ROT.Display({width: Math.floor(this._screenWidth*.25), height: this._screenHeight});
+        //this._display_help    = new ROT.Display({width: Math.floor(this._screenWidth*.25), height: this._screenHeight});
+        
+        //this._display_message = new ROT.Display({width: Math.floor(this._screenWidth*.75), height: Math.floor(this._screenHeight*.5)});
+        //this._display_info    = new ROT.Display({width: Math.floor(this._screenWidth*.75), height: Math.floor(this._screenHeight*.5)});
+
         
         
         // Create a helper function for binding to an event
@@ -49,26 +65,39 @@ var Game =  {
 //        bindEventToScreen('keyup');
         bindEventToScreen('keypress');
     },
+    
+    
     refresh: function() {
         // Clear the screen
         this._display_main.clear();
         // Render the screen
         this._currentScreen.render(this._display_main);
+        if (this._currentScreen == Game.Screen.playScreen) {
+            this._aux_screen_avatar.refresh();
+            this._aux_screen_help.refresh();
+            this._aux_screen_message.refresh();
+            this._aux_screen_info.refresh();
+        }
     },
+    
+    getPlayer: function() {
+        return this._player;
+    },
+    
     getDisplayAvatar: function() {
-        return this._display_avatar;
+        return this._aux_screen_avatar.getDisplay();
     },
     getDisplayMain: function() {
         return this._display_main;
     },
     getDisplayHelp: function() {
-        return this._display_help;
+        return this._aux_screen_help.getDisplay();
     },
     getDisplayMessage: function() {
-        return this._display_message;
+        return this._aux_screen_message.getDisplay();
     },
     getDisplayInfo: function() {
-        return this._display_info;
+        return this._aux_screen_info.getDisplay();
     },
 
 

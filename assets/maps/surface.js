@@ -4,6 +4,8 @@ Game.Map.Surface = function() {
     // Call the Map constructor
     Game.Map.call(this, this._generateTiles(250, 96));
     
+    this._mapName = 'Elysium Mons Crater';
+    
     this.setMapLightingType('fullLight');
     this.addTeammates();
 

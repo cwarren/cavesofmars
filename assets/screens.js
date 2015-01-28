@@ -69,7 +69,7 @@ Game.Screen.playScreen = {
 //        height = 24;
 //        depth = 1;
 
-        this._player = new Game.Entity(Game.PlayerTemplate);
+        this._player = Game.getPlayer();
 
         // initial inventory/gear
         var h = Game.ItemRepository.create('HEM suit');
@@ -182,6 +182,7 @@ Game.Screen.playScreen = {
     },
     renderPlayerMessages: function(display) {
         // Get the messages in the player's queue and render them
+/*
         var messages = this._player.getMessages();
         var messageY = 0;
         for (var i = 0; i < messages.length; i++) {
@@ -192,6 +193,8 @@ Game.Screen.playScreen = {
                 Game.Screen.DEFAULT_COLOR_SETTER + messages[i]
             );
         }
+        */
+        Game.AuxScreen.messageScreen.render();
     },
     renderPlayerStats: function(display) {
         var screenWidth = Game.getScreenWidth();
@@ -228,8 +231,8 @@ Game.Screen.playScreen = {
         
         this.renderTiles(display);
         
-        this.renderPlayerMessages(display);
-        this.renderPlayerStats(display);
+        //this.renderPlayerMessages(display);
+        //this.renderPlayerStats(display);
 
         
     },

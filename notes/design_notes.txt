@@ -41,6 +41,11 @@ analyzer
 TODO NEXT:
 
 1. make help & messages external to the game window
+    - extract instantiation of the player from the play screen init - move it to game init?
+    - make functions to display info to the various display areas other than the main one (part of Screen? part of Game? something new?)
+    - in the main Game.refresh function, refresh the accessory displays as well as the main one
+        + NOTE: other screens can also directly refresh the accessory displays as needed (and perhaps that's all that's needed? might avoid accessory display in the main Game object... just let the various screen handle it...)
+    ?? re-do some Screen-type logic for the accessory displays?
 1.5.  persistent common key bindings
 
 2. inventory drop support multi-select

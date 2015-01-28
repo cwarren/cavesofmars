@@ -674,6 +674,8 @@ Game.EntityMixins.MessageRecipient = {
     name: 'MessageRecipient',
     init: function(template) {
         this._messages = [];
+        this._messageArchives = [];
+        this._messageArchiveLimit = template['messageArchiveLimit'] || 1;
     },
     receiveMessage: function(message) {
         this._messages.push(message);
@@ -681,11 +683,25 @@ Game.EntityMixins.MessageRecipient = {
     getMessages: function() {
         return this._messages;
     },
+    getMessageArchives: function() {
+        return this._messageArchives;
+    },
     hasAnyMessages: function() {
         return this._messages.length > 0;
     },
     clearMessages: function() {
-        this._messages = [];
+        this._messageArchives.pop(); // old messages are gradually cleared away
+        
+        // new ones are moved to the archive
+        while (this._messages.length > 0) {
+            this.archiveMessage(this._messages.shift());
+        }
+    },
+    archiveMessage: function(msg) {
+        if (this._messageArchives.length > this._messageArchiveLimit) {
+             this._messageArchives.pop();
+        }
+        this._messageArchives.unshift(msg);
     },
     listeners: {
         onKill: function(victim) {
@@ -835,7 +851,9 @@ Game.EntityMixins.FoodConsumer = {
         // Fullness points per percent of max fullness
         var perPercent = this._maxFullness / 100;
         // 5% of max fullness or less = starving
-        if (this._fullness <= perPercent * 5) {
+        if (this._fullness <= 0) {
+            return '%c{black}%b{red}!! D E A D !!';
+        } else if (this._fullness <= perPercent * 5) {
             return '%c{black}%b{red}*Starving*';
         } else if (this._fullness <= perPercent * 10) {
             return '%c{red}Very Hungry';

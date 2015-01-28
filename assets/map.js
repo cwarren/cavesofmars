@@ -1,5 +1,6 @@
 Game.Map = function(tiles) {
     this._tiles = tiles;
+    this._mapName = 'no name';
 
     // Cache dimensions
     this._depth = tiles.length
@@ -41,6 +42,10 @@ Game.Map = function(tiles) {
 };
 
 // Standard getters
+Game.Map.prototype.getMapName = function() {
+    return this._mapName;
+};
+
 Game.Map.prototype.getDepth = function() {
     return this._depth;
 };

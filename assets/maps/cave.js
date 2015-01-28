@@ -13,6 +13,8 @@ Game.Map.Cave = function() {
     Game.Map.call(this, tiles);
     //this.setMapLightingType('fullLight');
     
+    this._mapName = 'The Caves';
+
     // Add the player
 //    this.addEntityAtRandomPosition(player, 0);
 
