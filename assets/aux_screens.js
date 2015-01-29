@@ -181,8 +181,8 @@ Game.AuxScreen.helpScreen = {
 
 
         y += 2;
-        this._display.drawText(1,y,this._color+this._characterLookups[Game.Bindings.Actions.World.LOOK.unique_id]);
-        this._display.drawText(4,y,Game.Bindings.Actions.World.LOOK.word);
+        this._display.drawText(1,y,this._color+this._characterLookups[Game.Bindings.Actions.Targeting.LOOK.unique_id]);
+        this._display.drawText(4,y,Game.Bindings.Actions.Targeting.LOOK.word);
 
 
         y += 2;
@@ -283,4 +283,4 @@ Game.AuxScreen.infoScreen = {
         this.render();
     }
 };
-
+

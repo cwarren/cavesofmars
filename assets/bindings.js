@@ -73,8 +73,10 @@ Game.Bindings = {
             INVENTORY_EAT:     {id: 7, unique_id: Game.util.generateRandomString(24), word:"eat",       descr: "consume something that has food value"},
             INVENTORY_FLING:   {id: 8, unique_id: Game.util.generateRandomString(24), word:"fire/fling",descr: "fire something from an appropriate missile weapon, or else throw it"},
         },
-        World: {
-            LOOK:   {id: 1, unique_id: Game.util.generateRandomString(24), word:"look around", descr: "get information about some visible space, item, or creature"}
+        Targeting: {
+            LOOK:             {id: 1, unique_id: Game.util.generateRandomString(24), word:"look around",  descr: "get information about some visible space, item, or creature"},
+            USE_OLD_TARGET:   {id: 2, unique_id: Game.util.generateRandomString(24), word:"re-target",  descr: "set the target to the previous target used"},
+            CLEAR_OLD_TARGET: {id: 3, unique_id: Game.util.generateRandomString(24), word:"clear target", descr: "remove any old targeting, setting the cursor to the player location"}
         },
         Meta: {
             SWITCH_KEYBINDING: {id: 1, unique_id: Game.util.generateRandomString(24), word:"swap controls", descr: "swap between numpad-oriented and laptop-oriented controls"},
@@ -110,7 +112,9 @@ Game.Bindings['BindingSet_Numpad']['isKeydown'][ROT.VK_X] = ['x',Game.Bindings.A
 Game.Bindings['BindingSet_Numpad']['isKeydown'][ROT.VK_G] = ['g',Game.Bindings.Actions.Inventory.INVENTORY_GET];
 Game.Bindings['BindingSet_Numpad']['isKeydown'][ROT.VK_F] = ['f',Game.Bindings.Actions.Inventory.INVENTORY_FLING];
 
-Game.Bindings['BindingSet_Numpad']['isKeydown'][ROT.VK_L] = ['l',Game.Bindings.Actions.World.LOOK];
+Game.Bindings['BindingSet_Numpad']['isKeydown'][ROT.VK_L] = ['l',Game.Bindings.Actions.Targeting.LOOK];
+Game.Bindings['BindingSet_Numpad']['isKeydown'][ROT.VK_T] = ['t',Game.Bindings.Actions.Targeting.USE_OLD_TARGET];
+Game.Bindings['BindingSet_Numpad']['isKeydown'][ROT.VK_SPACE] = ['<space>',Game.Bindings.Actions.Targeting.CLEAR_OLD_TARGET];
 
 Game.Bindings['BindingSet_Numpad']['isKeydown'][ROT.VK_BACK_SLASH] = ['\\',Game.Bindings.Actions.Meta.SWITCH_KEYBINDING];
 
@@ -144,7 +148,7 @@ Game.Bindings['BindingSet_Laptop']['isKeydown'][ROT.VK_H] = ['h',Game.Bindings.A
 Game.Bindings['BindingSet_Laptop']['isKeydown'][ROT.VK_G] = ['g',Game.Bindings.Actions.Inventory.INVENTORY_GET];
 Game.Bindings['BindingSet_Laptop']['isKeydown'][ROT.VK_F] = ['f',Game.Bindings.Actions.Inventory.INVENTORY_FLING];
 
-Game.Bindings['BindingSet_Laptop']['isKeydown'][ROT.VK_L] = ['l',Game.Bindings.Actions.World.LOOK];
+Game.Bindings['BindingSet_Laptop']['isKeydown'][ROT.VK_L] = ['l',Game.Bindings.Actions.Targeting.LOOK];
 
 Game.Bindings['BindingSet_Laptop']['isKeydown'][ROT.VK_BACK_SLASH] = ['\\',Game.Bindings.Actions.Meta.SWITCH_KEYBINDING];
 
@@ -159,4 +163,4 @@ Game.Bindings['BindingSet_Laptop']['isKeypress']['<'] = ['<',Game.Bindings.Actio
 Game.Bindings['BindingSet_Laptop']['isKeypress']['>'] = ['>',Game.Bindings.Actions.Moves.MOVE_DESCEND];
 Game.Bindings['BindingSet_Laptop']['isKeypress']['?'] = ['?',Game.Bindings.Actions.Meta.HELP];
 
-
+

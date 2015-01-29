@@ -317,7 +317,7 @@ Game.Screen.playScreen = {
 
         //----------------------------
         // world actions
-        } else if (gameAction === Game.Bindings.Actions.World.LOOK) {
+        } else if (gameAction === Game.Bindings.Actions.Targeting.LOOK) {
             var offsets = this.getScreenOffsets();
             Game.Screen.lookScreen.setup(this._player,this._player.getX(), this._player.getY(),offsets.x, offsets.y);
             this.setSubScreen(Game.Screen.lookScreen);
@@ -862,6 +862,9 @@ Game.Screen.TargetBasedScreen = function(template) {
     this._captionFunction = template['captionFunction'] || function(x, y) {
         return '';
     }
+    
+    this._lastTargetEnt = null;
+    this._lastTargetCoord = null;
 };
 
 Game.Screen.TargetBasedScreen.prototype.setParentScreen = function(screen) {
@@ -914,17 +917,13 @@ Game.Screen.TargetBasedScreen.prototype.renderPlayerMessages = function(display)
 
 Game.Screen.TargetBasedScreen.prototype.render = function(display) {
     Game.Screen.playScreen.renderTiles.call(Game.Screen.playScreen, display);
-//    this.renderPlayerMessages(display);
-//    this._player.clearMessages();
-
-//    // Draw a line from the start to the cursor.
-//    var points = Game.Geometry.getLine(this._startX, this._startY, this._cursorX,
-//        this._cursorY);
+    //console.log('TargetBasedScreen render A');
 
     // Draw a line from the cursor to the start.
     var points = Game.Geometry.getLine(this._cursorX,this._cursorY,this._startX, this._startY);
 
 
+    //console.log('TargetBasedScreen render B');
     display.drawText(points[0].x, points[0].y, '%c{yellow}*');
 
     // Render stars along the line. (stop before the last node - don't cover up the player!)
@@ -932,12 +931,61 @@ Game.Screen.TargetBasedScreen.prototype.render = function(display) {
         display.drawText(points[i].x, points[i].y, '%c{magenta}*');
     }
 
+    //console.log('TargetBasedScreen render C');
+
 //    // Render the caption at the bottom.
 //    display.drawText(0, Game.getScreenHeight() - 1, 
 //        this._captionFunction(this._cursorX + this._offsetX, this._cursorY + this._offsetY));
     
     Game.AuxScreen.infoScreen.setCurrentShortInfo(this._captionFunction(this._cursorX + this._offsetX, this._cursorY + this._offsetY));
+
+    //console.log('TargetBasedScreen render D');
 };
+
+Game.Screen.TargetBasedScreen.prototype.moveCursorToLastTarget = function() {
+//    console.log('moveCursorToLastTarget');
+    if (this._lastTargetEnt) {
+        // if entity is dead or out of range, clearLastTarget instead
+        this._cursorX = this._lastTargetEnt.getX() - this._offsetX;
+        this._cursorY = this._lastTargetEnt.getY() - this._offsetY;
+        Game.sendMessage(this._player,'using prior target '+this._lastTargetEnt.getName());
+        return true;
+    } else if (this._lastTargetCoord) {
+        // if coord is out of range, clearLastTarget instead
+        this._cursorX = this._lastTargetCoord.x - this._offsetX;
+        this._cursorY = this._lastTargetCoord.y - this._offsetY;
+        Game.sendMessage(this._player,'using prior target location');
+        return true;
+    } else {
+        Game.sendMessage(this._player,'prior target not available');
+        this.clearLastTarget();
+        return false;
+    }
+}
+
+Game.Screen.TargetBasedScreen.prototype.setLastTarget = function(lastTarget) {
+//    console.log('setLastTarget');
+    if (lastTarget instanceof Game.Entity) {
+        this._lastTargetEnt = lastTarget;
+        this._lastTargetCoord = null;
+        Game.sendMessage(this._player,'set target to '+lastTarget.getName());
+    } else if (lastTarget) {
+        this._lastTargetEnt = null;
+        this._lastTargetCoord = lastTarget;
+        Game.sendMessage(this._player,'set target location');
+    } else {
+        this.clearLastTarget();
+    }
+}
+
+Game.Screen.TargetBasedScreen.prototype.clearLastTarget = function() {
+//    console.log('clearLastTarget');
+        this._lastTargetEnt = null;
+        this._lastTargetCoord = null;
+        this._cursorX = this._player.getX() - this._offsetX;
+        this._cursorY = this._player.getY() - this._offsetY;
+        //Game.sendMessage(this._player,'cleared prior target');
+}
 
 Game.Screen.TargetBasedScreen.prototype.handleInput = function(inputType, inputData) {
 
@@ -959,12 +1007,21 @@ Game.Screen.TargetBasedScreen.prototype.handleInput = function(inputType, inputD
         tookAction = this.moveCursor(0, 1);
     } else if (gameAction === Game.Bindings.Actions.Moves.MOVE_DR) {
         tookAction = this.moveCursor(1, 1);
+    } else if (gameAction === Game.Bindings.Actions.Targeting.USE_OLD_TARGET) {
+        this._player.clearMessages();
+        tookAction = this.moveCursorToLastTarget();
+    } else if (gameAction === Game.Bindings.Actions.Targeting.CLEAR_OLD_TARGET) {
+        this._player.clearMessages();
+        tookAction = this.clearLastTarget();
+        Game.sendMessage(this._player,'cleared prior target');
     } else if (inputData.keyCode === ROT.VK_ESCAPE) {
+        this._player.clearMessages();
         Game.AuxScreen.infoScreen.setCurrentShortInfo('');
         Game.AuxScreen.infoScreen.setCurrentDetailInfo('');
         this._parentScreen.setSubScreen(undefined);
         this.setParentScreen(undefined);
     } else if (inputData.keyCode === ROT.VK_RETURN) {
+        this._player.clearMessages();
         this.executeOkFunction();
     }
 
@@ -998,6 +1055,16 @@ Game.Screen.TargetBasedScreen.prototype.executeOkFunction = function() {
     this._parentScreen.setSubScreen(undefined);
     this.setParentScreen(undefined);
     
+//    console.log('executeOkFunction');
+    var realX = this._cursorX + this._offsetX;
+    var realY = this._cursorY + this._offsetY;
+    var targetChoice = {x:realX,y:realY};
+    var ent = this._player.getMap().getEntityAt(targetChoice.x,targetChoice.y,this._player.getZ());
+    if (ent) {
+        targetChoice = ent;
+    }
+    this.setLastTarget(targetChoice);
+
     // Call the OK function and end the player's turn if it return true.
     if (this._okFunction(this._cursorX + this._offsetX, this._cursorY + this._offsetY)) {
         this._player.finishAction();

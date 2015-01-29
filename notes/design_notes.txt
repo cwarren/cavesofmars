@@ -40,11 +40,11 @@ analyzer
 
 TODO NEXT:
 
-1. ranged combat system remembers last target and ammo, offers default options for each
+1.  digging sometimes leaves rocks in adj open space (or same space, if result/new space is walkable)
+
+2. update look caption to indicate surface / tile-type of occupied spaces in addition to info about what's in the space
 
 3. richer inventory management system - weight and volume attributes
-3.5. collapsing slot list (rather than static)
-4. automatic sorting/grouping of things in inventory
 5. arbitrarily many slots
 6. stacking of items
 
@@ -59,6 +59,8 @@ TODO NEXT:
 15. LOOT (loot tables (re-read blog post); drop rate; etc.)
         oozes sometimes drop loot
         give small martians some starting loot
+
+17. figure out where geodic nuts and jelly balls come from (oozes, perhaps?)
 
 20. crafting system!
         two basic operations - break down (consume?) (create raw materials from something), and construct (build something from raw materials and/or other things)
