@@ -40,24 +40,15 @@ analyzer
 
 TODO NEXT:
 
-1. make help & messages external to the game window
-    - extract instantiation of the player from the play screen init - move it to game init?
-    - make functions to display info to the various display areas other than the main one (part of Screen? part of Game? something new?)
-    - in the main Game.refresh function, refresh the accessory displays as well as the main one
-        + NOTE: other screens can also directly refresh the accessory displays as needed (and perhaps that's all that's needed? might avoid accessory display in the main Game object... just let the various screen handle it...)
-    ?? re-do some Screen-type logic for the accessory displays?
-1.5.  persistent common key bindings
-
-2. inventory drop support multi-select
+1. ranged combat system remembers last target and ammo, offers default options for each
 
 3. richer inventory management system - weight and volume attributes
+3.5. collapsing slot list (rather than static)
 4. automatic sorting/grouping of things in inventory
 5. arbitrarily many slots
 6. stacking of items
 
-
-9. ranged combat system remembers last target and ammo, offers default options for each
-9.5 ammo has individual destruction chance, modified by the shooter (using same stats as for damage?)
+8. real equipment system (use item, choose viable slot)
 
 10. add new entity: small martian
 11.    which can pick up and equip items it finds (5 inven slots)
@@ -70,8 +61,36 @@ TODO NEXT:
         give small martians some starting loot
 
 20. crafting system!
+        two basic operations - break down (consume?) (create raw materials from something), and construct (build something from raw materials and/or other things)
+    base:
+        - material
+            + leather (generally, creature parts)
+            + suit scraps
+            + dried mycelium
+        - cord
+            + sinew (generally, creature parts)
+            + suit scraps
+        - sticks, small
+            + dried mycelium
+            + bone (generally, creature parts)
+            + JAT scraps
+        - sticks, large
+            + bone (generally, creature parts)
+            + JAT scraps
+        - rocks
+        - adhesive
+            + fungus stuff
+            + creature-based
+        - edges
+            + stone shards
+            + suit scraps
+            + teeth (generally, creature parts)
+        - hard material
+            + suit scraps
+            + scutes (generally, creature parts)
+            + stone
 
-
+25. useable items (potions, pods, etc.)
 
 42.5 consider a spore-y mass repository w/ different kinds of spore-y masses that grow on different things (even consider making this prodecurally generated - can dynamically set targets, exclusions, rates, etc.)
 42.75 consider docile fungi occasionally spawning nearby spore-y masses that share the same traits

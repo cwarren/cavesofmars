@@ -1401,10 +1401,11 @@ Game.Screen.storyScreen = {
                 var player = Game.Screen.playScreen.getPlayer()
 
                 // remove existing inventory (just leave it on the map - player won't return to the surface map)
-                var playerItems = player.getItems();
-                for (var i=0;i<playerItems.length;i++) {
-                    player.dropItem(i);
-                }
+//                var playerItems = player.getItems();
+//                for (var i=0;i<playerItems.length;i++) {
+//                    player.dropItem(i);
+//                }
+                player.clearInventory();
 
                 player.switchMap(new Game.Map.Cave());
 
@@ -1415,6 +1416,7 @@ Game.Screen.storyScreen = {
                 
                 /////////////////////////////
                 /// CODE FOR ITEM TESTING!!!!
+                /*
                 console.log('item testing code is active');
 
                 player.addItem(Game.ItemRepository.create('sling'));
@@ -1422,7 +1424,7 @@ Game.Screen.storyScreen = {
                 player.addItem(Game.ItemRepository.create('stone shot'));
                 player.addItem(Game.ItemRepository.create('iron shot'));
                 player.addItem(Game.ItemRepository.create('iron shot'));
-
+                */
                 /// CODE FOR ITEM TESTING!!!!
                 /////////////////////////////
 

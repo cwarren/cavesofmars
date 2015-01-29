@@ -731,9 +731,9 @@ Game.EntityMixins.InventoryHolder = {
     name: 'InventoryHolder',
     init: function(template) {
         // Default to 10 inventory slots.
-        var inventorySlots = template['inventorySlots'] || 10;
+        this._inventorySlots = template['inventorySlots'] || 10;
         // Set up an empty inventory.
-        this._items = new Array(inventorySlots);
+        this._items = new Array();
     },
     getItems: function() {
         return this._items;
@@ -741,16 +741,63 @@ Game.EntityMixins.InventoryHolder = {
     getItem: function(i) {
         return this._items[i];
     },
-    // CSW NOTE : modify additem and remove item to collapse inventory tags rather than having gaps in label (e.g. abc - b = ab, not ac)
-    addItem: function(item) {
-        // Try to find a slot, returning true only if we could add the item.
-        for (var i = 0; i < this._items.length; i++) {
-            if (!this._items[i]) {
-                this._items[i] = item;
-                return true;
+    _CompactInventory: function() {
+        var newItems = new Array();
+        for (var i=0; i< this._items.length; i++) {
+            if (this._items[i]) {
+                newItems.push(this._items[i]);
             }
         }
-        return false;
+        this._items = newItems;
+    },
+    _SortInventory: function() {
+        this._items.sort(function(a,b) {
+            //console.dir(a);
+            //console.dir(b);
+            var vaSuper = a.getSuperGroup(); if (! vaSuper) { vaSuper = ''; }
+            var vaGroup = a.getGroup();      if (! vaGroup) { vaGroup = ''; }
+            var vaName = a.getName();        if (! vaName) { vaName = ''; }
+
+            var vbSuper = b.getSuperGroup(); if (! vaSuper) { vaSuper = ''; }
+            var vbGroup = b.getGroup();      if (! vbGroup) { vbGroup = ''; }
+            var vbName = b.getName();        if (! vbName) { vbName = ''; }
+
+            var cmpSuper = vaSuper.localeCompare(vbSuper);
+            var cmpGroup = vaGroup.localeCompare(vbGroup);
+            var cmpName  = vaName.localeCompare(vbName);
+
+            //var ret = 0;
+            
+            if (cmpSuper === 0) {
+                if (cmpGroup === 0) {
+                    return cmpName;
+                } else {
+                    return cmpGroup;
+                }
+            } else {
+                return cmpSuper;
+            }
+        });
+    },
+    _CleanInventory: function() {
+        this._CompactInventory();
+        this._SortInventory();
+    },
+    clearInventory: function() {
+        this._items = new Array();
+    },
+    dropAllInventory: function() {
+        while(this._items.length > 0) {
+            this.dropItem(0);
+        }
+    },
+    addItem: function(item) {
+        if (this._items.length >= this._inventorySlots) {
+            return false;
+        }
+        this._items.push(item);
+        this._CleanInventory();
+        return true;
     },
     removeItem: function(i) {
         // If we can equip items, then make sure we unequip the item we are removing.
@@ -759,15 +806,11 @@ Game.EntityMixins.InventoryHolder = {
         }
         // Simply clear the inventory slot.
         this._items[i] = null;
+        this._CleanInventory();
     },
     canAddItem: function() {
         // Check if we have an empty slot.
-        for (var i = 0; i < this._items.length; i++) {
-            if (!this._items[i]) {
-                return true;
-            }
-        }
-        return false;
+        return (this._items.length < this._inventorySlots);
     },
     pickupItems: function(indices) {
         // Allows the user to pick up items from the map, where indices is
