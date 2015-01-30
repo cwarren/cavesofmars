@@ -171,12 +171,17 @@ Game.Map.prototype.dig = function(digger,digAmount, x, y, z) {
         if (curDigAmt >= dugTile.getDigResistance()) {
             this.setDigStatus(curDigAmt - dugTile.getDigResistance(),x, y, z);
             var newTile = this.getNewTileForDugOutTile(dugTile);
-            this._tiles[z][x][y] = newTile;
             if (! newTile) {
                 newTile = Game.Tile.rubbleTile;
             }
+            this._tiles[z][x][y] = newTile;
             Game.sendMessage(digger,'The %s is now %s',[dugTile.getName(),newTile.getName()]);
-
+            var itm = dugTile.getDigDrop();
+            if (itm) {
+                if (this.attemptAddItemAtOrAdjacentTo(itm,x, y, z)) {
+                    Game.sendMessage(digger,'you dig out %s',[itm.describeA(false)]);
+                }
+            }
         } else {
             this.setDigStatus(curDigAmt,x, y, z);
         }
@@ -423,6 +428,18 @@ Game.Map.prototype.addItem = function(x, y, z, item) {
         this._items[key] = [item];
     }
 };
+
+Game.Map.prototype.attemptAddItemAtOrAdjacentTo = function(item, x, y, z) {
+    var coords = Game.util.coordsNeighboring(x, y);
+    coords.unshift({x: x, y: y});    
+    for (var i=0;i<coords.length;i++) {
+        if (this.isWalkable(coords[i].x, coords[i].y, z)) {
+            this.addItem(coords[i].x, coords[i].y, z,item);
+            return true;
+        }
+    }
+    return false;
+}
 
 Game.Map.prototype.addItemAtRandomPosition = function(item, z) {
     var position = this.getRandomWalkablePosition(z);

@@ -21,6 +21,14 @@ var Game =  {
         ROT.RNG.setSeed(this._randomSeed);
 
         this._player = new Game.Entity(Game.PlayerTemplate);
+        // initial inventory/gear
+        var h = Game.ItemRepository.create('HEM suit');
+        this._player.addItem(h);
+        this._player.wear(h);
+        var j = Game.ItemRepository.create('JAT tool');
+        this._player.addItem(j);
+        this._player.wield(j);        
+
         
         this._display_main    = new ROT.Display({width: this._screenWidth,                 height: this._screenHeight});
         

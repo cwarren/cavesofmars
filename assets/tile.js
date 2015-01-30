@@ -9,6 +9,8 @@ Game.Tile = function(properties) {
     this._airPassable = properties['airPassable'] || this._walkable;
     this._diggable = properties['diggable'] || false;
     this._digResistance = properties['digResistance'] || 10;
+    this._digDropChance = properties['digDropChance'] || .1;
+    this._digDropTable = properties['digDropTable'] || ['rock'];
     
     this._transparent = properties['transparent'] || false;
     this._opaque = (properties['opaque'] !== undefined) ?
@@ -32,6 +34,17 @@ Game.Tile.prototype.isDiggable = function() {
 Game.Tile.prototype.getDigResistance = function() {
     return this._digResistance;
 }
+
+Game.Tile.prototype.getDigDropChance = function() {
+    return this._digDropChance;
+}
+Game.Tile.prototype.getDigDrop = function() {
+    if (this._digDropTable && (ROT.RNG.getUniform() < this.getDigDropChance()) ) {
+        return Game.ItemRepository.create(this._digDropTable.random());
+    }
+    return null;
+}
+
 
 Game.Tile.prototype.isTransparent = function() {
     return this._transparent;
@@ -106,6 +119,8 @@ Game.Tile.hardSandstoneTile = new Game.Tile({
     foreground: '#ca4',
     diggable: true,
     digResistance: 11,
+    digDropChance: .3,
+    digDropTable: ['rock','rock','rock','rock','rock','rock','stone shot'],
     transparent: false,
     description: 'hard sandstone'
     });
@@ -116,6 +131,8 @@ Game.Tile.softenedSandstoneTile = new Game.Tile({
     foreground: '#b85',
     diggable: true,
     digResistance: 8,
+    digDropChance: .2,
+    digDropTable: ['rock','rock','rock','rock','rock','rock','rock','rock','stone shot','stone shot','iron shot'],
     transparent: false,
     description: 'softened sandstone'
     });
@@ -126,6 +143,8 @@ Game.Tile.basaltTile = new Game.Tile({
     foreground: '#557',
     diggable: true,
     digResistance: 16,
+    digDropChance: .2,
+    digDropTable: ['rock','stone shot'],
     transparent: false,
     description: 'weak basalt'
     });
@@ -136,6 +155,7 @@ Game.Tile.slightlyCrackedStoneTile = new Game.Tile({
     foreground: '#987',
     diggable: true,
     digResistance: 10,
+    digDropChance: .4,
     transparent: false,
     description: 'slightly cracked stone'
     });
@@ -146,6 +166,8 @@ Game.Tile.crackedStoneTile = new Game.Tile({
     foreground: '#ca7',
     diggable: true,
     digResistance: 5,
+    digDropChance: .6,
+    digDropTable: ['rock','rock','rock','rock','rock','rock','stone shot'],
     transparent: false,
     description: 'cracked stone'
     });
@@ -156,6 +178,8 @@ Game.Tile.rubbleTile = new Game.Tile({
     foreground: '#eca',
     diggable: true,
     digResistance: 3,
+    digDropChance: .8,
+    digDropTable: ['rock','rock','rock','rock','rock','rock','stone shot'],
     transparent: false,
     description: 'rubble'
     });
@@ -167,7 +191,7 @@ Game.Tile.basaltTile,
 Game.Tile.slightlyCrackedStoneTile,
 Game.Tile.crackedStoneTile,
 Game.Tile.rubbleTile
-];
+],
 
 Game.Tile.borderTile = new Game.Tile({
     name: 'strong basalt',

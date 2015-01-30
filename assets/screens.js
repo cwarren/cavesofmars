@@ -74,15 +74,6 @@ Game.Screen.playScreen = {
 //        depth = 1;
 
         this._player = Game.getPlayer();
-
-        // initial inventory/gear
-        var h = Game.ItemRepository.create('HEM suit');
-        this._player.addItem(h);
-        this._player.wear(h);
-
-        var j = Game.ItemRepository.create('JAT tool');
-        this._player.addItem(j);
-        this._player.wield(j);        
         
         this._moveCounter = 0;
         
@@ -1471,27 +1462,33 @@ Game.Screen.storyScreen = {
                 return;
             }
             else if (Game.getGameStage()=='surface') {
-                Game.setGameStage('falling');
-                Game.switchScreen(Game.Screen.fallingScreen);
+
+                // give the player just a damaged suit
+                var player = Game.Screen.playScreen.getPlayer();
+                player.clearInventory();
+                var h = Game.ItemRepository.create('HEM suit, damaged');
+                player.addItem(h);
+                player.wear(h);
+
+                setTimeout(function(){
+                    Game.refresh();
+                    Game.setGameStage('falling');
+                    Game.switchScreen(Game.Screen.fallingScreen);
+                    },100);
                 return;
             }
             else if (Game.getGameStage()=='falling') {
                 Game.setGameStage('uppercaves');
                 var player = Game.Screen.playScreen.getPlayer()
 
-                // remove existing inventory (just leave it on the map - player won't return to the surface map)
-//                var playerItems = player.getItems();
-//                for (var i=0;i<playerItems.length;i++) {
-//                    player.dropItem(i);
-//                }
-                player.clearInventory();
 
                 player.switchMap(new Game.Map.Cave());
 
-                // give the player a damaged suit
-                var h = Game.ItemRepository.create('HEM suit, damaged');
-                player.addItem(h);
-                player.wear(h);
+//                // give the player just a damaged suit
+//                player.clearInventory();
+//                var h = Game.ItemRepository.create('HEM suit, damaged');
+//                player.addItem(h);
+//                player.wear(h);
                 
                 /////////////////////////////
                 /// CODE FOR ITEM TESTING!!!!

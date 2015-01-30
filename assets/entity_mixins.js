@@ -784,9 +784,13 @@ Game.EntityMixins.InventoryHolder = {
         this._SortInventory();
     },
     clearInventory: function() {
+        //console.dir(Game.getPlayer());
+        //console.log('...clearInventory');
         while(this._items.length > 0) {
+        //console.log('......removing item');
             this.removeItem(0);
         }
+        //console.dir(Game.getPlayer());
     },
     dropAllInventory: function() {
         while(this._items.length > 0) {
