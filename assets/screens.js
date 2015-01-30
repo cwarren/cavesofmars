@@ -944,20 +944,32 @@ Game.Screen.TargetBasedScreen.prototype.render = function(display) {
 
 Game.Screen.TargetBasedScreen.prototype.moveCursorToLastTarget = function() {
 //    console.log('moveCursorToLastTarget');
-    if (this._lastTargetEnt) {
+    var tX_map = this._player.getX();
+    var tY_map = this._player.getY();
+    var msg = '';
+    if (this._lastTargetEnt && this._lastTargetEnt.isAlive()) {
         // if entity is dead or out of range, clearLastTarget instead
-        this._cursorX = this._lastTargetEnt.getX() - this._offsetX;
-        this._cursorY = this._lastTargetEnt.getY() - this._offsetY;
-        Game.sendMessage(this._player,'using prior target '+this._lastTargetEnt.getName());
-        return true;
+        tX_map = this._lastTargetEnt.getX();
+        tY_map = this._lastTargetEnt.getY();
+        msg = 'using prior target '+this._lastTargetEnt.getName();
     } else if (this._lastTargetCoord) {
         // if coord is out of range, clearLastTarget instead
-        this._cursorX = this._lastTargetCoord.x - this._offsetX;
-        this._cursorY = this._lastTargetCoord.y - this._offsetY;
-        Game.sendMessage(this._player,'using prior target location');
-        return true;
+        tX_map = this._lastTargetCoord.x;
+        tY_map = this._lastTargetCoord.y;
+        msg = 'using prior target location';
     } else {
         Game.sendMessage(this._player,'prior target not available');
+        this.clearLastTarget();
+        return false;
+    }
+
+    if (this._player.canSeeCoord(tX_map,tY_map)) {
+        this._cursorX = tX_map - this._offsetX;
+        this._cursorY = tY_map - this._offsetY;
+        Game.sendMessage(this._player,msg);
+        return true;
+    } else {
+        Game.sendMessage(this._player,'prior target not visible');
         this.clearLastTarget();
         return false;
     }

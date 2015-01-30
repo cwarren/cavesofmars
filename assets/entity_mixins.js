@@ -93,7 +93,7 @@ Game.EntityMixins.Seer = {
         // field of view either.
         if ((otherX - this._x) * (otherX - this._x) +
             (otherY - this._y) * (otherY - this._y) >
-            this._sightRadius * this._sightRadius) {
+            (this._sightRadius+1) * (this._sightRadius+1)) {
             return false;
         }
 
