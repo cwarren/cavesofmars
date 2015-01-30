@@ -65,12 +65,41 @@ Game.AuxScreen.avatarScreen = {
         
         // digging
         this._display.drawText(0,9,this._colors+vsprintf('Digging: %d', [this._player.getDigRate()]));
+
+        var y = 11
         
+        var weapon = this._player.getWeapon();
+        if (weapon) {
+            y += this._display.drawText(0,y, weapon.getRepresentation() + ' ' +weapon.getName());
+            if (weapon.getAttackValue() != 0 || weapon.getDefenseValue() != 0) {
+                y += this._display.drawText(1,y,vsprintf('atk: %s, def: %s',[weapon.getAttackValue(),weapon.getDefenseValue()]));
+            }
+            if (weapon.hasMixin('Shooter')) {
+                y += this._display.drawText(1,y,vsprintf('%s: *%s, +%s',[weapon.getAllowedAmmoStr(),weapon.getRangedAttackDamageMultipler(),weapon.getRangedAttackDamageAdder()]));
+            }
+            if (weapon.hasMixin('DigTool')) {
+                y += this._display.drawText(1,y,vsprintf('dig: +%s, *%s',[weapon.getDigAdder(),weapon.getDigMultiplier()]));
+            }
+            y++;
+        }
+
+        var armor = this._player.getArmor();
+        if (armor) {
+            y += this._display.drawText(0,y, armor.getRepresentation() + ' ' +armor.getName());
+            if (armor.hasMixin('Shooter')) {
+                y += this._display.drawText(1,y,vsprintf('%s: *%s, +%s',[armor.getAllowedAmmoStr(),armor.getRangedAttackDamageMultipler(),armor.getRangedAttackDamageAdder()]));
+            }
+            if (armor.hasMixin('DigTool')) {
+                y += this._display.drawText(1,y,vsprintf('dig: +%s, *%s',[armor.getDigAdder(),armor.getDigMultiplier()]));
+            }
+            y += this._display.drawText(1,y,vsprintf('def: %s, atk: %s',[armor.getDefenseValue(),armor.getAttackValue()]));
+            y++;
+        }
+
+
         // level
         // current xp
-        this._display.drawText(0,11,this._colors+vsprintf('Level: %d (%d/%d)  ', [this._player.getLevel(),this._player.getExperience(), this._player.getNextLevelExperience()]));
-        
-
+        this._display.drawText(0,this._height-5,this._colors+vsprintf('Level: %d (%d/%d)  ', [this._player.getLevel(),this._player.getExperience(), this._player.getNextLevelExperience()]));
         
         // map name and depth
         var map = this._player.getMap();

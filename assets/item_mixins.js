@@ -185,6 +185,9 @@ Game.ItemMixins.Shooter = {
     setRangedAttackDamageMultipler: function (v) {
         this._rangedAttackDamageMultipler = v;
     },
+    getAllowedAmmoStr: function() {
+        return this._allowedAmmo.join();
+    },
     canUseAmmo: function(ammo) {
         return (this._allowedAmmo.indexOf(ammo.getName())>-1) 
                || (this._allowedAmmo.indexOf(ammo.getGroup())>-1)
@@ -193,14 +196,14 @@ Game.ItemMixins.Shooter = {
     listeners: {
         'details': function() {
             return [{key: 'rangedAttackDamageAdder', value: this.getRangedAttackDamageAdder()},
-                    {key: 'rangedAttackDamageMultipler', value: this.getRangedAttackDamageMultipler()},
+                    {key: 'rangedAttackDamageMultiplier', value: this.getRangedAttackDamageMultipler()},
                     {key: 'uses ammo', value: this._allowedAmmo.join()}];
         },
         'onShooting': function(ammo) {
             if (ammo && this.canUseAmmo(ammo)) {
 //            if (this.canUseAmmo(ammo)) {
                 return [{key: 'rangedAttackDamageAdder', value: this.getRangedAttackDamageAdder()},
-                        {key: 'rangedAttackDamageMultipler', value: this.getRangedAttackDamageMultipler()}];
+                        {key: 'rangedAttackDamageMultiplier', value: this.getRangedAttackDamageMultipler()}];
             }
             return [];
         }

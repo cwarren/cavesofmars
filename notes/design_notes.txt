@@ -40,8 +40,6 @@ analyzer
 
 TODO NEXT:
  
-0. add range atk info to avatar screen, add current wield,wear to avatar screen
-
 1.  digging sometimes leaves rocks in adj open space (or same space, if result/new space is walkable)
 
 2. update look caption to indicate surface / tile-type of occupied spaces in addition to info about what's in the space

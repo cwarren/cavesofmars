@@ -25,8 +25,7 @@ Game.Glyph.prototype.getColorDesignator = function(){
 }
 
 Game.Glyph.prototype.getRepresentation = function() {
-    return '%c{' + this._foreground + '}%b{' + this._background + '}' + this._char +
-        '%c{white}%b{black}';
+    return '%c{' + this._foreground + '}%b{' + this._background + '}' + this._char;
 };
 
 Game.Glyph.itemPile = new Game.Glyph({'character':'&','foreground':'black','background':'white'});

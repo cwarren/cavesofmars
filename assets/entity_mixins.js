@@ -522,12 +522,12 @@ Game.EntityMixins.RangedAttacker = {
             if (weapon) {
                 var weaponShootEffects = weapon.raiseEvent('onShooting',ammo);
 
-                var mults = Game.util.scanEventResultsFor(weaponShootEffects,'rangedAttackDamageMultipler');
+                var mults = Game.util.scanEventResultsFor(weaponShootEffects,'rangedAttackDamageMultiplier');
                 for (var i=0;i<mults.length;i++) {
                     rangedAtk *= mults[i];
                 }
 
-                var adds = Game.util.scanEventResultsFor(weaponShootEffects,'rangedAttackDamageMultipler');
+                var adds = Game.util.scanEventResultsFor(weaponShootEffects,'rangedAttackDamageAdder');
                 for (var i=0;i<adds.length;i++) {
                     rangedAtk += adds[i];
                 }
@@ -784,7 +784,9 @@ Game.EntityMixins.InventoryHolder = {
         this._SortInventory();
     },
     clearInventory: function() {
-        this._items = new Array();
+        while(this._items.length > 0) {
+            this.removeItem(0);
+        }
     },
     dropAllInventory: function() {
         while(this._items.length > 0) {
@@ -1125,6 +1127,7 @@ Game.EntityMixins.Equipper = {
         if (this._armor === item) {
             this.takeOff();
         }
+        Game.AuxScreen.avatarScreen.render();
     }
 };
 

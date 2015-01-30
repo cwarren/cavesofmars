@@ -1544,12 +1544,18 @@ Game.Screen.storyScreen = {
                 Game.AuxScreen.infoScreen.setCurrentShortInfo("OW! You awake battered and bruised, surrounded by fallen rocks, and lying on something distinctly uncomfortable.");
                 Game.AuxScreen.infoScreen.setCurrentDetailInfo("Through some combination of luck and quality nano-docs you're at least still alive...");
 
+                //Game.AuxScreen.avatarScreen.render();
+                Game.refresh();
+
                 return;
             }
             else if (Game.getGameStage()=='uppercaves') {
                 Game.setGameStage('bossfight1');
+                Game.AuxScreen.infoScreen.setCurrentShortInfo("You think you hear a voice! In your haste to get down you fail to adequately test a foot hold. You slip and fall, tumbling past several openings...");
+                Game.AuxScreen.infoScreen.setCurrentDetailInfo("...and manage a pretty clean landing after a scary amount freefall - thank goodness for the reduced gravity! However, there's no way you'll be able to make it back up that way. Looking around you seem to be in a large, open cavern, and there's actual standing water down here! Also, less encouragingly, there's the noise of something quite large moving around....");
                 Game.Screen.playScreen.getPlayer().switchMap(new Game.Map.BossCavern());
                 Game.Screen.playScreen.setSubScreen(null);
+                Game.refresh();
                 return;
             }
             
