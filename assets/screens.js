@@ -1082,6 +1082,8 @@ Game.Screen.lookScreen = new Game.Screen.TargetBasedScreen({
         var z = this._player.getZ();
         var map = this._player.getMap();
         var fullyLightMap = (map.getMapLightingType() == 'fullLight');
+        var captionStr = '';
+        var detailsStr = '';
         
         // If the tile is explored, we can give a better capton
         if (fullyLightMap || map.isExplored(x, y, z)) {
@@ -1094,42 +1096,40 @@ Game.Screen.lookScreen = new Game.Screen.TargetBasedScreen({
                 if (map.getEntityAt(x, y, z)) {
                     var entity = map.getEntityAt(x, y, z);
 
-                        Game.AuxScreen.infoScreen.setCurrentDetailInfo(entity.getDescription());
+                    detailsStr += entity.getName()+': '+entity.getDescription()+"\n\n";
+//                        Game.AuxScreen.infoScreen.setCurrentDetailInfo(entity.getDescription());
                         //Game.sendMessage(this._player,entity.getDescription());
 
                     if (entity.details()) {
-                        return String.format("%s - %s (%s)",
-                            entity.getRepresentation(),
-                            entity.describeA(true),
-                            entity.details());
+                        captionStr += String.format("%s - %s (%s)",entity.getRepresentation(),entity.describeA(true),entity.details());
+                    } else {
+                        captionStr += String.format("%s - %s",entity.getRepresentation(),entity.describeA(true));
                     }
-                    return String.format("%s - %s",
-                        entity.getRepresentation(),
-                        entity.describeA(true));
 
                 // Else check if there's are any items
-                } else if (items) {
+                }
+                
+                if (items) {
                     var item = items[items.length - 1];
 
                     if (items.length > 1) {
                         Game.sendMessage(this._player,'there are several things piled up here - you can only see clearly the one on the top');
                     }
-                    Game.AuxScreen.infoScreen.setCurrentDetailInfo(item.getDescription());
+                    detailsStr += item.getName()+': '+item.getDescription()+"\n";
+//                    Game.AuxScreen.infoScreen.setCurrentDetailInfo(item.getDescription());
 //                    Game.sendMessage(this._player,item.getDescription());
 
-                    if (item.details()) {
-                        return String.format('%s - %s (%s)',
-                            item.getRepresentation(),
-                            item.describeA(true),
-                            item.details());
+                    if (captionStr) {
+                        captionStr += ' with ';
                     }
-                    return String.format('%s - %s',
-                        item.getRepresentation(),
-                        item.describeA(true));
+                    if (item.details()) {
+                        captionStr += String.format('%s - %s (%s)',item.getRepresentation(), item.describeA(true),item.details());
+                    } else {
+                        captionStr += String.format('%s - %s',item.getRepresentation(),item.describeA(true));
+                    }
                 }
             }
-            // If there was no entity/item or the tile wasn't visible, then use
-            // the tile information.
+            // add the tile information.
             var t = map.getTile(x, y, z);
             var dug = map.getDigStatus(x, y, z);
             var diggingDescr = '';
@@ -1150,10 +1150,13 @@ Game.Screen.lookScreen = new Game.Screen.TargetBasedScreen({
                     diggingDescr = 'almost falling apart';
                 }                
             }
-            return String.format('%s - %s %s',
-                map.getTile(x, y, z).getRepresentation(),
-                map.getTile(x, y, z).getDescription(),
-                diggingDescr);
+            if (captionStr) {
+                captionStr += ' on ';
+            }
+            captionStr +=  String.format('%s - %s %s',map.getTile(x, y, z).getRepresentation(),map.getTile(x, y, z).getDescription(),diggingDescr);
+
+            Game.AuxScreen.infoScreen.setCurrentDetailInfo(detailsStr);
+            return captionStr;
         } else {
             // If the tile is not explored, show the null tile description.
             return String.format('%s - %s',

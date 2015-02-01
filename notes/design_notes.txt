@@ -40,15 +40,13 @@ analyzer
 
 TODO NEXT:
  
-1.  digging sometimes leaves rocks in adj open space (or same space, if result/new space is walkable)
-
-2. update look caption to indicate surface / tile-type of occupied spaces in addition to info about what's in the space
-
-2.5. update help section to provide dynamic, contextual help
+1. update help section to provide dynamic, contextual help (e.g. inventory, movement, targeting, etc.)
 
 3. richer inventory management system - weight and volume attributes
-5. arbitrarily many slots
-6. stacking of items
+    inventory uses weight and bulk limits instead of slot limits
+5. arbitrarily many slots (UI to step through the list)
+
+6. stackable item mixin? (impacts inventory)
 
 8. real equipment system (use item, choose viable slot)
 

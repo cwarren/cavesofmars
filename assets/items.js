@@ -99,6 +99,7 @@ Game.ItemRepository.define('spore-y mass', {
 Game.ItemRepository.define('rock', {
     name: 'rock',
     character: Game.ItemRepository.Symbol['mineral'],
+    description: "a good sized chick of stone - you could throw it at something, but it's large enough that it'd be a bit awkward doing so.",
     foreground: 'lightGrey',
     rangedAttackDamageBonus: 2,
     mixins: [Game.ItemMixins.Ammo]
