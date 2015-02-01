@@ -6,8 +6,8 @@ Game.Screen.DEFAULT_COLOR_SETTER = '%c{white}%b{black}';
 
 // Define our initial start screen
 Game.Screen.startScreen = {
-    enter: function() {  },
-    exit: function() {  },
+    enter: function() { Game.AuxScreen.helpScreen.refresh(['none']); },
+    exit: function() { Game.AuxScreen.helpScreen.refresh(); },
     render: function(display) {
         // Render our prompt to the screen
 display.drawText(2,1,  "............................................................................");
@@ -27,6 +27,8 @@ display.drawText(2,14, "..\\____/\\_|.|_/\\___/\\____/\\____/...\\___/|_|...\\_|
 display.drawText(2,15, "............................................................................");
 
         display.drawText(28,20, "%c{yellow}Press [Enter] to start");
+
+        
     },
     handleInput: function(inputType, inputData) {
         // When [Enter] is pressed, go to the play screen
@@ -51,16 +53,25 @@ Game.Screen.playScreen = {
     _subScreen: null,
     _parentScreen: null,
     _moveCounter: 0,
+    _helpSections: ['movement','levels','inventory','sense','meta'],
+    getHelpSections: function() {
+        if (this._subScreen) {
+            return this._subScreen.getHelpSections();
+        }
+        return this._helpSections;
+    },
     setSubScreen: function(subScreen) {
+            
             this._subScreen = subScreen;
             if (subScreen) {
                 subScreen.setParentScreen(this);
             }
+            Game.AuxScreen.helpScreen.refresh(this.getHelpSections());
             
             // Refresh screen on changing the subscreen
-            if (this._player) {
+            //if (this._player) {
                 //this._player.clearMessages();
-            }
+            //}
             Game.refresh();
     },
     getPlayer: function() {
@@ -76,6 +87,8 @@ Game.Screen.playScreen = {
         this._player = Game.getPlayer();
         
         this._moveCounter = 0;
+        
+        Game.AuxScreen.helpScreen.refresh();
         
         // Create our map from the tiles and player
 //        var tiles = new Game.Builder(width, height, depth).getTiles();
@@ -437,6 +450,10 @@ Game.Screen.ItemListScreen = function(template) {
     this._hasNoItemOption = template['hasNoItemOption'];
 };
 
+Game.Screen.ItemListScreen.prototype.getHelpSections = function() {
+    return ['inventory'];
+};
+
 Game.Screen.ItemListScreen.prototype.setParentScreen = function(screen) {
     this._parentScreen = screen;
 }
@@ -603,6 +620,11 @@ Game.Screen.inventoryScreen.handleInput = function(inputType, inputData) {
     }
 }
 
+Game.Screen.inventoryScreen.getHelpSections = function() {
+    return ['inventory'];
+};
+
+
 //-------------------
 
 Game.Screen.pickupScreen = new Game.Screen.ItemListScreen({
@@ -619,6 +641,10 @@ Game.Screen.pickupScreen = new Game.Screen.ItemListScreen({
     }
 });
 
+Game.Screen.pickupScreen.getHelpSections = function() {
+    return [];
+};
+
 //-------------------
 
 Game.Screen.dropScreen = new Game.Screen.ItemListScreen({
@@ -631,6 +657,10 @@ Game.Screen.dropScreen = new Game.Screen.ItemListScreen({
         return true;
     }
 });
+
+Game.Screen.dropScreen.getHelpSections = function() {
+    return [];
+};
 
 //-------------------
 
@@ -653,6 +683,11 @@ Game.Screen.eatScreen = new Game.Screen.ItemListScreen({
         return true;
     }
 });
+
+Game.Screen.eatScreen.getHelpSections = function() {
+    return [];
+};
+
 
 //-------------------
 
@@ -682,6 +717,11 @@ Game.Screen.wieldScreen = new Game.Screen.ItemListScreen({
     }
 });
 
+Game.Screen.wieldScreen.getHelpSections = function() {
+    return [];
+};
+
+
 //-------------------
 
 Game.Screen.wearScreen = new Game.Screen.ItemListScreen({
@@ -709,6 +749,11 @@ Game.Screen.wearScreen = new Game.Screen.ItemListScreen({
     }
 });
 
+Game.Screen.wearScreen.getHelpSections = function() {
+    return [];
+};
+
+
 //-------------------
 
 Game.Screen.fireFlingScreen = new Game.Screen.ItemListScreen({
@@ -732,6 +777,10 @@ Game.Screen.fireFlingScreen = new Game.Screen.ItemListScreen({
         return false;
     }
 });
+
+Game.Screen.fireFlingScreen.getHelpSections = function() {
+    return [];
+};
 
 Game.Screen.fireFlingScreen.setAmmo = function(item) {
     this._ammo = item;
@@ -768,11 +817,19 @@ Game.Screen.examineScreen = new Game.Screen.ItemListScreen({
     }
 });
 
+Game.Screen.examineScreen.getHelpSections = function() {
+    return [];
+};
+
+
 ////////////////////////////////////////////////////////////
 
 Game.Screen.gainStatScreen = {
     _subScreen: null,
     _parentScreen: null,
+    enter: function() {
+        Game.AuxScreen.helpScreen.refresh(this.getHelpSections());
+    },
     setup: function(entity) {
         // Must be called before rendering.
         this._entity = entity;
@@ -780,6 +837,9 @@ Game.Screen.gainStatScreen = {
     },
     setParentScreen: function(screen) {
         this._parentScreen = screen;
+    },
+    getHelpSections: function() {
+        return [];
     },
     render: function(display) {
         if (this._parentScreen) {
@@ -858,6 +918,10 @@ Game.Screen.TargetBasedScreen = function(template) {
     this._lastTargetCoord = null;
 };
 
+Game.Screen.TargetBasedScreen.prototype.getHelpSections = function() {
+    return ['movement','targeting'];
+};
+
 Game.Screen.TargetBasedScreen.prototype.setParentScreen = function(screen) {
     this._parentScreen = screen;
 }
@@ -888,6 +952,8 @@ Game.Screen.TargetBasedScreen.prototype.setup = function(player, startX, startY,
             visibleCells[x + "," + y] = true;
         });
     this._visibleCells = visibleCells;
+    
+    Game.AuxScreen.helpScreen.refresh(this.getHelpSections());
 };
 
 /*
@@ -1431,6 +1497,9 @@ Game.Screen.storyScreen = {
         'was_falling':"You awake to discover, to your shock, that you are not dead. Your gear was badly damaged by the fall - there's no way you'll be calling for help with that mess, and your suit integrity is completely shot. About the only thing still working is an emergency light on your helmet, a hand-held analyzer, and your old-fashioned multi-tool. On the plus side, you've made an amazing discovery! The cave air down here is actually breathable (at least for the short term), the temperature is warm enough that the crushed heating unit won't be what does you in, and through your slightly bloodied and swollen nose you think that you detect a faint, strangely organic aroma! Now all you have to do is figure out how to let your team know that you survived, and- Wait a moment! Is that *movement* over there in the shadows....!?",
         'was_uppercaves':'After a harrowing descent you find yourself in a very large cave and dealing with a very foul smell.'
     },
+    enter: function() {
+        Game.AuxScreen.helpScreen.refresh(this.getHelpSections());
+    },
     render: function(display) {
         var text = 'CAVES of MARS';
         var border = '-------------';
@@ -1442,6 +1511,10 @@ Game.Screen.storyScreen = {
         y = Game.getScreenHeight()-1;
         text = '%c{yellow}--- press space key to continue ---';
         display.drawText(Game.getScreenWidth() / 2 - text.length / 2, y++, text);
+        Game.AuxScreen.helpScreen.refresh(this.getHelpSections());
+    },
+    getHelpSections: function() {
+        return [];
     },
     setParentScreen: function(screen) {
         this._parentScreen = screen;
@@ -1569,6 +1642,9 @@ Game.Screen.storyScreen = {
 Game.Screen.fallingScreen = {
     y: 1,
     _player: null,
+    getHelpSections: function() {
+        return [];
+    },
     enter: function() {
         console.log("Entered falling screen."); 
         this._player = Game.Screen.playScreen.getPlayer();
@@ -1584,6 +1660,7 @@ Game.Screen.fallingScreen = {
         
         
         setTimeout(this.fallFarther,300);
+        Game.AuxScreen.helpScreen.refresh(this.getHelpSections());
     },
     exit: function() { console.log("Exited falling screen."); },
     render: function(display) {
@@ -1637,8 +1714,12 @@ Game.Screen.winScreen = {
     ],
     _text_idx: 0,
     _inputLock: false,
+    getHelpSections: function() {
+        return ['winning'];
+    },
     enter: function() {
         console.log("Entered win screen."); 
+        Game.AuxScreen.helpScreen.refresh(this.getHelpSections());
     },
     exit: function() { console.log("Exited win screen."); },
     render: function(display) {
@@ -1691,8 +1772,13 @@ Game.Screen.winScreen = {
 
 // Define our winning screen
 Game.Screen.loseScreen = {
-    enter: function() {    console.log("Entered lose screen."); },
+    enter: function() {    console.log("Entered lose screen.");
+        Game.AuxScreen.helpScreen.refresh(this.getHelpSections());
+    },
     exit: function() { console.log("Exited lose screen."); },
+    getHelpSections: function() {
+        return ['losing'];
+    },
     render: function(display) {
         // Render our prompt to the screen
 //        for (var i = 0; i < 22; i++) {

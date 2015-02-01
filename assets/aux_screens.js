@@ -136,95 +136,121 @@ Game.AuxScreen.helpScreen = {
         this._characterLookups = Game.Bindings.getDisplayStringsForActions(bindingSet);
         this.render();
     },
-    render: function() {
+    render: function(commandSets) {
         if (! this._bindingSet) {
             return;
+        }
+        
+        if (! commandSets) {
+            commandSets = [];
         }
 
         var y = 0;        
         //this._display.drawText(4,y,'Movement');
         
         //y++;
-        this._display.drawText(1,y,this._color+this._characterLookups[Game.Bindings.Actions.Moves.MOVE_UL.unique_id]);
-        this._display.drawText(3,y,this._color+this._characterLookups[Game.Bindings.Actions.Moves.MOVE_U.unique_id]);
-        this._display.drawText(5,y,this._color+this._characterLookups[Game.Bindings.Actions.Moves.MOVE_UR.unique_id]);
+        if (commandSets.indexOf('movement') > -1) {
+            this._display.drawText(1,y,this._color+this._characterLookups[Game.Bindings.Actions.Moves.MOVE_UL.unique_id]);
+            this._display.drawText(3,y,this._color+this._characterLookups[Game.Bindings.Actions.Moves.MOVE_U.unique_id]);
+            this._display.drawText(5,y,this._color+this._characterLookups[Game.Bindings.Actions.Moves.MOVE_UR.unique_id]);
 
-        y++;
-        this._display.drawText(2,y,'\\');
-        this._display.drawText(3,y,'|');
-        this._display.drawText(4,y,'/');
-        this._display.drawText(8,y,this._color+this._characterLookups[Game.Bindings.Actions.Moves.MOVE_ASCEND.unique_id]);
-        this._display.drawText(10,y,Game.Bindings.Actions.Moves.MOVE_ASCEND.word);
+            y++;
+            this._display.drawText(2,y,'\\');
+            this._display.drawText(3,y,'|');
+            this._display.drawText(4,y,'/');
+            if (commandSets.indexOf('levels') > -1) {
+                this._display.drawText(8,y,this._color+this._characterLookups[Game.Bindings.Actions.Moves.MOVE_ASCEND.unique_id]);
+                this._display.drawText(10,y,Game.Bindings.Actions.Moves.MOVE_ASCEND.word);
+            }
+            
+            y++;
+            this._display.drawText(1,y,this._color+this._characterLookups[Game.Bindings.Actions.Moves.MOVE_L.unique_id]);
+            this._display.drawText(2,y,'-');
+            this._display.drawText(3,y,this._color+this._characterLookups[Game.Bindings.Actions.Moves.MOVE_WAIT.unique_id]);
+            this._display.drawText(4,y,'-');
+            this._display.drawText(5,y,this._color+this._characterLookups[Game.Bindings.Actions.Moves.MOVE_R.unique_id]);
 
-        y++;
-        this._display.drawText(1,y,this._color+this._characterLookups[Game.Bindings.Actions.Moves.MOVE_L.unique_id]);
-        this._display.drawText(2,y,'-');
-        this._display.drawText(3,y,this._color+this._characterLookups[Game.Bindings.Actions.Moves.MOVE_WAIT.unique_id]);
-        this._display.drawText(4,y,'-');
-        this._display.drawText(5,y,this._color+this._characterLookups[Game.Bindings.Actions.Moves.MOVE_R.unique_id]);
-
-        y++;
-        this._display.drawText(2,y,'/');
-        this._display.drawText(3,y,'|');
-        this._display.drawText(4,y,'\\');
-        this._display.drawText(8,y,this._color+this._characterLookups[Game.Bindings.Actions.Moves.MOVE_DESCEND.unique_id]);
-        this._display.drawText(10,y,Game.Bindings.Actions.Moves.MOVE_DESCEND.word);
-
-        y++;
-        this._display.drawText(1,y,this._color+this._characterLookups[Game.Bindings.Actions.Moves.MOVE_DL.unique_id]);
-        this._display.drawText(3,y,this._color+this._characterLookups[Game.Bindings.Actions.Moves.MOVE_D.unique_id]);
-        this._display.drawText(5,y,this._color+this._characterLookups[Game.Bindings.Actions.Moves.MOVE_DR.unique_id]);
+            y++;
+            this._display.drawText(2,y,'/');
+            this._display.drawText(3,y,'|');
+            this._display.drawText(4,y,'\\');
+            if (commandSets.indexOf('levels') > -1) {
+                this._display.drawText(8,y,this._color+this._characterLookups[Game.Bindings.Actions.Moves.MOVE_DESCEND.unique_id]);
+                this._display.drawText(10,y,Game.Bindings.Actions.Moves.MOVE_DESCEND.word);
+            }
+            
+            y++;
+            this._display.drawText(1,y,this._color+this._characterLookups[Game.Bindings.Actions.Moves.MOVE_DL.unique_id]);
+            this._display.drawText(3,y,this._color+this._characterLookups[Game.Bindings.Actions.Moves.MOVE_D.unique_id]);
+            this._display.drawText(5,y,this._color+this._characterLookups[Game.Bindings.Actions.Moves.MOVE_DR.unique_id]);
+    
+            y += 2;
+        }        
         
-        
-        y += 2;
-        this._display.drawText(1,y,this._color+this._characterLookups[Game.Bindings.Actions.Inventory.INVENTORY_LIST.unique_id]);
-        this._display.drawText(4,y,Game.Bindings.Actions.Inventory.INVENTORY_LIST.word);
+        if (commandSets.indexOf('inventory') > -1) {
+            this._display.drawText(1,y,this._color+this._characterLookups[Game.Bindings.Actions.Inventory.INVENTORY_LIST.unique_id]);
+            this._display.drawText(5,y,Game.Bindings.Actions.Inventory.INVENTORY_LIST.word);
 
-        y++;
-        this._display.drawText(1,y,this._color+this._characterLookups[Game.Bindings.Actions.Inventory.INVENTORY_GET.unique_id]);
-        this._display.drawText(4,y,Game.Bindings.Actions.Inventory.INVENTORY_GET.word);
+            y++;
+            this._display.drawText(1,y,this._color+this._characterLookups[Game.Bindings.Actions.Inventory.INVENTORY_GET.unique_id]);
+            this._display.drawText(5,y,Game.Bindings.Actions.Inventory.INVENTORY_GET.word);
 
-        y++;
-        this._display.drawText(1,y,this._color+this._characterLookups[Game.Bindings.Actions.Inventory.INVENTORY_DROP.unique_id]);
-        this._display.drawText(4,y,Game.Bindings.Actions.Inventory.INVENTORY_DROP.word);
+            y++;
+            this._display.drawText(1,y,this._color+this._characterLookups[Game.Bindings.Actions.Inventory.INVENTORY_DROP.unique_id]);
+            this._display.drawText(5,y,Game.Bindings.Actions.Inventory.INVENTORY_DROP.word);
 
-        y++;
-        this._display.drawText(1,y,this._color+this._characterLookups[Game.Bindings.Actions.Inventory.INVENTORY_WEAR.unique_id]);
-        this._display.drawText(4,y,Game.Bindings.Actions.Inventory.INVENTORY_WEAR.word);
+            y++;
+            this._display.drawText(1,y,this._color+this._characterLookups[Game.Bindings.Actions.Inventory.INVENTORY_WEAR.unique_id]);
+            this._display.drawText(5,y,Game.Bindings.Actions.Inventory.INVENTORY_WEAR.word);
 
-        y++;
-        this._display.drawText(1,y,this._color+this._characterLookups[Game.Bindings.Actions.Inventory.INVENTORY_WIELD.unique_id]);
-        this._display.drawText(4,y,Game.Bindings.Actions.Inventory.INVENTORY_WIELD.word);
+            y++;
+            this._display.drawText(1,y,this._color+this._characterLookups[Game.Bindings.Actions.Inventory.INVENTORY_WIELD.unique_id]);
+            this._display.drawText(5,y,Game.Bindings.Actions.Inventory.INVENTORY_WIELD.word);
 
-        y++;
-        this._display.drawText(1,y,this._color+this._characterLookups[Game.Bindings.Actions.Inventory.INVENTORY_EXAMINE.unique_id]);
-        this._display.drawText(4,y,Game.Bindings.Actions.Inventory.INVENTORY_EXAMINE.word);
+            y++;
+            this._display.drawText(1,y,this._color+this._characterLookups[Game.Bindings.Actions.Inventory.INVENTORY_EXAMINE.unique_id]);
+            this._display.drawText(5,y,Game.Bindings.Actions.Inventory.INVENTORY_EXAMINE.word);
 
-        y++;
-        this._display.drawText(1,y,this._color+this._characterLookups[Game.Bindings.Actions.Inventory.INVENTORY_EAT.unique_id]);
-        this._display.drawText(4,y,Game.Bindings.Actions.Inventory.INVENTORY_EAT.word);
+            y++;
+            this._display.drawText(1,y,this._color+this._characterLookups[Game.Bindings.Actions.Inventory.INVENTORY_EAT.unique_id]);
+            this._display.drawText(5,y,Game.Bindings.Actions.Inventory.INVENTORY_EAT.word);
 
-        y++;
-        this._display.drawText(1,y,this._color+this._characterLookups[Game.Bindings.Actions.Inventory.INVENTORY_FLING.unique_id]);
-        this._display.drawText(4,y,Game.Bindings.Actions.Inventory.INVENTORY_FLING.word);
+            y++;
+            this._display.drawText(1,y,this._color+this._characterLookups[Game.Bindings.Actions.Inventory.INVENTORY_FLING.unique_id]);
+            this._display.drawText(5,y,Game.Bindings.Actions.Inventory.INVENTORY_FLING.word);
 
+            y += 2;
+        }
 
-        y += 2;
-        this._display.drawText(1,y,this._color+this._characterLookups[Game.Bindings.Actions.Targeting.LOOK.unique_id]);
-        this._display.drawText(4,y,Game.Bindings.Actions.Targeting.LOOK.word);
+        if (commandSets.indexOf('sense') > -1) {
+            this._display.drawText(1,y,this._color+this._characterLookups[Game.Bindings.Actions.Targeting.LOOK.unique_id]);
+            this._display.drawText(5,y,Game.Bindings.Actions.Targeting.LOOK.word);
+            y += 2;
+        }
 
+        if (commandSets.indexOf('targeting') > -1) {
+            this._display.drawText(1,y,this._color+this._characterLookups[Game.Bindings.Actions.Targeting.USE_OLD_TARGET.unique_id]);
+            this._display.drawText(5,y,Game.Bindings.Actions.Targeting.USE_OLD_TARGET.word);
+            y++;
 
-        y += 2;
-        this._display.drawText(1,y,this._color+this._characterLookups[Game.Bindings.Actions.Meta.SWITCH_KEYBINDING.unique_id]);
-        this._display.drawText(4,y,Game.Bindings.Actions.Meta.SWITCH_KEYBINDING.word);
+            this._display.drawText(1,y,this._color+this._characterLookups[Game.Bindings.Actions.Targeting.CLEAR_OLD_TARGET.unique_id]);
+            this._display.drawText(5,y,Game.Bindings.Actions.Targeting.CLEAR_OLD_TARGET.word);
 
-        y++;
-        this._display.drawText(1,y,this._color+this._characterLookups[Game.Bindings.Actions.Meta.HELP.unique_id]);
-        this._display.drawText(4,y,Game.Bindings.Actions.Meta.HELP.word);
+            y += 2;
+        }
+
+        if (commandSets.indexOf('meta') > -1) {
+            this._display.drawText(1,y,this._color+this._characterLookups[Game.Bindings.Actions.Meta.SWITCH_KEYBINDING.unique_id]);
+            this._display.drawText(5,y,Game.Bindings.Actions.Meta.SWITCH_KEYBINDING.word);
+
+            y++;
+            this._display.drawText(1,y,this._color+this._characterLookups[Game.Bindings.Actions.Meta.HELP.unique_id]);
+            this._display.drawText(5,y,Game.Bindings.Actions.Meta.HELP.word);
+        }
     },
-    refresh: function() {
+    refresh: function(commandSets) {
         this._display.clear();
-        this.render();
+        this.render(commandSets);
     }
 };
 

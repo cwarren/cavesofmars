@@ -83,7 +83,7 @@ var Game =  {
         this._currentScreen.render(this._display_main);
         if (this._currentScreen == Game.Screen.playScreen) {
             this._aux_screen_avatar.refresh();
-            this._aux_screen_help.refresh();
+            //this._aux_screen_help.refresh();
             this._aux_screen_message.refresh();
             this._aux_screen_info.refresh();
         }

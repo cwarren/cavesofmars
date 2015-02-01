@@ -76,7 +76,7 @@ Game.Bindings = {
         Targeting: {
             LOOK:             {id: 1, unique_id: Game.util.generateRandomString(24), word:"look around",  descr: "get information about some visible space, item, or creature"},
             USE_OLD_TARGET:   {id: 2, unique_id: Game.util.generateRandomString(24), word:"re-target",  descr: "set the target to the previous target used"},
-            CLEAR_OLD_TARGET: {id: 3, unique_id: Game.util.generateRandomString(24), word:"clear target", descr: "remove any old targeting, setting the cursor to the player location"}
+            CLEAR_OLD_TARGET: {id: 3, unique_id: Game.util.generateRandomString(24), word:"no target", descr: "remove any old targeting, setting the cursor to the player location"}
         },
         Meta: {
             SWITCH_KEYBINDING: {id: 1, unique_id: Game.util.generateRandomString(24), word:"swap controls", descr: "swap between numpad-oriented and laptop-oriented controls"},
@@ -114,7 +114,7 @@ Game.Bindings['BindingSet_Numpad']['isKeydown'][ROT.VK_F] = ['f',Game.Bindings.A
 
 Game.Bindings['BindingSet_Numpad']['isKeydown'][ROT.VK_L] = ['l',Game.Bindings.Actions.Targeting.LOOK];
 Game.Bindings['BindingSet_Numpad']['isKeydown'][ROT.VK_T] = ['t',Game.Bindings.Actions.Targeting.USE_OLD_TARGET];
-Game.Bindings['BindingSet_Numpad']['isKeydown'][ROT.VK_SPACE] = ['<space>',Game.Bindings.Actions.Targeting.CLEAR_OLD_TARGET];
+Game.Bindings['BindingSet_Numpad']['isKeydown'][ROT.VK_SPACE] = ["' '",Game.Bindings.Actions.Targeting.CLEAR_OLD_TARGET];
 
 Game.Bindings['BindingSet_Numpad']['isKeydown'][ROT.VK_BACK_SLASH] = ['\\',Game.Bindings.Actions.Meta.SWITCH_KEYBINDING];
 
@@ -149,6 +149,9 @@ Game.Bindings['BindingSet_Laptop']['isKeydown'][ROT.VK_G] = ['g',Game.Bindings.A
 Game.Bindings['BindingSet_Laptop']['isKeydown'][ROT.VK_F] = ['f',Game.Bindings.Actions.Inventory.INVENTORY_FLING];
 
 Game.Bindings['BindingSet_Laptop']['isKeydown'][ROT.VK_L] = ['l',Game.Bindings.Actions.Targeting.LOOK];
+Game.Bindings['BindingSet_Laptop']['isKeydown'][ROT.VK_T] = ['t',Game.Bindings.Actions.Targeting.USE_OLD_TARGET];
+Game.Bindings['BindingSet_Laptop']['isKeydown'][ROT.VK_SPACE] = ["' '",Game.Bindings.Actions.Targeting.CLEAR_OLD_TARGET];
+
 
 Game.Bindings['BindingSet_Laptop']['isKeydown'][ROT.VK_BACK_SLASH] = ['\\',Game.Bindings.Actions.Meta.SWITCH_KEYBINDING];
 

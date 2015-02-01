@@ -40,8 +40,6 @@ analyzer
 
 TODO NEXT:
  
-1. update help section to provide dynamic, contextual help (e.g. inventory, movement, targeting, etc.)
-
 3. richer inventory management system - weight and volume attributes
     inventory uses weight and bulk limits instead of slot limits
 5. arbitrarily many slots (UI to step through the list)
