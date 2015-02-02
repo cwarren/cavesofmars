@@ -448,6 +448,10 @@ Game.Screen.ItemListScreen = function(template) {
     
     // Whether a 'no item' option should appear.
     this._hasNoItemOption = template['hasNoItemOption'];
+    
+    this._displayIndexBase = 0;
+    this._displayItems;
+    this._displayMaxNum = Game.getScreenHeight()-2;
 };
 
 Game.Screen.ItemListScreen.prototype.getHelpSections = function() {
@@ -476,6 +480,8 @@ Game.Screen.ItemListScreen.prototype.setup = function(player, items) {
     });
     // Clean set of selected indices
     this._selectedIndices = {};
+    this._displayIndexBase = 0;
+    this._displayItems = this._items.slice(0,this._displayMaxNum);
     return count;
 };
 
@@ -495,9 +501,9 @@ Game.Screen.ItemListScreen.prototype.render = function(display) {
             display.drawText(0, 1, Game.Screen.DEFAULT_COLOR_SETTER + '0 - no item');
             row++;
     }
-    for (var i = 0; i < this._items.length; i++) {
+    for (var i = 0; i < this._displayItems.length; i++) {
         // If we have an item, we want to render it.
-        if (this._items[i]) {
+        if (this._displayItems[i]) {
             // Get the letter matching the item's index
             var letter = letters.substring(i, i + 1);
             
@@ -508,15 +514,15 @@ Game.Screen.ItemListScreen.prototype.render = function(display) {
             
             // Check if the item is worn or wielded
             var suffix = '';
-            if (this._items[i] === this._player.getArmor()) {
+            if (this._displayItems[i] === this._player.getArmor()) {
                 suffix = ' (wearing)';
-            } else if (this._items[i] === this._player.getWeapon()) {
+            } else if (this._displayItems[i] === this._player.getWeapon()) {
                 suffix = ' (wielding)';
             }
 
             // Render at the correct row and add 1
-            var item_symbol = this._items[i].getColorDesignator()+this._items[i].getChar()+Game.Screen.DEFAULT_COLOR_SETTER;
-            display.drawText(0, 1 + row, Game.Screen.DEFAULT_COLOR_SETTER + letter + ' ' + selectionState + ' ' + item_symbol + ' ' +this._items[i].describe() + suffix);
+            var item_symbol = this._displayItems[i].getColorDesignator()+this._displayItems[i].getChar()+Game.Screen.DEFAULT_COLOR_SETTER;
+            display.drawText(0, 1 + row, Game.Screen.DEFAULT_COLOR_SETTER + letter + ' ' + selectionState + ' ' + item_symbol + ' ' +this._displayItems[i].describe() + suffix);
             row++;
         }
     }
@@ -648,12 +654,12 @@ Game.Screen.pickupScreen.getHelpSections = function() {
 //-------------------
 
 Game.Screen.dropScreen = new Game.Screen.ItemListScreen({
-    caption: 'Choose the item you wish to drop',
+    caption: 'Choose the items you wish to drop',
     canSelect: true,
-    canSelectMultipleItems: false,
+    canSelectMultipleItems: true,
     ok: function(selectedItems) {
         // Drop the selected item
-        this._player.dropItem(Object.keys(selectedItems)[0]);
+        this._player.dropItems(Object.keys(selectedItems));
         return true;
     }
 });

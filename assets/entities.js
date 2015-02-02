@@ -9,7 +9,7 @@ Game.PlayerTemplate = {
     attackValue: 3,
     digRate: 2,
     sightRadius: 4,
-    inventorySlots: 12,
+    inventorySlots: 42,
     statPointsPerLevel: 2,
     messageArchiveLimit: 50,
 //    fullness: 1000,

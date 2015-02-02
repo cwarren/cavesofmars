@@ -39,10 +39,13 @@ powerbars
 analyzer
 
 TODO NEXT:
+
+1. arbitrarily many slots (UI to step through the list)
  
 3. richer inventory management system - weight and volume attributes
     inventory uses weight and bulk limits instead of slot limits
-5. arbitrarily many slots (UI to step through the list)
+
+5. all inventory commands offer options from items on current space in addition to those in inventory
 
 6. stackable item mixin? (impacts inventory)
 

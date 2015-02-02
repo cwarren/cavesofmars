@@ -806,13 +806,22 @@ Game.EntityMixins.InventoryHolder = {
         return true;
     },
     removeItem: function(i) {
+//        // If we can equip items, then make sure we unequip the item we are removing.
+//        if (this._items[i] && this.hasMixin(Game.EntityMixins.Equipper)) {
+//            this.unequip(this._items[i]);
+//        }
+//        // Simply clear the inventory slot.
+//        this._items[i] = null;
+        this.clearOutItem(i);
+        this._CleanInventory();
+    },
+    clearOutItem: function(i) {
         // If we can equip items, then make sure we unequip the item we are removing.
         if (this._items[i] && this.hasMixin(Game.EntityMixins.Equipper)) {
             this.unequip(this._items[i]);
         }
         // Simply clear the inventory slot.
         this._items[i] = null;
-        this._CleanInventory();
     },
     canAddItem: function() {
         // Check if we have an empty slot.
@@ -857,6 +866,30 @@ Game.EntityMixins.InventoryHolder = {
             }
             this.setLastActionDuration(this.getDefaultActionDuration());
             
+        }
+    },
+    dropItems: function(indices) {
+        if (indices.length == 1) {
+            this.dropItem(indices[0]);
+            return;
+        }
+        
+        var didDrop = false;
+        // Drops multiple items to the current map tile
+        for (var i = 0; i < indices.length; i++) {
+            if (this._items[indices[i]]) {
+                var item = this._items[indices[i]];
+                this.clearOutItem(indices[i]);
+                if (this._map) {
+                    this._map.addItem(this.getX(), this.getY(), this.getZ(), item);
+                    item.raiseEvent('onDropped',this._map,this.getX(), this.getY(), this.getZ());
+                }
+                didDrop = true;
+            }
+        }
+        if (didDrop) {
+            this._CleanInventory();
+            this.setLastActionDuration(this.getDefaultActionDuration()*2);
         }
     },
     extractItem: function(i) {
