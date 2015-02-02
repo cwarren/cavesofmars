@@ -221,6 +221,15 @@ Game.AuxScreen.helpScreen = {
 
             y += 2;
         }
+        
+        if (commandSets.indexOf('datanav') > -1) {
+            this._display.drawText(1,y,this._color+this._characterLookups[Game.Bindings.Actions.DataNav.PAGE_UP.unique_id]);
+            this._display.drawText(5,y,Game.Bindings.Actions.DataNav.PAGE_UP.word);
+            y++;
+            this._display.drawText(1,y,this._color+this._characterLookups[Game.Bindings.Actions.DataNav.PAGE_DOWN.unique_id]);
+            this._display.drawText(5,y,Game.Bindings.Actions.DataNav.PAGE_DOWN.word);
+            y += 2;
+        }
 
         if (commandSets.indexOf('sense') > -1) {
             this._display.drawText(1,y,this._color+this._characterLookups[Game.Bindings.Actions.Targeting.LOOK.unique_id]);

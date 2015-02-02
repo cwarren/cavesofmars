@@ -40,8 +40,8 @@ analyzer
 
 TODO NEXT:
 
-1. arbitrarily many slots (UI to step through the list)
- 
+2. fix item sorting minor issue where geodic nut sorts before everything else 
+
 3. richer inventory management system - weight and volume attributes
     inventory uses weight and bulk limits instead of slot limits
 

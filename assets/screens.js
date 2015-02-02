@@ -451,11 +451,11 @@ Game.Screen.ItemListScreen = function(template) {
     
     this._displayIndexBase = 0;
     this._displayItems;
-    this._displayMaxNum = Game.getScreenHeight()-2;
+    this._displayMaxNum = Game.getScreenHeight()-3;
 };
 
 Game.Screen.ItemListScreen.prototype.getHelpSections = function() {
-    return ['inventory'];
+    return ['inventory','datanav'];
 };
 
 Game.Screen.ItemListScreen.prototype.setParentScreen = function(screen) {
@@ -479,11 +479,53 @@ Game.Screen.ItemListScreen.prototype.setup = function(player, items) {
         }
     });
     // Clean set of selected indices
-    this._selectedIndices = {};
+    this._selectedIndices = {}; // TODO: handle _displayIndexBase offset correctly
     this._displayIndexBase = 0;
-    this._displayItems = this._items.slice(0,this._displayMaxNum);
+    this._displayItems = [];
+    this.determineDisplayItems();
     return count;
 };
+
+Game.Screen.ItemListScreen.prototype.determineDisplayItems = function() {
+    this._displayItems = this._items.slice(this._displayIndexBase,this._displayIndexBase+this._displayMaxNum);
+}
+
+Game.Screen.ItemListScreen.prototype.handlePageUp = function() {
+    //console.log('page up');
+    //console.log('this._displayIndexBase='+this._displayIndexBase);
+    //console.dir(this._items);    
+    //console.dir(this._displayItems);
+    //console.log('---');
+    this._displayIndexBase -= this._displayMaxNum;
+    if (this._displayIndexBase < 0) {
+        this._displayIndexBase = 0;
+    }
+    this.determineDisplayItems();
+    //console.log('this._displayIndexBase='+this._displayIndexBase);
+    //console.dir(this._items);    
+    //console.dir(this._displayItems);
+    Game.refresh();
+}
+Game.Screen.ItemListScreen.prototype.handlePageDown = function() {
+    //console.log('page down');
+    //console.log('this._displayIndexBase='+this._displayIndexBase);
+    //console.dir(this._items);    
+    //console.dir(this._displayItems);
+    //console.log('---');
+    var numUnseenItems = this._items.length - (this._displayIndexBase + this._displayItems.length);
+    this._displayIndexBase += this._displayMaxNum;
+    if (this._displayIndexBase > this._items.length) {
+        this._displayIndexBase -= this._displayMaxNum;
+    }    
+    //if (this._displayIndexBase >= this._items.length - this._displayMaxNum) {
+    //    this._displayIndexBase = Math.max(0,this._items.length - this._displayMaxNum - 1);
+    //}    
+    this.determineDisplayItems();
+    //console.log('this._displayIndexBase='+this._displayIndexBase);
+    //console.dir(this._items);    
+    //console.dir(this._displayItems);
+    Game.refresh();
+}
 
 Game.Screen.ItemListScreen.prototype.render = function(display) {
     //this._player.clearMessages();
@@ -501,8 +543,13 @@ Game.Screen.ItemListScreen.prototype.render = function(display) {
             display.drawText(0, 1, Game.Screen.DEFAULT_COLOR_SETTER + '0 - no item');
             row++;
     }
+    if (this._displayIndexBase > 0) {
+            display.drawText(0, 1 + row, '%c{black}%b{yellow}page up for more');
+            row++;
+    }
     for (var i = 0; i < this._displayItems.length; i++) {
         // If we have an item, we want to render it.
+        var trueItemIndex = this._displayIndexBase + i;
         if (this._displayItems[i]) {
             // Get the letter matching the item's index
             var letter = letters.substring(i, i + 1);
@@ -510,13 +557,13 @@ Game.Screen.ItemListScreen.prototype.render = function(display) {
             // If we have selected an item, show a +, else show a dash between
             // the letter and the item's name.
             var selectionState = (this._canSelectItem && this._canSelectMultipleItems &&
-                this._selectedIndices[i]) ? '+' : '-';
+                this._selectedIndices[trueItemIndex]) ? '+' : '-';
             
             // Check if the item is worn or wielded
             var suffix = '';
-            if (this._displayItems[i] === this._player.getArmor()) {
+            if (this._items[trueItemIndex] === this._player.getArmor()) {
                 suffix = ' (wearing)';
-            } else if (this._displayItems[i] === this._player.getWeapon()) {
+            } else if (this._items[trueItemIndex] === this._player.getWeapon()) {
                 suffix = ' (wielding)';
             }
 
@@ -525,6 +572,10 @@ Game.Screen.ItemListScreen.prototype.render = function(display) {
             display.drawText(0, 1 + row, Game.Screen.DEFAULT_COLOR_SETTER + letter + ' ' + selectionState + ' ' + item_symbol + ' ' +this._displayItems[i].describe() + suffix);
             row++;
         }
+    }
+    if ((this._displayIndexBase + this._displayItems.length) < this._items.length) {
+            display.drawText(0, 1 + row, '%c{black}%b{yellow}page down for more');
+            row++;
     }
 };
 
@@ -543,6 +594,8 @@ Game.Screen.ItemListScreen.prototype.executeOkFunction = function() {
 };
 
 Game.Screen.ItemListScreen.prototype.handleInput = function(inputType, inputData) {
+    console.dir(inputType);
+    console.dir(inputData);
     if (inputType === 'keydown') {
         // If the user hit escape, hit enter and can't select an item, or hit
         // enter without any items selected, simply cancel out
@@ -566,21 +619,38 @@ Game.Screen.ItemListScreen.prototype.handleInput = function(inputType, inputData
             // Check if it maps to a valid item by subtracting 'a' from the character
             // to know what letter of the alphabet we used.
             var index = inputData.keyCode - ROT.VK_A;
-            if (this._items[index]) {
+            var trueItemIndex = this._displayIndexBase + index;
+            if (this._items[trueItemIndex]) {
                 // If multiple selection is allowed, toggle the selection status, else
                 // select the item and exit the screen
                 if (this._canSelectMultipleItems) {
-                    if (this._selectedIndices[index]) {
-                        delete this._selectedIndices[index];
+                    if (this._selectedIndices[trueItemIndex]) {
+                        delete this._selectedIndices[trueItemIndex];
                     } else {
-                        this._selectedIndices[index] = true;
+                        this._selectedIndices[trueItemIndex] = true;
                     }
                     // Redraw screen
                     Game.refresh();
                 } else {
-                    this._selectedIndices[index] = true;
+                    this._selectedIndices[trueItemIndex] = true;
                     this.executeOkFunction();
                 }
+            }
+        } else {
+            var gameAction = Game.Bindings.getAction(inputType, inputData, Game.getControlScheme());
+
+            //----------------------------
+            // data nav actions
+            if (gameAction === Game.Bindings.Actions.DataNav.PAGE_UP) {
+                //console.log('page up');
+                this.handlePageUp();
+        //        this._parentScreen.showItemsSubScreen(Game.Screen.dropScreen, this._player.getItems(),'You have nothing to drop.');
+                return;
+            } else if (gameAction === Game.Bindings.Actions.DataNav.PAGE_DOWN) {
+                //console.log('page down');
+                this.handlePageDown();
+        //        this._parentScreen.showItemsSubScreen(Game.Screen.examineScreen, this._player.getItems(),'You have nothing to examine.');
+                return;
             }
         }
     }
@@ -595,6 +665,8 @@ Game.Screen.inventoryScreen = new Game.Screen.ItemListScreen({
 });
 
 Game.Screen.inventoryScreen.handleInput = function(inputType, inputData) {
+//    console.dir(inputType);
+//    console.dir(inputData);
 
     if ((inputData.keyCode === ROT.VK_ESCAPE) || (inputData.keyCode === ROT.VK_RETURN)) {
         Game.Screen.playScreen.setSubScreen(undefined);
@@ -624,10 +696,24 @@ Game.Screen.inventoryScreen.handleInput = function(inputType, inputData) {
         this._parentScreen.showItemsSubScreen(Game.Screen.examineScreen, this._player.getItems(),'You have nothing to examine.');
         return;
     }
+    
+    //----------------------------
+    // data nav actions
+    if (gameAction === Game.Bindings.Actions.DataNav.PAGE_UP) {
+        //console.log('page up');
+        this.handlePageUp();
+//        this._parentScreen.showItemsSubScreen(Game.Screen.dropScreen, this._player.getItems(),'You have nothing to drop.');
+        return;
+    } else if (gameAction === Game.Bindings.Actions.DataNav.PAGE_DOWN) {
+        //console.log('page down');
+        this.handlePageDown();
+//        this._parentScreen.showItemsSubScreen(Game.Screen.examineScreen, this._player.getItems(),'You have nothing to examine.');
+        return;
+    }
 }
 
 Game.Screen.inventoryScreen.getHelpSections = function() {
-    return ['inventory'];
+    return ['inventory','datanav'];
 };
 
 
@@ -648,7 +734,7 @@ Game.Screen.pickupScreen = new Game.Screen.ItemListScreen({
 });
 
 Game.Screen.pickupScreen.getHelpSections = function() {
-    return [];
+    return ['datanav'];
 };
 
 //-------------------
@@ -665,7 +751,7 @@ Game.Screen.dropScreen = new Game.Screen.ItemListScreen({
 });
 
 Game.Screen.dropScreen.getHelpSections = function() {
-    return [];
+    return ['datanav'];
 };
 
 //-------------------
@@ -691,7 +777,7 @@ Game.Screen.eatScreen = new Game.Screen.ItemListScreen({
 });
 
 Game.Screen.eatScreen.getHelpSections = function() {
-    return [];
+    return ['datanav'];
 };
 
 
@@ -724,7 +810,7 @@ Game.Screen.wieldScreen = new Game.Screen.ItemListScreen({
 });
 
 Game.Screen.wieldScreen.getHelpSections = function() {
-    return [];
+    return ['datanav'];
 };
 
 
@@ -756,7 +842,7 @@ Game.Screen.wearScreen = new Game.Screen.ItemListScreen({
 });
 
 Game.Screen.wearScreen.getHelpSections = function() {
-    return [];
+    return ['datanav'];
 };
 
 
@@ -785,7 +871,7 @@ Game.Screen.fireFlingScreen = new Game.Screen.ItemListScreen({
 });
 
 Game.Screen.fireFlingScreen.getHelpSections = function() {
-    return [];
+    return ['datanav'];
 };
 
 Game.Screen.fireFlingScreen.setAmmo = function(item) {
@@ -824,7 +910,7 @@ Game.Screen.examineScreen = new Game.Screen.ItemListScreen({
 });
 
 Game.Screen.examineScreen.getHelpSections = function() {
-    return [];
+    return ['datanav'];
 };
 
 
@@ -1574,7 +1660,6 @@ Game.Screen.storyScreen = {
                 
                 /////////////////////////////
                 /// CODE FOR ITEM TESTING!!!!
-                /*
                 console.log('item testing code is active');
 
                 player.addItem(Game.ItemRepository.create('sling'));
@@ -1582,6 +1667,11 @@ Game.Screen.storyScreen = {
                 player.addItem(Game.ItemRepository.create('stone shot'));
                 player.addItem(Game.ItemRepository.create('iron shot'));
                 player.addItem(Game.ItemRepository.create('iron shot'));
+
+                for (var i=0;i<30;i++) {
+                    player.addItem(Game.ItemRepository.createRandom());
+                }
+                /*
                 */
                 /// CODE FOR ITEM TESTING!!!!
                 /////////////////////////////
