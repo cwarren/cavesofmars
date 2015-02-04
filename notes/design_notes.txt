@@ -40,28 +40,31 @@ analyzer
 
 TODO NEXT:
 
-2. fix item sorting minor issue where geodic nut sorts before everything else 
-
-3. richer inventory management system - weight and volume attributes
-    inventory uses weight and bulk limits instead of slot limits
+3. richer inventory management system - weight and volume attributes on all items
+    - inventory uses weight and bulk limits instead of slot limits
+        + bulk classes? carry slots?
+4. on unequip, drop vs re-stash?
+    - if throwing something on current space, action duration is 10% of normal?
 
 5. all inventory commands offer options from items on current space in addition to those in inventory
 
-6. stackable item mixin? (impacts inventory)
+6. consider 'stackable' item mixin? (impacts inventory)
 
 8. real equipment system (use item, choose viable slot)
 
 10. add new entity: small martian
 11.    which can pick up and equip items it finds (5 inven slots)
 11.5      need a value metric function for things that can be found/gotten - should have option of spec-ing direct values for items, but the function shoudl also support inspection-based valuation)
-12.    and which uses a more interesting / better wander mechanism
+12.    and which uses a more interesting / better wander mechanism (A* towards a given visible destination - choose a new destination on arrival, OR, weight random space selection against backtracking (until caught in a dead end?))
 13.    and drop inventory on death
 
 15. LOOT (loot tables (re-read blog post); drop rate; etc.)
         oozes sometimes drop loot
         give small martians some starting loot
 
-17. figure out where geodic nuts and jelly balls come from (oozes, perhaps?)
+17. figure out where geodic nuts and jelly balls come from (oozes, perhaps? introduce several kinds of ooze, and when they are adjacent they have a chance to spawn a jelly ball or a geodic nut (depending on other circumstances?))
+
+18. fix item sorting minor issue where geodic nut sorts before everything else 
 
 20. crafting system!
         two basic operations - break down (consume?) (create raw materials from something), and construct (build something from raw materials and/or other things)

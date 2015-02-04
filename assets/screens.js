@@ -275,6 +275,7 @@ Game.Screen.playScreen = {
         //----------------------------
         // inventory actions
         if (gameAction === Game.Bindings.Actions.Inventory.INVENTORY_LIST) {
+            this._player._CleanInventory();
             this.showItemsSubScreen(Game.Screen.inventoryScreen, this._player.getItems(),'You are not carrying anything.');
             return;
 
@@ -528,16 +529,17 @@ Game.Screen.ItemListScreen.prototype.handlePageDown = function() {
 }
 
 Game.Screen.ItemListScreen.prototype.render = function(display) {
-    //this._player.clearMessages();
-
-    if (this._parentScreen) {
-        this._parentScreen.renderTiles(display);
-        this._parentScreen.renderPlayerStats(display);
-    }
-
     var letters = 'abcdefghijklmnopqrstuvwxyz';
+    
     // Render the caption in the top row
-    display.drawText(0, 0, Game.Screen.DEFAULT_COLOR_SETTER + this._caption);
+    var captionText = 'Item List';
+    if (typeof this._caption == 'function') {
+        captionText = this._caption();
+    } else {
+        captionText = this._caption;
+    }
+    display.drawText(0, 0, Game.Screen.DEFAULT_COLOR_SETTER + captionText);
+    
     var row = 0;
     if (this._hasNoItemOption) {
             display.drawText(0, 1, Game.Screen.DEFAULT_COLOR_SETTER + '0 - no item');
@@ -559,17 +561,25 @@ Game.Screen.ItemListScreen.prototype.render = function(display) {
             var selectionState = (this._canSelectItem && this._canSelectMultipleItems &&
                 this._selectedIndices[trueItemIndex]) ? '+' : '-';
             
+            var weightNote = (this._items[trueItemIndex].getInvWeight()/1000) + ' kg';
+            var bulkNote = (this._items[trueItemIndex].getInvBulk()/1000) + ' L';
+
             // Check if the item is worn or wielded
             var suffix = '';
             if (this._items[trueItemIndex] === this._player.getArmor()) {
                 suffix = ' (wearing)';
+                bulkNote = 'worn';
             } else if (this._items[trueItemIndex] === this._player.getWeapon()) {
                 suffix = ' (wielding)';
+                bulkNote = 'in hand';
             }
+            
 
             // Render at the correct row and add 1
             var item_symbol = this._displayItems[i].getColorDesignator()+this._displayItems[i].getChar()+Game.Screen.DEFAULT_COLOR_SETTER;
             display.drawText(0, 1 + row, Game.Screen.DEFAULT_COLOR_SETTER + letter + ' ' + selectionState + ' ' + item_symbol + ' ' +this._displayItems[i].describe() + suffix);
+            display.drawText(50, 1 + row, weightNote);
+            display.drawText(65, 1 + row, bulkNote);
             row++;
         }
     }
@@ -659,7 +669,9 @@ Game.Screen.ItemListScreen.prototype.handleInput = function(inputType, inputData
 //-------------------
 
 Game.Screen.inventoryScreen = new Game.Screen.ItemListScreen({
-    caption: 'Inventory',
+    caption: function() {
+        return 'Inventory      mass: '+this._player.getWeightStatusString()+'       volume: '+this._player.getBulkStatusString();
+    },
     canSelect: false,
     
 });
@@ -828,7 +840,7 @@ Game.Screen.wearScreen = new Game.Screen.ItemListScreen({
         // Check if we selected 'no item'
         var keys = Object.keys(selectedItems);
         if (keys.length === 0) {
-            this._player.unwield();
+            this._player.takeOff();
             Game.sendMessage(this._player, "You are not wearing anthing.")
         } else {
             // Make sure to unequip the item first in case it is the weapon.
@@ -1668,7 +1680,7 @@ Game.Screen.storyScreen = {
                 player.addItem(Game.ItemRepository.create('iron shot'));
                 player.addItem(Game.ItemRepository.create('iron shot'));
 
-                for (var i=0;i<30;i++) {
+                for (var i=0;i<15;i++) {
                     player.addItem(Game.ItemRepository.createRandom());
                 }
                 /*

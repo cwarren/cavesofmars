@@ -29,6 +29,7 @@ Game.ItemRepository.Symbol = {
 // food & corpse
 Game.ItemRepository.define('jelly ball', {
     name: 'jelly ball',
+    group: 'food',
     character: Game.ItemRepository.Symbol['food'],
     foreground: 'red',
     foodValue: 50,
@@ -38,6 +39,7 @@ Game.ItemRepository.define('jelly ball', {
 
 Game.ItemRepository.define('geodic nut', {
     name: 'geodic nut',
+    group: 'food',
     character: Game.ItemRepository.Symbol['food'],
     foreground: 'lightGreen',
     foodValue: 35,

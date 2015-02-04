@@ -619,7 +619,7 @@ Game.EntityMixins.MeleeAttacker = {
             value = value || 2;
             // Add to the attack value.
             this._attackValue += value;
-            Game.sendMessage(this, "You are stronger!");
+            Game.sendMessage(this, "You are deadlier!");
     },
     attack: function(target) {
         // only can hit targets in melee range
@@ -731,10 +731,61 @@ Game.EntityMixins.InventoryHolder = {
     name: 'InventoryHolder',
     init: function(template) {
         // Default to 10 inventory slots.
-        this._inventorySlots = template['inventorySlots'] || 10;
+        //this._inventorySlots = template['inventorySlots'] || 10;
         // Set up an empty inventory.
         this._items = new Array();
+        
+        this._weightCapacity = template['weightCapacity'] || 52000; // 52 kg (20 on earth, but mars is 38% of earth gravity); NOTE: this is a soft limit, up until 5x that amount
+        this._bulkCapacity = template['bulkCapacity'] || 20000; // 20 l
+        
+        this._currentBulk = 0;
+        this._currentWeight = 0;
     },
+    
+    getWeightCapacity: function() {
+        return this._weightCapacity;
+    },
+    setWeightCapacity: function(v) {
+        this._weightCapacity = v;
+    },
+    increaseWeightCapacity: function(v) {
+        this._weightCapacity += v;
+    },
+    getCurrentWeight: function() {
+        return this._currentWeight;
+    },
+    setCurrentWeight: function(v) {
+        this._currentWeight = v;
+    },
+    increaseCurrentWeight: function(v) {
+        this._currentWeight += v;
+    },
+    getWeightStatusString: function() {
+        return (this._currentWeight/1000)+'/'+(this._weightCapacity/1000)+' kg';
+    },
+
+    getBulkCapacity: function() {
+        return this._bulkCapacity;
+    },
+    setBulkCapacity: function(v) {
+        this._bulkCapacity = v;
+    },
+    increaseBulkCapacity: function(v) {
+        this._bulkCapacity += v;
+    },
+    getCurrentBulk: function() {
+        return this._currentBulk;
+    },
+    setCurrentBulk: function(v) {
+        this._currentBulk = v;
+    },
+    increaseCurrentBulk: function(v) {
+        this._currentBulk += v;
+    },
+    getBulkStatusString: function() {
+        return (this._currentBulk/1000)+'/'+(this._bulkCapacity/1000)+' L';
+    },
+
     getItems: function() {
         return this._items;
     },
@@ -750,7 +801,7 @@ Game.EntityMixins.InventoryHolder = {
         }
         this._items = newItems;
     },
-    _SortInventory: function() {
+    _SortInventoryByType: function() {
         this._items.sort(function(a,b) {
             //console.dir(a);
             //console.dir(b);
@@ -779,9 +830,46 @@ Game.EntityMixins.InventoryHolder = {
             }
         });
     },
+    _SortInventoryByBulk: function() {
+        // sorts in descending order of bulk
+        this._items.sort(function(a,b) {
+            return b.getInvBulk() - a.getInvBulk();
+        });
+    },
+    _SortInventoryByWeight: function() {
+        // sorts in descending order of bulk
+        this._items.sort(function(a,b) {
+            return b.getInvBulk() - a.getInvBulk();
+        });
+    },
+    _calculateWeightAndBulk: function() {
+        this._currentBulk = 0;
+        this._currentWeight = 0;
+        var wieldedItem = '';
+        var wornItem = '';
+        if (this.hasMixin(Game.EntityMixins.Equipper)) {
+            wieldedItem = this.getWeapon();
+            wornItem = this.getArmor();
+        }
+        
+        for (var i=0; i<this._items.length; i++) {
+            this._currentWeight += this._items[i].getInvWeight();
+            console.log('wieldedItem');
+            console.dir(wieldedItem);
+            console.log('wornItem');
+            console.dir(wornItem);
+            console.log('this._items[i]');
+            console.dir(this._items[i]);
+            if ((wieldedItem && this._items[i] === wieldedItem) || (wornItem && this._items[i] === wornItem)) {
+                continue;
+            }
+            this._currentBulk +=  this._items[i].getInvBulk();
+        }
+    },
     _CleanInventory: function() {
         this._CompactInventory();
-        this._SortInventory();
+        this._SortInventoryByType();
+        this._calculateWeightAndBulk();
     },
     clearInventory: function() {
         //console.dir(Game.getPlayer());
@@ -791,6 +879,8 @@ Game.EntityMixins.InventoryHolder = {
             this.removeItem(0);
         }
         //console.dir(Game.getPlayer());
+        this._currentBulk = 0;
+        this._currentWeight = 0;
     },
     dropAllInventory: function() {
         while(this._items.length > 0) {
@@ -798,7 +888,7 @@ Game.EntityMixins.InventoryHolder = {
         }
     },
     addItem: function(item) {
-        if (this._items.length >= this._inventorySlots) {
+        if (! this.canAddItem(item)) {
             return false;
         }
         this._items.push(item);
@@ -812,10 +902,10 @@ Game.EntityMixins.InventoryHolder = {
 //        }
 //        // Simply clear the inventory slot.
 //        this._items[i] = null;
-        this.clearOutItem(i);
+        this._clearOutItem(i);
         this._CleanInventory();
     },
-    clearOutItem: function(i) {
+    _clearOutItem: function(i) { // NOTE: this should ALWAYS have _CleanInventory called after it's done being used
         // If we can equip items, then make sure we unequip the item we are removing.
         if (this._items[i] && this.hasMixin(Game.EntityMixins.Equipper)) {
             this.unequip(this._items[i]);
@@ -823,9 +913,13 @@ Game.EntityMixins.InventoryHolder = {
         // Simply clear the inventory slot.
         this._items[i] = null;
     },
-    canAddItem: function() {
-        // Check if we have an empty slot.
-        return (this._items.length < this._inventorySlots);
+    canAddItem: function(itm) {
+        //console.dir(itm);
+        // check bulk and weight limits: must be under bulk limit and under 5x weight limit
+        return (itm.getInvBulk() + this._currentBulk 
+                                < this._bulkCapacity) &&
+               (itm.getInvWeight() + this._currentWeight 
+                              < this._weightCapacity * 5);
     },
     pickupItems: function(indices) {
         // Allows the user to pick up items from the map, where indices is
@@ -879,7 +973,7 @@ Game.EntityMixins.InventoryHolder = {
         for (var i = 0; i < indices.length; i++) {
             if (this._items[indices[i]]) {
                 var item = this._items[indices[i]];
-                this.clearOutItem(indices[i]);
+                this._clearOutItem(indices[i]);
                 if (this._map) {
                     this._map.addItem(this.getX(), this.getY(), this.getZ(), item);
                     item.raiseEvent('onDropped',this._map,this.getX(), this.getY(), this.getZ());
