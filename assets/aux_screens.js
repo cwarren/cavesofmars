@@ -69,7 +69,7 @@ Game.AuxScreen.avatarScreen = {
         var y = 11
         
         var weapon = this._player.getWeapon();
-        if (weapon) {
+        if ((weapon) && (! weapon.hasMixin('Wearable'))) {
             y += this._display.drawText(0,y, weapon.getRepresentation() + ' ' +weapon.getName());
             if (weapon.getAttackValue() != 0 || weapon.getDefenseValue() != 0) {
                 y += this._display.drawText(1,y,vsprintf('atk: %s, def: %s',[weapon.getAttackValue(),weapon.getDefenseValue()]));

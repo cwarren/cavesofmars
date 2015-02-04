@@ -209,7 +209,7 @@ Game.EntityMixins.Digger = {
             var digAdds = [];
 
             var w = this.getWeapon();
-            if (w) {
+            if (w && ! w.hasMixin('Wearable')) {
                 digMults = digMults.concat(Game.util.scanEventResultsFor(w.raiseEvent('onDigging'),'digMultiplier'));
                 digAdds = digAdds.concat(Game.util.scanEventResultsFor(w.raiseEvent('onDigging'),'digAdder'));
             }
@@ -310,8 +310,9 @@ Game.EntityMixins.NonRecuperatingDestructible = {
         // If we can equip items, then have to take into 
         // consideration weapon and armor
         if (this.hasMixin(Game.EntityMixins.Equipper)) {
-            if (this.getWeapon()) {
-                modifier += this.getWeapon().getDefenseValue();
+            var w = this.getWeapon();
+            if (w && ! w.hasMixin('Wearable')) {
+                modifier += w.getDefenseValue();
             }
             if (this.getArmor()) {
                 modifier += this.getArmor().getDefenseValue();
@@ -519,7 +520,7 @@ Game.EntityMixins.RangedAttacker = {
         
         if (this.hasMixin('Equipper')) {
             var weapon = this.getWeapon();
-            if (weapon) {
+            if (weapon && ! weapon.hasMixin('Wearable')) {
                 var weaponShootEffects = weapon.raiseEvent('onShooting',ammo);
 
                 var mults = Game.util.scanEventResultsFor(weaponShootEffects,'rangedAttackDamageMultiplier');
@@ -605,8 +606,9 @@ Game.EntityMixins.MeleeAttacker = {
         // If we can equip items, then have to take into 
         // consideration weapon and armor
         if (this.hasMixin(Game.EntityMixins.Equipper)) {
-            if (this.getWeapon()) {
-                modifier += this.getWeapon().getAttackValue();
+            var w = this.getWeapon();
+            if (w && ! w.hasMixin('Wearable')) {
+                modifier += w.getAttackValue();
             }
             if (this.getArmor()) {
                 modifier += this.getArmor().getAttackValue();
@@ -1229,6 +1231,7 @@ Game.EntityMixins.Equipper = {
         this._armor = null;
     },
     wield: function(item) {
+        if (item==this._armor) { this.takeOff(); }
         this._weapon = item;
         this.setLastActionDuration(this.getDefaultActionDuration());
     },
@@ -1237,6 +1240,7 @@ Game.EntityMixins.Equipper = {
         this.setLastActionDuration(this.getDefaultActionDuration());
     },
     wear: function(item) {
+        if (item==this._weapon) { this.unwield(); }
         this._armor = item;
         this.setLastActionDuration(this.getDefaultActionDuration());
     },

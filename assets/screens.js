@@ -801,7 +801,7 @@ Game.Screen.wieldScreen = new Game.Screen.ItemListScreen({
     canSelectMultipleItems: false,
     hasNoItemOption: true,
     isAcceptable: function(item) {
-        return item && item.hasMixin('Equippable') && item.isWieldable();
+        return item && true; //item.hasMixin('Equippable') && item.isWieldable();
     },
     ok: function(selectedItems) {
         // Check if we selected 'no item'
@@ -834,7 +834,7 @@ Game.Screen.wearScreen = new Game.Screen.ItemListScreen({
     canSelectMultipleItems: false,
     hasNoItemOption: true,
     isAcceptable: function(item) {
-        return item && item.hasMixin('Equippable') && item.isWearable();
+        return item && item.hasMixin('Wearable') && item.isWearable();
     },
     ok: function(selectedItems) {
         // Check if we selected 'no item'

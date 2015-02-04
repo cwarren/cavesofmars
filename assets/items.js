@@ -149,7 +149,7 @@ Game.ItemRepository.define('sling', {
     rangedAttackDamageMultipler: 1.5,
     allowedAmmo: ['shot'],
     wieldable: true,
-    mixins: [Game.ItemMixins.Equippable, Game.ItemMixins.Shooter]
+    mixins: [Game.ItemMixins.Shooter]
 });
 
 
@@ -165,7 +165,7 @@ Game.ItemRepository.define('JAT tool, damaged', {
     digMultiplier: .75,
     wieldable: true,
     description: "The JAT (Jack-of-All-Trades) tool is the standard-issue tool for work on Mars. While not as good as a specialized tool, it's at least moderately effective as a shovel, prybar, pick, axe, and walking stick for navigating rough terrain. Unfortunately this one has been badly damaged, but you could still probably hit something with it if you had to.",
-    mixins: [Game.ItemMixins.Equippable, Game.ItemMixins.DigTool]
+    mixins: [Game.ItemMixins.DigTool]
 }, {
     disableRandomCreation: true
 });
@@ -180,7 +180,7 @@ Game.ItemRepository.define('JAT tool', {
     digMultiplier: 2.5,
     wieldable: true,
     description: "The JAT (Jack-of-All-Trades) tool is the standard-issue tool for work on Mars. While not as good as a specialized tool, it's at least moderately effective as a shovel, prybar, pick, axe, and walking stick for navigating rough terrain. Plus, if you have to you can use it to give something a pretty solid whack.",
-    mixins: [Game.ItemMixins.Equippable, Game.ItemMixins.DigTool]
+    mixins: [Game.ItemMixins.DigTool]
 }, {
     disableRandomCreation: true
 });
@@ -192,7 +192,7 @@ Game.ItemRepository.define('shard blade', {
     attackValue: 4,
     wieldable: true,
     description: "A large, sharp piece of volcanic glass has been shaped and affixed to a handle made of bone. Primitive, but effective.",
-    mixins: [Game.ItemMixins.Equippable]
+    mixins: []
 }, {
     disableRandomCreation: true
 });
@@ -204,7 +204,7 @@ Game.ItemRepository.define('stone sword', {
     attackValue: 9,
     wieldable: true,
     description: "A long piece of something like wood has been embedded with carefully shaped and fit pieces of dark glass. Primitive, but very effective.",
-    mixins: [Game.ItemMixins.Equippable]
+    mixins: []
 }, {
     disableRandomCreation: true
 });
@@ -219,7 +219,7 @@ Game.ItemRepository.define('staff', {
     digMultiplier: 1.25,
     wieldable: true,
     description: "A long fairly thin piece of something that resembles wood, with wrappings where the hands are to be placed. It's light weight and flex makes it more of a defensive tool.",
-    mixins: [Game.ItemMixins.Equippable, Game.ItemMixins.DigTool]
+    mixins: [Game.ItemMixins.DigTool]
 }, {
     disableRandomCreation: true
 });
@@ -234,7 +234,7 @@ Game.ItemRepository.define('shod staff', {
     digMultiplier: 1.75,
     wieldable: true,
     description: "A long heavy piece of something that resembles wood. Parts of it are also wrapped in some kind of metal. It's heavy, but well balanced.",
-    mixins: [Game.ItemMixins.Equippable, Game.ItemMixins.DigTool]
+    mixins: [Game.ItemMixins.DigTool]
 }, {
     disableRandomCreation: true
 });
@@ -249,7 +249,7 @@ Game.ItemRepository.define('HEM suit, damaged', {
     defenseValue: 1,
     wearable: true,
     description: "The HEM (Hostile Environment Mitigation) suit is the standard outfit for those working on the surface. It would offer significant protection from scrapes and falls in addition to temperature controls, air supply, comm unit, etc. Sadly, this one has been very badly damaged and so provides only minimal protection. All the complicated systems have also been destroyed.",
-    mixins: [Game.ItemMixins.Equippable]
+    mixins: [Game.ItemMixins.Wearable]
 }, {
     disableRandomCreation: true
 });
@@ -261,7 +261,7 @@ Game.ItemRepository.define('leather armor', {
     defenseValue: 2,
     wearable: true,
     description: "Some kind of primitive armor made from leather (or whatever the local equivalent is). It doesn't exactly fit, but you could arrange it to cover some of your more vulnerable areas.",
-    mixins: [Game.ItemMixins.Equippable]
+    mixins: [Game.ItemMixins.Wearable]
 }, {
     disableRandomCreation: true
 });
@@ -273,7 +273,7 @@ Game.ItemRepository.define('plated leather armor', {
     defenseValue: 4,
     wearable: true,
     description: "Some kind of primitive armor made from leather (or whatever the local equivalent is), with hard, rocky plates affixed all over it. It's surprisingly effective for such low-tech work.",
-    mixins: [Game.ItemMixins.Equippable]
+    mixins: [Game.ItemMixins.Wearable]
 }, {
     disableRandomCreation: true
 });
@@ -286,7 +286,7 @@ Game.ItemRepository.define('HEM suit', {
     digAdder: 1,
     wearable: true,
     description: "The HEM (Hostile Environment Mitigation) suit is the standard outfit for those working on the surface. It offers significant protection from scrapes and falls in addition to temperature controls, air supply, comm unit, etc.",
-    mixins: [Game.ItemMixins.Equippable, Game.ItemMixins.DigTool]
+    mixins: [Game.ItemMixins.Wearable, Game.ItemMixins.DigTool]
 }, {
     disableRandomCreation: true
 });
@@ -299,7 +299,7 @@ Game.ItemRepository.define('HEM-A suit', {
     digAdder: 2,
     wearable: true,
     description: "The HEM-A (Hostile Environment Mitigation - Armored) suit is the heavy duty version of the standard HEM suit, designed for work in particularly hazardous environments. It has additional padding, plus Cera-tek composite plates embedded to help protect especially vulnerable areas. It also has the standard temperature controls, air supply, comm unit, etc.",
-    mixins: [Game.ItemMixins.Equippable, Game.ItemMixins.DigTool]
+    mixins: [Game.ItemMixins.Wearable, Game.ItemMixins.DigTool]
 }, {
     disableRandomCreation: true
 });
