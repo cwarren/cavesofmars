@@ -41,11 +41,21 @@ analyzer
 TODO NEXT:
 
 
-1. in inventory, add color to weight summary if over-capacity, and to bulk if near capacity
-        
-2. add an isWeapon flag to items - only weapons add combat modifiers; consider converting Wearable mixin to isArmor flag (are there any differences between the two? probably actually more flexible/powerful when using a flag....)
+1. for item drop on unequip, switch from the explicit bulk check to the canPickUp function that's already built it
+
+2. in inventory, add color to weight summary if over-capacity, and to bulk if near capacity
+       
+3. add an isWeapon flag to items - only weapons add combat modifiers; consider converting Wearable mixin to isArmor flag (are there any differences between the two? probably actually more flexible/powerful when using a flag....)
+
+4. wielding inventory commands offers options from items on current space in addition to those in inventory (access using the dash/minus key (NOT the numpad one)?)
 
 5. container objects
+    - containers have a weight, bulk
+    - containers have a bulk capacity
+    - containers have an access action duration - it can take more (for packs, pouches, etc) or less (for slings, bandoliers, etc) time to take out items so that they can be used (wielded, thrown, etc.)
+    - weight goes up as items are added to it, but bulk does NOT
+    - items are placed in a container using the p (pack) control key (NOTE: this is a two-stage thing - first the target container must be selected)
+    - items in a container are accessed using the P (unPack) control key (NOTE: this is a two-stage thing - first the target container must be selected)
 
 10. add new entity: small martian
 11.    which can pick up and equip items it finds (5 inven slots)
@@ -67,12 +77,12 @@ TODO NEXT:
         - material
             + leather (generally, creature parts)
             + suit scraps
-            + dried mycelium
+            + dried mycelium (particular fungus, particular techniques?)
         - cord
             + sinew (generally, creature parts)
             + suit scraps
         - sticks, small
-            + dried mycelium
+            + dried mycelium (particular fungus, particular techniques?)
             + bone (generally, creature parts)
             + JAT scraps
         - sticks, large
@@ -80,20 +90,20 @@ TODO NEXT:
             + JAT scraps
         - rocks
         - adhesive
-            + fungus stuff
+            + fungus stuff (particular fungus, particular techniques?)
             + creature-based
         - edges
-            + stone shards
+            + stone shards (from worked stone)
             + suit scraps
             + teeth (generally, creature parts)
         - hard material
             + suit scraps
             + scutes (generally, creature parts)
-            + stone
+            + worked stone (from rocks)
+            + dried mycelium (particular fungus, particular techniques?)
 
 25. useable items (potions, pods, etc.)
 
-35. all inventory commands offer options from items on current space in addition to those in inventory? (or maybe just for wielding and wearing?)
 
 42.5 consider a spore-y mass repository w/ different kinds of spore-y masses that grow on different things (even consider making this prodecurally generated - can dynamically set targets, exclusions, rates, etc.)
 42.75 consider docile fungi occasionally spawning nearby spore-y masses that share the same traits
