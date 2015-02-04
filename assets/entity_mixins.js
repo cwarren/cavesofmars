@@ -241,7 +241,12 @@ Game.EntityMixins.Digger = {
         this.setLastActionDuration(this.getDigDuration());
     },
     getDigDuration: function() {
-        return this.getDefaultActionDuration()*3;
+        var actionDurationMultiplier = 1;
+        if (this.hasMixin('InventoryHolder')) {
+            actionDurationMultiplier = this.getActionPenaltyFactor();
+        }
+        this.alertOnSlowness(actionDurationMultiplier);
+        return this.getDefaultActionDuration()*3*actionDurationMultiplier;
     },
     listeners: {
         details: function() {
@@ -567,7 +572,12 @@ Game.EntityMixins.RangedAttacker = {
                 Game.refresh();
             }
 
-            this.setLastActionDuration(this.getRangedAttackDuration());
+            var actionDurationMultiplier = 1;
+            if (this.hasMixin('InventoryHolder')) {
+                actionDurationMultiplier = this.getActionPenaltyFactor();
+            }
+            this.alertOnSlowness(actionDurationMultiplier);
+            this.setLastActionDuration(this.getRangedAttackDuration()*actionDurationMultiplier);
             
             Game.sendMessageNearby(this.getMap(), this.getX(), this.getY(), this.getZ(),
                             'The %s hit the %s for %d damage',
@@ -645,7 +655,12 @@ Game.EntityMixins.MeleeAttacker = {
                     [this.getName(), damage]);
             }
 
-            this.setLastActionDuration(this.getAttackDuration());
+            var actionDurationMultiplier = 1;
+            if (this.hasMixin('InventoryHolder')) {
+                actionDurationMultiplier = this.getActionPenaltyFactor();
+            }
+            this.alertOnSlowness(actionDurationMultiplier);
+            this.setLastActionDuration(this.getAttackDuration()*actionDurationMultiplier);
             
             Game.sendMessageNearby(this.getMap(), this.getX(), this.getY(), this.getZ(),
                             'The %s hit the %s for %d damage',
@@ -766,6 +781,10 @@ Game.EntityMixins.InventoryHolder = {
         return (this._currentWeight/1000)+'/'+(this._weightCapacity/1000)+' kg';
     },
 
+    getActionPenaltyFactor: function() {
+        return Math.max(1,this.getCurrentWeight() / this.getWeightCapacity());
+    },
+
     getBulkCapacity: function() {
         return this._bulkCapacity;
     },
@@ -856,12 +875,12 @@ Game.EntityMixins.InventoryHolder = {
         
         for (var i=0; i<this._items.length; i++) {
             this._currentWeight += this._items[i].getInvWeight();
-            console.log('wieldedItem');
-            console.dir(wieldedItem);
-            console.log('wornItem');
-            console.dir(wornItem);
-            console.log('this._items[i]');
-            console.dir(this._items[i]);
+//            console.log('wieldedItem');
+//            console.dir(wieldedItem);
+//            console.log('wornItem');
+//            console.dir(wornItem);
+//            console.log('this._items[i]');
+//            console.dir(this._items[i]);
             if ((wieldedItem && this._items[i] === wieldedItem) || (wornItem && this._items[i] === wornItem)) {
                 continue;
             }
@@ -945,7 +964,9 @@ Game.EntityMixins.InventoryHolder = {
         this._map.setItemsAt(this.getX(), this.getY(), this.getZ(), mapItems);
         
         if (added > 0) {
-            this.setLastActionDuration(this.getDefaultActionDuration());
+            var actionDurationMultiplier = this.getActionPenaltyFactor();
+            this.alertOnSlowness(actionDurationMultiplier);        
+            this.setLastActionDuration(this.getDefaultActionDuration()*actionDurationMultiplier);
         }
         
         // Return true only if we added all items
@@ -960,8 +981,20 @@ Game.EntityMixins.InventoryHolder = {
                 this._map.addItem(this.getX(), this.getY(), this.getZ(), item);
                 item.raiseEvent('onDropped',this._map,this.getX(), this.getY(), this.getZ());
             }
-            this.setLastActionDuration(this.getDefaultActionDuration());
+            this.setLastActionDuration(this.getDefaultActionDuration()*.5);
             
+        }
+    },
+    dropThisItem: function(itm) {
+        var itemIdx = -1;
+        for (var i = 0; i < this._items.length; i++) {
+            if (this._items[i].getId() == itm.getId()) {
+                itemIdx = i;
+                break;
+            }
+        }
+        if (itemIdx>-1) {
+            this.dropItem(itemIdx);
         }
     },
     dropItems: function(indices) {
@@ -985,7 +1018,7 @@ Game.EntityMixins.InventoryHolder = {
         }
         if (didDrop) {
             this._CleanInventory();
-            this.setLastActionDuration(this.getDefaultActionDuration()*2);
+            this.setLastActionDuration(this.getDefaultActionDuration());
         }
     },
     extractItem: function(i) {
@@ -1111,8 +1144,11 @@ Game.EntityMixins.CorpseDropper = {
                     newCorpse = Game.ItemRepository.create('corpse', {
                         name: this._corpseName,
                         foreground: this._foreground,
+                        invWeight: this._corpseFoodValue * (100 + Game.util.getRandomInteger(-10,10)),
+                        invBulk: this._corpseFoodValue * (100 + Game.util.getRandomInteger(-10,10)),
                         foodValue: this._corpseFoodValue
                     });
+
                 }
                 if (this.getGroup()) {
                     newCorpse.setGroup(this.getGroup()+' corpse');
@@ -1231,22 +1267,54 @@ Game.EntityMixins.Equipper = {
         this._armor = null;
     },
     wield: function(item) {
+        this.unwield();
         if (item==this._armor) { this.takeOff(); }
         this._weapon = item;
-        this.setLastActionDuration(this.getDefaultActionDuration());
+        var actionDurationMultiplier = this.getActionPenaltyFactor();
+        this.alertOnSlowness(actionDurationMultiplier);        
+        this.setLastActionDuration(this.getDefaultActionDuration()*actionDurationMultiplier);
     },
     unwield: function() {
-        this._weapon = null;
-        this.setLastActionDuration(this.getDefaultActionDuration());
+        if (this._weapon) {
+            if (this._weapon.getInvBulk()+this.getCurrentBulk() > this.getBulkCapacity()) {
+                // drop the item instead of putting it in inventory
+                // NOTE: this shuffle avoids a recursive loop that would otherwise occur when the item dropping code tries to unequip the item
+                var w = this._weapon;
+                this._weapon = null;
+                this.dropThisItem(w);
+                Game.sendMessage(this,'%s was too large for you to stow - it had to be dropped on the ground',[w.describeThe()])
+            } else {
+                this._weapon = null;
+                var actionDurationMultiplier = this.getActionPenaltyFactor();
+                this.alertOnSlowness(actionDurationMultiplier);        
+                this.setLastActionDuration(this.getDefaultActionDuration()*actionDurationMultiplier);
+            }
+        }
     },
     wear: function(item) {
+        this.takeOff();
         if (item==this._weapon) { this.unwield(); }
         this._armor = item;
-        this.setLastActionDuration(this.getDefaultActionDuration());
+        var actionDurationMultiplier = this.getActionPenaltyFactor();
+        this.alertOnSlowness(actionDurationMultiplier);        
+        this.setLastActionDuration(this.getDefaultActionDuration()*actionDurationMultiplier);
     },
     takeOff: function() {
-        this._armor = null;
-        this.setLastActionDuration(this.getDefaultActionDuration());
+        if (this._armor) {
+            if (this._armor.getInvBulk()+this.getCurrentBulk() > this.getBulkCapacity()) {
+                // drop the item instead of putting it in inventory
+                // NOTE: this shuffle avoids a recursive loop that would otherwise occur when the item dropping code tries to unequip the item
+                var a = this._armor;
+                this._armor = null;
+                this.dropThisItem(a);
+                Game.sendMessage(this,'%s was too large for you to stow - it had to be dropped on the ground',[a.describeThe()])
+            } else {
+                this._armor = null;
+                var actionDurationMultiplier = this.getActionPenaltyFactor();
+                this.alertOnSlowness(actionDurationMultiplier);        
+                this.setLastActionDuration(this.getDefaultActionDuration()*actionDurationMultiplier);
+            }
+        }
     },
     getWeapon: function() {
         return this._weapon;

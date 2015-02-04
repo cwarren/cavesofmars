@@ -40,17 +40,12 @@ analyzer
 
 TODO NEXT:
 
-3. richer inventory management system - weight and volume attributes on all items
-    - inventory uses weight and bulk limits instead of slot limits
-        + bulk classes? carry slots?
-4. on unequip, drop vs re-stash?
-    - if throwing something on current space, action duration is 10% of normal?
 
-5. all inventory commands offer options from items on current space in addition to those in inventory
+1. in inventory, add color to weight summary if over-capacity, and to bulk if near capacity
+        
+2. add an isWeapon flag to items - only weapons add combat modifiers; consider converting Wearable mixin to isArmor flag (are there any differences between the two? probably actually more flexible/powerful when using a flag....)
 
-6. consider 'stackable' item mixin? (impacts inventory)
-
-8. real equipment system (use item, choose viable slot)
+5. container objects
 
 10. add new entity: small martian
 11.    which can pick up and equip items it finds (5 inven slots)
@@ -97,6 +92,8 @@ TODO NEXT:
             + stone
 
 25. useable items (potions, pods, etc.)
+
+35. all inventory commands offer options from items on current space in addition to those in inventory? (or maybe just for wielding and wearing?)
 
 42.5 consider a spore-y mass repository w/ different kinds of spore-y masses that grow on different things (even consider making this prodecurally generated - can dynamically set targets, exclusions, rates, etc.)
 42.75 consider docile fungi occasionally spawning nearby spore-y masses that share the same traits

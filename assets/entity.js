@@ -140,11 +140,34 @@ Game.Entity.prototype.setPosition = function(x, y, z) {
     }
 }
 
+Game.Entity.prototype.alertOnSlowness = function(actionDurationMultiplier) {
+    if (actionDurationMultiplier > 4.5) {
+        Game.sendMessage(this, "You can barely do anything with all the weight you're carrying");
+    }
+    else if (actionDurationMultiplier > 3.5) {
+        Game.sendMessage(this, "The weight you're carrying slows you down a huge amount");
+    }
+    else if (actionDurationMultiplier > 2.5) {
+        Game.sendMessage(this, "The weight you're carrying slows you down a lot");
+    }
+    else if (actionDurationMultiplier > 1.5) {
+        Game.sendMessage(this, "The weight you're carrying really slows you down");
+    }
+    else if (actionDurationMultiplier > 1) {
+        Game.sendMessage(this, "You're slightly slower due to the weight you're carrying");
+    }
+}
+
 Game.Entity.prototype.tryMove = function(x, y, z, map) {
     var map = this.getMap();
 
     // Must use starting z
     var tile = map.getTile(x, y, this.getZ());
+
+    var moveDurationMultiplier = 1;
+    if (this.hasMixin('InventoryHolder')) {
+        moveDurationMultiplier = this.getActionPenaltyFactor();
+    }
 
     // Check if trying to go up or down stairs
     if (z < this.getZ()) {
@@ -154,7 +177,8 @@ Game.Entity.prototype.tryMove = function(x, y, z, map) {
         } else {
             Game.sendMessage(this, "You ascend to level %d!", [z + 1]);
             this.setPosition(x, y, z);
-            this.setLastActionDuration(this.getMoveDuration());
+            this.setLastActionDuration(this.getMoveDuration()*moveDurationMultiplier);
+            this.alertOnSlowness(moveDurationMultiplier);
             return true;
         }
     } else if (z > this.getZ()) {
@@ -162,7 +186,8 @@ Game.Entity.prototype.tryMove = function(x, y, z, map) {
             this.hasMixin(Game.EntityMixins.PlayerActor)) {
             // Switch the entity to a boss cavern!
             this.switchMap(new Game.Map.BossCavern());
-            this.setLastActionDuration(this.getMoveDuration());
+            this.setLastActionDuration(this.getMoveDuration()*moveDurationMultiplier);
+            this.alertOnSlowness(moveDurationMultiplier);
             return true;
         } else if (tile != Game.Tile.stairsDownTile) {
             Game.sendMessage(this, "You can't go down here!");
@@ -170,7 +195,8 @@ Game.Entity.prototype.tryMove = function(x, y, z, map) {
         } else {
             this.setPosition(x, y, z);
             Game.sendMessage(this, "You descend to level %d!", [z + 1]);
-            this.setLastActionDuration(this.getMoveDuration());
+            this.setLastActionDuration(this.getMoveDuration()*moveDurationMultiplier);
+            this.alertOnSlowness(moveDurationMultiplier);
             return true;
         }
     }
@@ -209,8 +235,8 @@ Game.Entity.prototype.tryMove = function(x, y, z, map) {
             }
         }
 
-        this.setLastActionDuration(this.getMoveDuration());
-        
+        this.setLastActionDuration(this.getMoveDuration()*moveDurationMultiplier);
+        this.alertOnSlowness(moveDurationMultiplier);
         return true;
     }
 

@@ -69,16 +69,18 @@ Game.AuxScreen.avatarScreen = {
         var y = 11
         
         var weapon = this._player.getWeapon();
-        if ((weapon) && (! weapon.hasMixin('Wearable'))) {
+        if (weapon) {
             y += this._display.drawText(0,y, weapon.getRepresentation() + ' ' +weapon.getName());
-            if (weapon.getAttackValue() != 0 || weapon.getDefenseValue() != 0) {
-                y += this._display.drawText(1,y,vsprintf('atk: %s, def: %s',[weapon.getAttackValue(),weapon.getDefenseValue()]));
-            }
-            if (weapon.hasMixin('Shooter')) {
-                y += this._display.drawText(1,y,vsprintf('%s: *%s, +%s',[weapon.getAllowedAmmoStr(),weapon.getRangedAttackDamageMultipler(),weapon.getRangedAttackDamageAdder()]));
-            }
-            if (weapon.hasMixin('DigTool')) {
-                y += this._display.drawText(1,y,vsprintf('dig: +%s, *%s',[weapon.getDigAdder(),weapon.getDigMultiplier()]));
+            if (! weapon.hasMixin('Wearable')) {
+                if (weapon.getAttackValue() != 0 || weapon.getDefenseValue() != 0) {
+                    y += this._display.drawText(1,y,vsprintf('atk: %s, def: %s',[weapon.getAttackValue(),weapon.getDefenseValue()]));
+                }
+                if (weapon.hasMixin('Shooter')) {
+                    y += this._display.drawText(1,y,vsprintf('%s: *%s, +%s',[weapon.getAllowedAmmoStr(),weapon.getRangedAttackDamageMultipler(),weapon.getRangedAttackDamageAdder()]));
+                }
+                if (weapon.hasMixin('DigTool')) {
+                    y += this._display.drawText(1,y,vsprintf('dig: +%s, *%s',[weapon.getDigAdder(),weapon.getDigMultiplier()]));
+                }
             }
             y++;
         }
