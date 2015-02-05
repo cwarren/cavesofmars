@@ -15,7 +15,7 @@ Game.AuxScreen.avatarScreen = {
     init: function(w,h,player) {
         this._width = w;
         this._height = h;
-        this._display  = new ROT.Display({width: w, height: h});
+        this._display  = new ROT.Display({width: w, height: h, spacing:Game.SPACING});
         this._player = player;
     },
     getDisplay: function(display) {
@@ -76,10 +76,10 @@ Game.AuxScreen.avatarScreen = {
                     y += this._display.drawText(1,y,vsprintf('atk: %s, def: %s',[weapon.getAttackValue(),weapon.getDefenseValue()]));
                 }
                 if (weapon.hasMixin('Shooter')) {
-                    y += this._display.drawText(1,y,vsprintf('%s: *%s, +%s',[weapon.getAllowedAmmoStr(),weapon.getRangedAttackDamageMultipler(),weapon.getRangedAttackDamageAdder()]));
+                    y += this._display.drawText(1,y,vsprintf('%s: x%s, +%s',[weapon.getAllowedAmmoStr(),weapon.getRangedAttackDamageMultipler(),weapon.getRangedAttackDamageAdder()]));
                 }
                 if (weapon.hasMixin('DigTool')) {
-                    y += this._display.drawText(1,y,vsprintf('dig: +%s, *%s',[weapon.getDigAdder(),weapon.getDigMultiplier()]));
+                    y += this._display.drawText(1,y,vsprintf('dig: +%s, x%s',[weapon.getDigAdder(),weapon.getDigMultiplier()]));
                 }
             }
             y++;
@@ -89,10 +89,10 @@ Game.AuxScreen.avatarScreen = {
         if (armor) {
             y += this._display.drawText(0,y, armor.getRepresentation() + ' ' +armor.getName());
             if (armor.hasMixin('Shooter')) {
-                y += this._display.drawText(1,y,vsprintf('%s: *%s, +%s',[armor.getAllowedAmmoStr(),armor.getRangedAttackDamageMultipler(),armor.getRangedAttackDamageAdder()]));
+                y += this._display.drawText(1,y,vsprintf('%s: x%s, +%s',[armor.getAllowedAmmoStr(),armor.getRangedAttackDamageMultipler(),armor.getRangedAttackDamageAdder()]));
             }
             if (armor.hasMixin('DigTool')) {
-                y += this._display.drawText(1,y,vsprintf('dig: +%s, *%s',[armor.getDigAdder(),armor.getDigMultiplier()]));
+                y += this._display.drawText(1,y,vsprintf('dig: +%s, x%s',[armor.getDigAdder(),armor.getDigMultiplier()]));
             }
             y += this._display.drawText(1,y,vsprintf('def: %s, atk: %s',[armor.getDefenseValue(),armor.getAttackValue()]));
             y++;
@@ -128,7 +128,7 @@ Game.AuxScreen.helpScreen = {
     init: function(w,h) {
         this._width = w;
         this._height = h;
-        this._display  = new ROT.Display({width: w, height: h}); 
+        this._display  = new ROT.Display({width: w, height: h, spacing:Game.SPACING}); 
     },
     getDisplay: function(display) {
         return this._display;
@@ -275,7 +275,7 @@ Game.AuxScreen.messageScreen = {
     init: function(w,h,player) {
         this._width = w;
         this._height = h;
-        this._display  = new ROT.Display({width: w, height: h});
+        this._display  = new ROT.Display({width: w, height: h, spacing:Game.SPACING});
         this._player = player;
     },
     getDisplay: function(display) {
@@ -323,7 +323,7 @@ Game.AuxScreen.infoScreen = {
     init: function(w,h) {
         this._width = w;
         this._height = h;
-        this._display  = new ROT.Display({width: w, height: h}); 
+        this._display  = new ROT.Display({width: w, height: h, spacing:Game.SPACING}); 
     },
     getDisplay: function(display) {
         return this._display;

@@ -27,6 +27,9 @@ Game.Item = function(properties) {
             results.push({key: 'defense', value: this.getDefenseValue()});
         }
 
+        results.push({key: 'mass', value: this.getInvWeight()/1000+' kg'});
+        results.push({key: 'bulk', value: this.getInvBulk()/1000+' L'});
+
         return results;
     });
                 

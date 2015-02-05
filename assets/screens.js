@@ -604,8 +604,8 @@ Game.Screen.ItemListScreen.prototype.executeOkFunction = function() {
 };
 
 Game.Screen.ItemListScreen.prototype.handleInput = function(inputType, inputData) {
-    console.dir(inputType);
-    console.dir(inputData);
+    //console.dir(inputType);
+    //console.dir(inputData);
     if (inputType === 'keydown') {
         // If the user hit escape, hit enter and can't select an item, or hit
         // enter without any items selected, simply cancel out
@@ -670,7 +670,7 @@ Game.Screen.ItemListScreen.prototype.handleInput = function(inputType, inputData
 
 Game.Screen.inventoryScreen = new Game.Screen.ItemListScreen({
     caption: function() {
-        return 'Inventory      mass: '+this._player.getWeightStatusString()+'       volume: '+this._player.getBulkStatusString();
+        return 'Inventory      '+this._player.getWeightStatusColor()+'mass: '+this._player.getWeightStatusString()+Game.Screen.DEFAULT_COLOR_SETTER+'       '+this._player.getBulkStatusColor()+'volume: '+this._player.getBulkStatusString();
     },
     canSelect: false,
     
@@ -812,7 +812,7 @@ Game.Screen.wieldScreen = new Game.Screen.ItemListScreen({
         } else {
             // Make sure to unequip the item first in case it is the armor.
             var item = selectedItems[keys[0]];
-            this._player.unequip(item);
+            //this._player.unequip(item);
             this._player.wield(item);
             Game.sendMessage(this._player, "You are wielding %s.", [item.describeA()]);
             //console.dir(this._player);
@@ -845,7 +845,7 @@ Game.Screen.wearScreen = new Game.Screen.ItemListScreen({
         } else {
             // Make sure to unequip the item first in case it is the weapon.
             var item = selectedItems[keys[0]];
-            this._player.unequip(item);
+            //this._player.unequip(item);
             this._player.wear(item);
             Game.sendMessage(this._player, "You are wearing %s.", [item.describeA()]);
         }
@@ -1646,9 +1646,7 @@ Game.Screen.storyScreen = {
                 // give the player just a damaged suit
                 var player = Game.Screen.playScreen.getPlayer();
                 player.clearInventory();
-                var h = Game.ItemRepository.create('HEM suit, damaged');
-                player.addItem(h);
-                player.wear(h);
+                
 
                 setTimeout(function(){
                     Game.refresh();
@@ -1664,26 +1662,33 @@ Game.Screen.storyScreen = {
 
                 player.switchMap(new Game.Map.Cave());
 
-//                // give the player just a damaged suit
-//                player.clearInventory();
-//                var h = Game.ItemRepository.create('HEM suit, damaged');
-//                player.addItem(h);
-//                player.wear(h);
+
+                // give the player just a damaged suit
+                var h = Game.ItemRepository.create('HEM suit, damaged');
+                player.addItem(h);
+                player.wear(h);
                 
                 /////////////////////////////
                 /// CODE FOR ITEM TESTING!!!!
                 console.log('item testing code is active');
 
-                player.addItem(Game.ItemRepository.create('sling'));
-                player.addItem(Game.ItemRepository.create('stone shot'));
-                player.addItem(Game.ItemRepository.create('stone shot'));
-                player.addItem(Game.ItemRepository.create('iron shot'));
-                player.addItem(Game.ItemRepository.create('iron shot'));
+//                player.addItem(Game.ItemRepository.create('sling'));
+//                player.addItem(Game.ItemRepository.create('stone shot'));
+//                player.addItem(Game.ItemRepository.create('stone shot'));
+//                player.addItem(Game.ItemRepository.create('iron shot'));
+//                player.addItem(Game.ItemRepository.create('iron shot'));
 
-                for (var i=0;i<15;i++) {
-                    player.addItem(Game.ItemRepository.createRandom());
-                }
-                /*
+//                for (var i=0;i<15;i++) {
+//                    player.addItem(Game.ItemRepository.createRandom());
+//                }
+                
+//                for (var i=0;i<15;i++) {
+//                    player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('lodestone'),player.getX(),player.getY(),player.getZ());
+//                }
+
+                  player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('plated leather armor'),player.getX(),player.getY(),player.getZ());
+
+/*
                 */
                 /// CODE FOR ITEM TESTING!!!!
                 /////////////////////////////

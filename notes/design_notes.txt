@@ -40,12 +40,7 @@ analyzer
 
 TODO NEXT:
 
-
-1. for item drop on unequip, switch from the explicit bulk check to the canPickUp function that's already built it
-
-2. in inventory, add color to weight summary if over-capacity, and to bulk if near capacity
-       
-3. add an isWeapon flag to items - only weapons add combat modifiers; consider converting Wearable mixin to isArmor flag (are there any differences between the two? probably actually more flexible/powerful when using a flag....)
+3. add an isWeapon flag to items - only weapons add combat modifiers when wielded; consider converting Wearable mixin to isArmor flag (are there any differences between the two? probably actually more flexible/powerful when using a flag....)
 
 4. wielding inventory commands offers options from items on current space in addition to those in inventory (access using the dash/minus key (NOT the numpad one)?)
 

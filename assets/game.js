@@ -12,10 +12,11 @@ var Game =  {
     _game_stage: 'start',
     _controlScheme: '',
     _player: null,
+    SPACING: 1.1,
     init: function() {
         // Any necessary initialization will go here.
         this._randomSeed = 5 + Math.floor(Math.random()*100000);
-        this._randomSeed = 59499;
+        //this._randomSeed = 59499;
         console.log(this._randomSeed);
         
         ROT.RNG.setSeed(this._randomSeed);
@@ -30,7 +31,7 @@ var Game =  {
         this._player.wield(j);        
 
         
-        this._display_main    = new ROT.Display({width: this._screenWidth,                 height: this._screenHeight});
+        this._display_main    = new ROT.Display({width: this._screenWidth, height: this._screenHeight, spacing: Game.SPACING});
         
         this._aux_screen_avatar = Game.AuxScreen.avatarScreen;
         this._aux_screen_avatar.init(Math.floor(this._screenWidth*.25),this._screenHeight,this._player);

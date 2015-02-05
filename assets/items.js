@@ -108,6 +108,7 @@ Game.ItemRepository.define('spore-y mass', {
 
 Game.ItemRepository.define('rock', {
     name: 'rock',
+    group: 'mineral',
     character: Game.ItemRepository.Symbol['mineral'],
     invWeight: 2500,
     invBulk: 1150,
@@ -118,6 +119,17 @@ Game.ItemRepository.define('rock', {
     mixins: [Game.ItemMixins.Ammo]
 });
 
+Game.ItemRepository.define('lodestone', {
+    name: 'lodestone',
+    group: 'mineral',
+    character: Game.ItemRepository.Symbol['mineral'],
+    invWeight: 20500,
+    invBulk: 1150,
+    description: "a good sized chunk of stone - you could throw it at something, but it's large enough that it'd be a bit awkward doing so.",
+    foreground: 'blue'
+}, {
+    disableRandomCreation: true
+});
 
 // ----------------------------------------------
 
@@ -274,8 +286,8 @@ Game.ItemRepository.define('shod staff', {
 Game.ItemRepository.define('HEM suit, damaged', {
     name: 'HEM suit, damaged',
     character: Game.ItemRepository.Symbol['wearable'],
-    invWeight: 6200,
-    invBulk: 7700,
+    invWeight: 16850,
+    invBulk: 11700,
     foreground: 'grey',
     defenseValue: 1,
     wearable: true,
@@ -288,8 +300,8 @@ Game.ItemRepository.define('HEM suit, damaged', {
 Game.ItemRepository.define('leather armor', {
     name: 'leather armor',
     character: Game.ItemRepository.Symbol['wearable'],
-    invWeight: 11900,
-    invBulk: 12900,
+    invWeight: 14900,
+    invBulk: 16900,
     foreground: 'yellow',
     defenseValue: 2,
     wearable: true,
@@ -302,7 +314,7 @@ Game.ItemRepository.define('leather armor', {
 Game.ItemRepository.define('plated leather armor', {
     name: 'plated leather armor',
     character: Game.ItemRepository.Symbol['wearable'],
-    invWeight: 17700,
+    invWeight: 18700,
     invBulk: 19000,
     foreground: 'orange',
     defenseValue: 4,
@@ -316,8 +328,8 @@ Game.ItemRepository.define('plated leather armor', {
 Game.ItemRepository.define('HEM suit', {
     name: 'HEM suit',
     character: Game.ItemRepository.Symbol['wearable'],
-    invWeight: 9100,
-    invBulk: 9000,
+    invWeight: 18100,
+    invBulk: 13000,
     foreground: 'white',
     defenseValue: 6,
     digAdder: 1,
@@ -331,8 +343,8 @@ Game.ItemRepository.define('HEM suit', {
 Game.ItemRepository.define('HEM-A suit', {
     name: 'HEM-A suit',
     character: Game.ItemRepository.Symbol['wearable'],
-    invWeight: 11400,
-    invBulk: 12000,
+    invWeight: 24400,
+    invBulk: 17000,
     foreground: '#8ad',
     defenseValue: 11,
     digAdder: 2,

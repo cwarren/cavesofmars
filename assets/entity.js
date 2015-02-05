@@ -141,6 +141,19 @@ Game.Entity.prototype.setPosition = function(x, y, z) {
 }
 
 Game.Entity.prototype.alertOnSlowness = function(actionDurationMultiplier) {
+    var msgText = ([
+        '',
+        "You're slightly slower due to the weight you're carrying",
+        "The weight you're carrying really slows you down",
+        "The weight you're carrying slows you down a lot",
+        "The weight you're carrying slows you down a huge amount",
+        "You can barely do anything with all the weight you're carrying"
+    ]
+    )[this.getSlownessStage(actionDurationMultiplier)];
+    if (msgText) {
+        Game.sendMessage(this, msgText);
+    }
+/*
     if (actionDurationMultiplier > 4.5) {
         Game.sendMessage(this, "You can barely do anything with all the weight you're carrying");
     }
@@ -156,6 +169,41 @@ Game.Entity.prototype.alertOnSlowness = function(actionDurationMultiplier) {
     else if (actionDurationMultiplier > 1) {
         Game.sendMessage(this, "You're slightly slower due to the weight you're carrying");
     }
+    */
+}
+
+Game.Entity.prototype.getSlownessColorMod = function(actionDurationMultiplier) {
+    var coloring = ([
+        '',
+        '%c{yellow}',
+        '%c{orange}',
+        '%c{red}',
+        '%c{red}%b{yellow}',
+        '%c{yellow}%b{red}'
+    ]
+    )[this.getSlownessStage(actionDurationMultiplier)];
+    
+    if (coloring) { return coloring; }
+    return '';
+}
+
+Game.Entity.prototype.getSlownessStage = function(actionDurationMultiplier) {
+    if (actionDurationMultiplier > 4.5) {
+        return 5;
+    }
+    else if (actionDurationMultiplier > 3.5) {
+        return 4;
+    }
+    else if (actionDurationMultiplier > 2.5) {
+        return 3;
+    }
+    else if (actionDurationMultiplier > 1.5) {
+        return 2;
+    }
+    else if (actionDurationMultiplier > 1) {
+        return 1;
+    }
+    return 0;
 }
 
 Game.Entity.prototype.tryMove = function(x, y, z, map) {

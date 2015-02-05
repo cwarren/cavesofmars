@@ -780,6 +780,9 @@ Game.EntityMixins.InventoryHolder = {
     getWeightStatusString: function() {
         return (this._currentWeight/1000)+'/'+(this._weightCapacity/1000)+' kg';
     },
+    getWeightStatusColor: function() {
+        return this.getSlownessColorMod(this.getActionPenaltyFactor());
+    },
 
     getActionPenaltyFactor: function() {
         return Math.max(1,this.getCurrentWeight() / this.getWeightCapacity());
@@ -805,6 +808,13 @@ Game.EntityMixins.InventoryHolder = {
     },
     getBulkStatusString: function() {
         return (this._currentBulk/1000)+'/'+(this._bulkCapacity/1000)+' L';
+    },
+    getBulkStatusColor: function() {
+        var fillRatio = this._currentBulk/this._bulkCapacity;
+        if (fillRatio >= 1) {return '%c{red}';}
+        if (fillRatio >= .9) {return '%c{orange}';}
+        if (fillRatio >= .8) {return '%c{yellow}';}
+        return '';
     },
 
     getItems: function() {
@@ -936,11 +946,26 @@ Game.EntityMixins.InventoryHolder = {
     },
     canAddItem: function(itm) {
         //console.dir(itm);
-        // check bulk and weight limits: must be under bulk limit and under 5x weight limit
-        return (itm.getInvBulk() + this._currentBulk 
-                                < this._bulkCapacity) &&
-               (itm.getInvWeight() + this._currentWeight 
-                              < this._weightCapacity * 5);
+        this._calculateWeightAndBulk();
+        // check bulk and weight limits
+        return this.canAddItem_bulk(itm) && this.canAddItem_weight(itm);
+    },
+    canAddItem_bulk: function(itm) {
+        console.log('canAddItem_bulk '+this._currentBulk +'/'+ this._bulkCapacity);
+        console.dir(itm);
+        // check bulk limit: must be under bulk limit
+        return (itm.getInvBulk() + this._currentBulk <= this._bulkCapacity);
+    },    
+    canAddItem_weight: function(itm) {
+        //console.dir(itm);
+        // check weight limit: must be under 5x weight limit
+        return (itm.getInvWeight() + this._currentWeight <= this._weightCapacity * 5);
+    },
+    isOverloaded_bulk: function() {
+        return this._currentBulk > this._bulkCapacity;
+    },
+    isOverloaded_weight: function() {
+        return this._currentWeight > this._weightCapacity * 5;
     },
     pickupItems: function(indices) {
         // Allows the user to pick up items from the map, where indices is
@@ -984,6 +1009,7 @@ Game.EntityMixins.InventoryHolder = {
             this.setLastActionDuration(this.getDefaultActionDuration()*.5);
             
         }
+        this._calculateWeightAndBulk();
     },
     dropThisItem: function(itm) {
         var itemIdx = -1;
@@ -996,6 +1022,7 @@ Game.EntityMixins.InventoryHolder = {
         if (itemIdx>-1) {
             this.dropItem(itemIdx);
         }
+        this._calculateWeightAndBulk();
     },
     dropItems: function(indices) {
         if (indices.length == 1) {
@@ -1020,6 +1047,7 @@ Game.EntityMixins.InventoryHolder = {
             this._CleanInventory();
             this.setLastActionDuration(this.getDefaultActionDuration());
         }
+        this._calculateWeightAndBulk();
     },
     extractItem: function(i) {
         // removes the item from the inventory and returns it
@@ -1267,16 +1295,34 @@ Game.EntityMixins.Equipper = {
         this._armor = null;
     },
     wield: function(item) {
+        console.log('called wield');
+        var priorWielded = this._weapon;
+        if (item==this._armor) { this._armor = null; }
+        this._weapon = item;
+        this._calculateWeightAndBulk();
+        //if (priorWielded && ! this.canAddItem_bulk(priorWielded)) {
+        if (this.isOverloaded_bulk()) {
+            this.dropThisItem(priorWielded);
+            Game.sendMessage(this,'%s was too large for you to stow - it had to be dropped on the ground',[priorWielded.describeThe()])
+        }
+        var actionDurationMultiplier = this.getActionPenaltyFactor();
+        this.alertOnSlowness(actionDurationMultiplier);        
+        this.setLastActionDuration(this.getDefaultActionDuration()*actionDurationMultiplier);        
+/*        
         this.unwield();
         if (item==this._armor) { this.takeOff(); }
         this._weapon = item;
         var actionDurationMultiplier = this.getActionPenaltyFactor();
         this.alertOnSlowness(actionDurationMultiplier);        
         this.setLastActionDuration(this.getDefaultActionDuration()*actionDurationMultiplier);
+*/
+        this._calculateWeightAndBulk();
     },
     unwield: function() {
+        console.log('called unwield');
         if (this._weapon) {
-            if (this._weapon.getInvBulk()+this.getCurrentBulk() > this.getBulkCapacity()) {
+            if (! this.canAddItem_bulk(this._weapon)) {
+            //if (this._weapon.getInvBulk()+this.getCurrentBulk() > this.getBulkCapacity()) {
                 // drop the item instead of putting it in inventory
                 // NOTE: this shuffle avoids a recursive loop that would otherwise occur when the item dropping code tries to unequip the item
                 var w = this._weapon;
@@ -1290,18 +1336,37 @@ Game.EntityMixins.Equipper = {
                 this.setLastActionDuration(this.getDefaultActionDuration()*actionDurationMultiplier);
             }
         }
+        this._calculateWeightAndBulk();
     },
     wear: function(item) {
+        console.log('called wear');
+        var priorWorn = this._armor;
+        if (item==this._weapon) { this._weapon = null; }
+        this._armor = item;
+        this._calculateWeightAndBulk();
+        //if (priorWorn && ! this.canAddItem_bulk(priorWorn)) {
+        if (this.isOverloaded_bulk()) {
+            this.dropThisItem(priorWorn);
+            Game.sendMessage(this,'%s was too large for you to stow - it had to be dropped on the ground',[priorWorn.describeThe()])
+        }
+        var actionDurationMultiplier = this.getActionPenaltyFactor();
+        this.alertOnSlowness(actionDurationMultiplier);        
+        this.setLastActionDuration(this.getDefaultActionDuration()*5*actionDurationMultiplier); // putting on armor takes a while
+/*
         this.takeOff();
         if (item==this._weapon) { this.unwield(); }
         this._armor = item;
         var actionDurationMultiplier = this.getActionPenaltyFactor();
         this.alertOnSlowness(actionDurationMultiplier);        
         this.setLastActionDuration(this.getDefaultActionDuration()*actionDurationMultiplier);
+*/
+        this._calculateWeightAndBulk();
     },
     takeOff: function() {
+        console.log('called takeOff');
         if (this._armor) {
-            if (this._armor.getInvBulk()+this.getCurrentBulk() > this.getBulkCapacity()) {
+            if (! this.canAddItem_bulk(this._armor)) {
+            //if (this._armor.getInvBulk()+this.getCurrentBulk() > this.getBulkCapacity()) {
                 // drop the item instead of putting it in inventory
                 // NOTE: this shuffle avoids a recursive loop that would otherwise occur when the item dropping code tries to unequip the item
                 var a = this._armor;
@@ -1315,6 +1380,7 @@ Game.EntityMixins.Equipper = {
                 this.setLastActionDuration(this.getDefaultActionDuration()*actionDurationMultiplier);
             }
         }
+        this._calculateWeightAndBulk();
     },
     getWeapon: function() {
         return this._weapon;
@@ -1324,6 +1390,7 @@ Game.EntityMixins.Equipper = {
     },
     unequip: function(item) {
         // Helper function to be called before getting rid of an item.
+        console.log('called unequip');
         if (this._weapon === item) {
             this.unwield();
         }
