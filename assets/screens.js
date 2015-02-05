@@ -1670,6 +1670,7 @@ Game.Screen.storyScreen = {
                 
                 /////////////////////////////
                 /// CODE FOR ITEM TESTING!!!!
+/*
                 console.log('item testing code is active');
 
 //                player.addItem(Game.ItemRepository.create('sling'));
@@ -1688,7 +1689,6 @@ Game.Screen.storyScreen = {
 
                   player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('plated leather armor'),player.getX(),player.getY(),player.getZ());
 
-/*
                 */
                 /// CODE FOR ITEM TESTING!!!!
                 /////////////////////////////

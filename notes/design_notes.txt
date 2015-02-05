@@ -40,11 +40,27 @@ analyzer
 
 TODO NEXT:
 
-3. add an isWeapon flag to items - only weapons add combat modifiers when wielded; consider converting Wearable mixin to isArmor flag (are there any differences between the two? probably actually more flexible/powerful when using a flag....)
+1. add an isWeapon flag to items - only weapons add combat modifiers when wielded; consider converting Wearable mixin to isArmor flag (are there any differences between the two? probably actually more flexible/powerful when using a flag....)
 
-4. wielding inventory commands offers options from items on current space in addition to those in inventory (access using the dash/minus key (NOT the numpad one)?)
+2. wielding inventory commands offers options from items on current space in addition to those in inventory (access using the dash/minus key (NOT the numpad one)?)
+    -- OR: if hands are currently empty, scan through all the items to be picked up and put the one with the highest bulk directly as wielded (then pick up others per normal process)
+    -- NOTE: add message re: empty hand option to alert than inven is too full to pick up an item
+    
+3 consider altering wield keybinding to 'h' for hands, and wear keybinding to 'b' for body
 
-5. container objects
+4. a density function would probably be useful; consider even doing away with direct mass and instead deal with bulk and density...?
+
+5. for food items: first, alter the weight and bulk per uses/consumption; second, figure out some kind of nutritional density for various food items, and give it appropriate uses by setting per-consume amount and total number of consumptions to match target total food value
+
+5.5. do away with explicit food uses entirely - have a nutritional density rating for the food (i.e. represent food amt / L ), and entities have an EatAmount which is measured in L, and each 'E'at of the food increases entity food level by EatAmount * nutri-density of the item, and reduces item L and wght appropriately
+    - entity has eatAmount - how many L the entity eats per 'E'at action
+    - item has nutritional density, which is food value per L
+    - on 'E'at of an item - 
+        if (item bulk > eatAmount) food value eaten = eatAmount * nutritional density; increase satiation by food value, and reduce item bulk by eatAmount
+        else if (item bulk <= eatAmount) increase satiation by item bulk * nutritional density, then destroy item
+    NOTE: this pattern may be able to be generalized from nutritional density to action-use-density; that might be a way to implement stacking... (or that may be a thing to try in a future game)
+
+8. container objects
     - containers have a weight, bulk
     - containers have a bulk capacity
     - containers have an access action duration - it can take more (for packs, pouches, etc) or less (for slings, bandoliers, etc) time to take out items so that they can be used (wielded, thrown, etc.)

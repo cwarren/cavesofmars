@@ -951,8 +951,8 @@ Game.EntityMixins.InventoryHolder = {
         return this.canAddItem_bulk(itm) && this.canAddItem_weight(itm);
     },
     canAddItem_bulk: function(itm) {
-        console.log('canAddItem_bulk '+this._currentBulk +'/'+ this._bulkCapacity);
-        console.dir(itm);
+        //console.log('canAddItem_bulk '+this._currentBulk +'/'+ this._bulkCapacity);
+        //console.dir(itm);
         // check bulk limit: must be under bulk limit
         return (itm.getInvBulk() + this._currentBulk <= this._bulkCapacity);
     },    
@@ -1295,7 +1295,7 @@ Game.EntityMixins.Equipper = {
         this._armor = null;
     },
     wield: function(item) {
-        console.log('called wield');
+        //console.log('called wield');
         var priorWielded = this._weapon;
         if (item==this._armor) { this._armor = null; }
         this._weapon = item;
@@ -1319,7 +1319,7 @@ Game.EntityMixins.Equipper = {
         this._calculateWeightAndBulk();
     },
     unwield: function() {
-        console.log('called unwield');
+        //console.log('called unwield');
         if (this._weapon) {
             if (! this.canAddItem_bulk(this._weapon)) {
             //if (this._weapon.getInvBulk()+this.getCurrentBulk() > this.getBulkCapacity()) {
@@ -1339,7 +1339,7 @@ Game.EntityMixins.Equipper = {
         this._calculateWeightAndBulk();
     },
     wear: function(item) {
-        console.log('called wear');
+        //console.log('called wear');
         var priorWorn = this._armor;
         if (item==this._weapon) { this._weapon = null; }
         this._armor = item;
@@ -1363,7 +1363,7 @@ Game.EntityMixins.Equipper = {
         this._calculateWeightAndBulk();
     },
     takeOff: function() {
-        console.log('called takeOff');
+        //console.log('called takeOff');
         if (this._armor) {
             if (! this.canAddItem_bulk(this._armor)) {
             //if (this._armor.getInvBulk()+this.getCurrentBulk() > this.getBulkCapacity()) {
@@ -1390,7 +1390,7 @@ Game.EntityMixins.Equipper = {
     },
     unequip: function(item) {
         // Helper function to be called before getting rid of an item.
-        console.log('called unequip');
+        //console.log('called unequip');
         if (this._weapon === item) {
             this.unwield();
         }
