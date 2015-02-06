@@ -796,12 +796,12 @@ Game.Screen.eatScreen.getHelpSections = function() {
 //-------------------
 
 Game.Screen.wieldScreen = new Game.Screen.ItemListScreen({
-    caption: 'Choose the item you wish to wield',
+    caption: 'Choose the item you wish to carry in your hands',
     canSelect: true,
     canSelectMultipleItems: false,
     hasNoItemOption: true,
     isAcceptable: function(item) {
-        return item && true; //item.hasMixin('Equippable') && item.isWieldable();
+        return item && true;
     },
     ok: function(selectedItems) {
         // Check if we selected 'no item'
@@ -834,7 +834,7 @@ Game.Screen.wearScreen = new Game.Screen.ItemListScreen({
     canSelectMultipleItems: false,
     hasNoItemOption: true,
     isAcceptable: function(item) {
-        return item && item.hasMixin('Wearable') && item.isWearable();
+        return item && item.isArmor();
     },
     ok: function(selectedItems) {
         // Check if we selected 'no item'

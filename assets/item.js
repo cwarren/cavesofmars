@@ -2,12 +2,17 @@ Game.Item = function(properties) {
     properties = properties || {};
     // Call the glyph's construtor with our set of properties
     Game.DynamicGlyph.call(this, properties);
+
+    this._isWeapon = properties['isWeapon'] || false;
+    this._isArmor = properties['isArmor'] || false;
     
     this._attackValue = properties['attackValue'] || 0;
     this._defenseValue = properties['defenseValue'] || 0;
     
     this._invWeight = properties['invWeight'] || 1; // roughly 1g 
     this._invBulk = properties['invBulk'] || 1; // roughly 1 cc
+    
+    
     
     if (!this._listeners['details']) {
         this._listeners['details'] = [];
@@ -19,7 +24,7 @@ Game.Item = function(properties) {
         if (this.getAttackValue() > 0) {
             results.push({key: 'attack', value: this.getAttackValue()});
         }
-        if (this.hasMixin('Wearable')) {
+        if (this.isArmor()) {
             if (this === Game.getPlayer().getArmor()) {
                 results.push({key: 'defense', value: this.getDefenseValue()});
             }
@@ -58,4 +63,11 @@ Game.Item.prototype.setInvBulk = function(v) {
 }
 Game.Item.prototype.getInvBulk = function() {
     return this._invBulk;
+}
+
+Game.Item.prototype.isWeapon = function() {
+    return this._isWeapon;
+}
+Game.Item.prototype.isArmor = function() {
+    return this._isArmor;
 }

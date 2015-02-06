@@ -49,28 +49,6 @@ Game.ItemMixins.Edible = {
     }
 };
 
-Game.ItemMixins.Wearable = {
-    name: 'Wearable',
-    init: function(template) {
-        this._wearable = template['wearable'] || false;
-    },
-    isWearable: function() {
-        return this._wearable;
-    }
-};
-
-/*
-    listeners: {
-        'details': function() {
-            var results = [];
-            if ((this._wearable) || (this.getDefenseValue() > 0)) {
-                results.push({key: 'defense', value: this.getDefenseValue()});
-            }
-            return results;
-        }
-    }
-*/
-
 Game.ItemMixins.DigTool = {
     name: 'DigTool',
     init: function(template) {

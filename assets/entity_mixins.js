@@ -209,7 +209,7 @@ Game.EntityMixins.Digger = {
             var digAdds = [];
 
             var w = this.getWeapon();
-            if (w && ! w.hasMixin('Wearable')) {
+            if (w && ! w.isArmor()) {
                 digMults = digMults.concat(Game.util.scanEventResultsFor(w.raiseEvent('onDigging'),'digMultiplier'));
                 digAdds = digAdds.concat(Game.util.scanEventResultsFor(w.raiseEvent('onDigging'),'digAdder'));
             }
@@ -316,7 +316,7 @@ Game.EntityMixins.NonRecuperatingDestructible = {
         // consideration weapon and armor
         if (this.hasMixin(Game.EntityMixins.Equipper)) {
             var w = this.getWeapon();
-            if (w && ! w.hasMixin('Wearable')) {
+            if (w && w.isWeapon()) {
                 modifier += w.getDefenseValue();
             }
             if (this.getArmor()) {
@@ -524,9 +524,9 @@ Game.EntityMixins.RangedAttacker = {
         var rangedAtk = this._rangedAttackValue + modifier;
         
         if (this.hasMixin('Equipper')) {
-            var weapon = this.getWeapon();
-            if (weapon && ! weapon.hasMixin('Wearable')) {
-                var weaponShootEffects = weapon.raiseEvent('onShooting',ammo);
+            var w = this.getWeapon();
+            if (w && w.isWeapon()) {
+                var weaponShootEffects = w.raiseEvent('onShooting',ammo);
 
                 var mults = Game.util.scanEventResultsFor(weaponShootEffects,'rangedAttackDamageMultiplier');
                 for (var i=0;i<mults.length;i++) {
@@ -617,7 +617,7 @@ Game.EntityMixins.MeleeAttacker = {
         // consideration weapon and armor
         if (this.hasMixin(Game.EntityMixins.Equipper)) {
             var w = this.getWeapon();
-            if (w && ! w.hasMixin('Wearable')) {
+            if (w && w.isWeapon()) {
                 modifier += w.getAttackValue();
             }
             if (this.getArmor()) {
