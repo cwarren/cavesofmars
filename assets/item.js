@@ -5,6 +5,7 @@ Game.Item = function(properties) {
 
     this._isWeapon = properties['isWeapon'] || false;
     this._isArmor = properties['isArmor'] || false;
+    this._isTool = properties['isTool'] || false;
     
     this._attackValue = properties['attackValue'] || 0;
     this._defenseValue = properties['defenseValue'] || 0;
@@ -18,18 +19,44 @@ Game.Item = function(properties) {
         this._listeners['details'] = [];
     }
     
-    // Add the listener.
+    // Add the listeners
     this._listeners['details'].push(function() {
         var results = [];
+        
+        var uses = this.getUses();
+        if (uses) {
+            results.push({key: 'use', value: '('+uses.join()+')'});
+        }
         if (this.getAttackValue() > 0) {
             results.push({key: 'attack', value: this.getAttackValue()});
         }
-        if (this.isArmor()) {
-            if (this === Game.getPlayer().getArmor()) {
+        if (this.getDefenseValue() > 0) {
+            results.push({key: 'defense', value: this.getDefenseValue()});
+        }
+
+        results.push({key: 'mass', value: this.getInvWeight()/1000+' kg'});
+        results.push({key: 'bulk', value: this.getInvBulk()/1000+' L'});
+
+        return results;
+    });
+    this._listeners['calcDetails'].push(function() {
+        var results = [];
+        if (this.isArmor() && (this === Game.getPlayer().getArmor())) {
+            results.push({key: 'use', value: 'armor'});
+            if (this.getDefenseValue() > 0) {
                 results.push({key: 'defense', value: this.getDefenseValue()});
             }
-        } else if (this.getDefenseValue() > 0) {
-            results.push({key: 'defense', value: this.getDefenseValue()});
+            if (this.getAttackValue() > 0) {
+                results.push({key: 'meleeAttack', value: this.getAttackValue()});
+            }
+        } else if (this.isWeapon() && (this === Game.getPlayer().getWeapon())) {
+            results.push({key: 'use', value: 'weapon'});
+            if (this.getDefenseValue() > 0) {
+                results.push({key: 'defense', value: this.getDefenseValue()});
+            }
+            if (this.getAttackValue() > 0) {
+                results.push({key: 'meleeAttack', value: this.getAttackValue()});
+            }
         }
 
         results.push({key: 'mass', value: this.getInvWeight()/1000+' kg'});
@@ -70,4 +97,15 @@ Game.Item.prototype.isWeapon = function() {
 }
 Game.Item.prototype.isArmor = function() {
     return this._isArmor;
+}
+Game.Item.prototype.isTool = function() {
+    return this._isTool;
+}
+Game.Item.prototype.getUses = function() {
+    var uses = [];
+    if (this.isWeapon()) { uses.push('weapon'); }
+    if (this.isArmor()) { uses.push('armor'); }
+    if (this.isTool()) { uses.push('tool'); }
+    if (this.hasMixin('Ammo')) { uses.push('ammo'); }
+    return uses;
 }

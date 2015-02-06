@@ -209,7 +209,7 @@ Game.EntityMixins.Digger = {
             var digAdds = [];
 
             var w = this.getWeapon();
-            if (w && ! w.isArmor()) {
+            if (w && w.isTool()) {
                 digMults = digMults.concat(Game.util.scanEventResultsFor(w.raiseEvent('onDigging'),'digMultiplier'));
                 digAdds = digAdds.concat(Game.util.scanEventResultsFor(w.raiseEvent('onDigging'),'digAdder'));
             }
@@ -250,6 +250,9 @@ Game.EntityMixins.Digger = {
     },
     listeners: {
         details: function() {
+            return [{key: 'digging', value: this.getDigRate()}];
+        },
+        calcDetails: function() {
             return [{key: 'digRate', value: this.getDigRate()}];
         }
     }
@@ -373,6 +376,12 @@ Game.EntityMixins.NonRecuperatingDestructible = {
             this.setHp(this.getMaxHp());
         },
         details: function() {
+            return [
+                {key: 'defense', value: this.getDefenseValue()},
+                {key: 'hp', value: this.getHp()}
+            ];
+        },
+        calcDetails: function() {
             return [
                 {key: 'defense', value: this.getDefenseValue()},
                 {key: 'hp', value: this.getHp()}
@@ -600,6 +609,9 @@ Game.EntityMixins.RangedAttacker = {
 //        },
         details: function() {
             return [{key: 'base ranged attack', value: this.getBaseRangedAttackValue()}];
+        },
+        calcDetails: function() {
+            return [{key: 'baseRangedAttack', value: this.getBaseRangedAttackValue()}];
         }
     }
 }
@@ -683,6 +695,9 @@ Game.EntityMixins.MeleeAttacker = {
         },
         details: function() {
             return [{key: 'attack', value: this.getAttackValue()}];
+        },
+        calcDetails: function() {
+            return [{key: 'meleeAttack', value: this.getAttackValue()}];
         }
     }
 }
@@ -1504,6 +1519,9 @@ Game.EntityMixins.ExperienceGainer = {
             }
         },
         details: function() {
+            return [{key: 'level', value: this.getLevel()}];
+        },
+        calcDetails: function() {
             return [{key: 'level', value: this.getLevel()}];
         },
         onSpawned: function(startLevel) {

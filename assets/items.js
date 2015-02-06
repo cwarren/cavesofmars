@@ -196,6 +196,7 @@ Game.ItemRepository.define('JAT tool, damaged', {
     digAdder: 3,
     digMultiplier: .75,
     isWeapon: true,
+    isTool: true,
     description: "The JAT (Jack-of-All-Trades) tool is the standard-issue tool for work on Mars. While not as good as a specialized tool, it's at least moderately effective as a shovel, prybar, pick, axe, and walking stick for navigating rough terrain. Unfortunately this one has been badly damaged, but you could still probably hit something with it if you had to.",
     mixins: [Game.ItemMixins.DigTool]
 }, {
@@ -213,6 +214,7 @@ Game.ItemRepository.define('JAT tool', {
     digAdder: 3,
     digMultiplier: 2.5,
     isWeapon: true,
+    isTool: true,
     description: "The JAT (Jack-of-All-Trades) tool is the standard-issue tool for work on Mars. While not as good as a specialized tool, it's at least moderately effective as a shovel, prybar, pick, axe, and walking stick for navigating rough terrain. Plus, if you have to you can use it to give something a pretty solid whack.",
     mixins: [Game.ItemMixins.DigTool]
 }, {
@@ -258,6 +260,7 @@ Game.ItemRepository.define('staff', {
     digAdder: 0,
     digMultiplier: 1.25,
     isWeapon: true,
+    isTool: true,
     description: "A long fairly thin piece of something that resembles wood, with wrappings where the hands are to be placed. It's light weight and flex makes it more of a defensive tool.",
     mixins: [Game.ItemMixins.DigTool]
 }, {
@@ -275,6 +278,7 @@ Game.ItemRepository.define('shod staff', {
     digAdder: 1,
     digMultiplier: 1.75,
     isWeapon: true,
+    isTool: true,
     description: "A long heavy piece of something that resembles wood. Parts of it are also wrapped in some kind of metal. It's heavy, but well balanced.",
     mixins: [Game.ItemMixins.DigTool]
 }, {

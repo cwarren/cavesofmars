@@ -40,11 +40,7 @@ analyzer
 
 TODO NEXT:
 
-1. add an isWeapon flag to items - only weapons add combat modifiers when wielded; consider converting Wearable mixin to isArmor flag (are there any differences between the two? probably actually more flexible/powerful when using a flag....)
-
-1.5 consider altering wield keybinding to 'h' for hands, and wear keybinding to 'b' for body
-
-1.75: looks like detail function is overloaded for info for player and numbers for calculation; split the two
+1 consider altering wield keybinding to 'h' for hands, and wear keybinding to 'b' for body; generally refactor 'weapon' slot stuff to 'hands', and 'armor' to 'body' (NOTE: NOT the isWeapon and isArmor flag - those are meaningful as is!)
 
 2. wielding (& eating?) inventory commands offers options from items on current space in addition to those in inventory (access using the dash/minus key (NOT the numpad one)?)
     -- OR: if hands are currently empty, scan through all the items to be picked up and put the one with the highest bulk directly as wielded (then pick up others per normal process)

@@ -1267,8 +1267,6 @@ Game.Screen.lookScreen = new Game.Screen.TargetBasedScreen({
                     var entity = map.getEntityAt(x, y, z);
 
                     detailsStr += entity.getName()+': '+entity.getDescription()+"\n\n";
-//                        Game.AuxScreen.infoScreen.setCurrentDetailInfo(entity.getDescription());
-                        //Game.sendMessage(this._player,entity.getDescription());
 
                     if (entity.details()) {
                         captionStr += String.format("%s - %s (%s)",entity.getRepresentation(),entity.describeA(true),entity.details());
@@ -1286,8 +1284,6 @@ Game.Screen.lookScreen = new Game.Screen.TargetBasedScreen({
                         Game.sendMessage(this._player,'there are several things piled up here - you can only see clearly the one on the top');
                     }
                     detailsStr += item.getName()+': '+item.getDescription()+"\n";
-//                    Game.AuxScreen.infoScreen.setCurrentDetailInfo(item.getDescription());
-//                    Game.sendMessage(this._player,item.getDescription());
 
                     if (captionStr) {
                         captionStr += ' with ';

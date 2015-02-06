@@ -45,6 +45,13 @@ Game.ItemMixins.Edible = {
                 det.push({key: 'food uses', value: this._remainingConsumptions+'/'+this._maxConsumptions});
             }
             return det;
+        },
+        'calcDetails': function() {
+            var det = [{key: 'food', value: this._foodValue}];
+            if (this._maxConsumptions > 1) {
+                det.push({key: 'foodUses', value: this._remainingConsumptions+'/'+this._maxConsumptions});
+            }
+            return det;
         }
     }
 };
@@ -69,11 +76,15 @@ Game.ItemMixins.DigTool = {
     },
     listeners: {
         'details': function() {
+            return [{key: 'dig-times', value: this.getDigMultiplier()},
+                    {key: 'dig-plus', value: this.getDigAdder()}
+                    ];
+        },
+        'calcDetails': function() {
             return [{key: 'digMultiplier', value: this.getDigMultiplier()},
                     {key: 'digAdder', value: this.getDigAdder()}
                     ];
         },
-    
         'onDigging': function() {
             return [{key: 'digMultiplier', value: this.getDigMultiplier()},
                     {key: 'digAdder', value: this.getDigAdder()}
@@ -105,19 +116,28 @@ Game.ItemMixins.Ammo = {
     setReuseChance: function (v) {
         this._reuseChance = v;
     },
+    getAmmoTypes: function() {
+        var ammoTypes = [this._name];
+        if (this._group) {
+            ammoTypes.push(this._group);
+        }
+        if (this._supergroup) {
+            ammoTypes.push(this._supergroup);
+        }
+        return ammoTypes;
+    },
     listeners: {
         'details': function() {
-            var det = [{key: 'rangedAttackDamageBonus', value: this.getRangedAttackDamageBonus()}];
-            var ammoTypes = [this._name];
-            if (this._group) {
-                ammoTypes.push(this._group);
-            }
-            if (this._supergroup) {
-                ammoTypes.push(this._supergroup);
-            }
-            det.push({key: 'ammo type', value: ammoTypes.join()})
+            var det = [{key: 'fire/fling damage bonus', value: this.getRangedAttackDamageBonus()}];
+            det.push({key: 'ammo type', value: '('+this.getAmmoTypes().join()+')'});
             return det;
-        }
+        },
+        'calcDetails': function() {
+            var det = [{key: 'rangedAttackDamageBonus', value: this.getRangedAttackDamageBonus()}];
+            det.push({key: 'ammoTypes', value: ','+this.getAmmoTypes().join()+','}); // allows easier substring searching
+            return det;
+        },
+
     }
 };
 
@@ -161,9 +181,14 @@ Game.ItemMixins.Shooter = {
     },
     listeners: {
         'details': function() {
+            return [{key: 'ranged-plus', value: this.getRangedAttackDamageAdder()},
+                    {key: 'ranged-times', value: this.getRangedAttackDamageMultipler()},
+                    {key: 'uses ammo', value: this._allowedAmmo.join()}];
+        },
+        'calcDetails': function() {
             return [{key: 'rangedAttackDamageAdder', value: this.getRangedAttackDamageAdder()},
                     {key: 'rangedAttackDamageMultiplier', value: this.getRangedAttackDamageMultipler()},
-                    {key: 'uses ammo', value: this._allowedAmmo.join()}];
+                    {key: 'allowedAmmo', value: this._allowedAmmo.join()}];
         },
         'onShooting': function(ammo) {
             if (ammo && this.canUseAmmo(ammo)) {
@@ -290,6 +315,12 @@ Game.ItemMixins.Seeder = {
 //            this.raiseEvent('onPlanted',map,x,y,z);
 //        },
         'details': function() {
+            return [{key: 'good growth chance', value: this.getGrowthLiklihoodGood()},
+                    {key: 'grows on', value: this.getSeedTargets().join(',')},
+                    {key: 'will not grow on', value: this.getSeedExclusions().join(',')},
+                    ];
+        },
+        'calcDetails': function() {
             return [{key: 'goodGrowthRate', value: this.getGrowthLiklihoodGood()},
                     {key: 'generallyValidSubstrates', value: this.getSeedTargets().join(',')},
                     {key: 'willNotGrowOn', value: this.getSeedExclusions().join(',')},
