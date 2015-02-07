@@ -839,6 +839,7 @@ Game.EntityMixins.InventoryHolder = {
         return this._items[i];
     },
     _CompactInventory: function() {
+/*
         var newItems = new Array();
         for (var i=0; i< this._items.length; i++) {
             if (this._items[i]) {
@@ -846,8 +847,21 @@ Game.EntityMixins.InventoryHolder = {
             }
         }
         this._items = newItems;
+*/
+        this._items = this._compactItemArray(this._items);
+    },
+    _compactItemArray: function(ar) {
+        var newAr = new Array();
+        for (var i=0; i< ar.length; i++) {
+            if (ar[i]) {
+                newAr.push(ar[i]);
+            }
+        }
+        return newAr;
     },
     _SortInventoryByType: function() {
+        this._sortItemArrayByType(this._items);
+    /*
         this._items.sort(function(a,b) {
             //console.dir(a);
             //console.dir(b);
@@ -875,38 +889,85 @@ Game.EntityMixins.InventoryHolder = {
                 return cmpSuper;
             }
         });
+        */
     },
-    _SortInventoryByBulk: function() {
+    _SortInventoryByBulkDesc: function() {
+        this._sortItemArrayByBulkDesc(this._items);
+    /*
         // sorts in descending order of bulk
         this._items.sort(function(a,b) {
             return b.getInvBulk() - a.getInvBulk();
         });
+        */
     },
-    _SortInventoryByWeight: function() {
-        // sorts in descending order of bulk
+    _SortInventoryByWeightDesc: function() {
+        this._sortItemArrayByWeightDesc(this._items);
+    /*
+        // sorts in descending order of weight
         this._items.sort(function(a,b) {
+            return b.getInvWeight() - a.getInvWeight();
+        });
+        */
+    },
+    _sortItemArrayByType: function(ar) {
+        ar.sort(function(a,b) {
+            //console.dir(a);
+            //console.dir(b);
+            var vaSuper = a.getSuperGroup(); if (! vaSuper) { vaSuper = ''; }
+            var vaGroup = a.getGroup();      if (! vaGroup) { vaGroup = ''; }
+            var vaName = a.getName();        if (! vaName) { vaName = ''; }
+
+            var vbSuper = b.getSuperGroup(); if (! vaSuper) { vaSuper = ''; }
+            var vbGroup = b.getGroup();      if (! vbGroup) { vbGroup = ''; }
+            var vbName = b.getName();        if (! vbName) { vbName = ''; }
+
+            var cmpSuper = vaSuper.localeCompare(vbSuper);
+            var cmpGroup = vaGroup.localeCompare(vbGroup);
+            var cmpName  = vaName.localeCompare(vbName);
+
+            //var ret = 0;
+            
+            if (cmpSuper === 0) {
+                if (cmpGroup === 0) {
+                    return cmpName;
+                } else {
+                    return cmpGroup;
+                }
+            } else {
+                return cmpSuper;
+            }
+        });
+    },
+    _sortItemArrayByBulkDesc: function(ar) {
+        ar.sort(function(a,b) {
             return b.getInvBulk() - a.getInvBulk();
         });
+    },
+    _sortItemArrayByWeightDesc: function(ar) {
+        // sorts in descending order of bulk
+        ar.sort(function(a,b) {
+            return b.getInvWeight() - a.getInvWeight();
+        });    
     },
     _calculateWeightAndBulk: function() {
         this._currentBulk = 0;
         this._currentWeight = 0;
-        var wieldedItem = '';
+        var heldItem = '';
         var wornItem = '';
         if (this.hasMixin(Game.EntityMixins.Equipper)) {
-            wieldedItem = this.getHolding();
+            heldItem = this.getHolding();
             wornItem = this.getWearing();
         }
         
         for (var i=0; i<this._items.length; i++) {
             this._currentWeight += this._items[i].getInvWeight();
-//            console.log('wieldedItem');
-//            console.dir(wieldedItem);
+//            console.log('heldItem');
+//            console.dir(heldItem);
 //            console.log('wornItem');
 //            console.dir(wornItem);
 //            console.log('this._items[i]');
 //            console.dir(this._items[i]);
-            if ((wieldedItem && this._items[i] === wieldedItem) || (wornItem && this._items[i] === wornItem)) {
+            if ((heldItem && this._items[i] === heldItem) || (wornItem && this._items[i] === wornItem)) {
                 continue;
             }
             this._currentBulk +=  this._items[i].getInvBulk();
@@ -932,6 +993,11 @@ Game.EntityMixins.InventoryHolder = {
         while(this._items.length > 0) {
             this.dropItem(0);
         }
+    },
+    forceAddItem: function(item) {
+        this._items.push(item);
+        this._CleanInventory();
+        return true;
     },
     addItem: function(item) {
         if (! this.canAddItem(item)) {
@@ -986,6 +1052,18 @@ Game.EntityMixins.InventoryHolder = {
         // Allows the user to pick up items from the map, where indices is
         // the indices for the array returned by map.getItemsAt
         var mapItems = this._map.getItemsAt(this.getX(), this.getY(), this.getZ());
+/*
+        var newMapItems = new Array();        
+        var toPickupItems = new Array();
+
+        for (var i = 0; i < mapItems.length; i++) {
+            if (indices.indexOf(i) > -1) {
+                toPickupItems.push(mapItems[i]);
+            } else {
+                newMapItems.push(mapItems[i]);
+            }
+        }
+*/        
         var added = 0;
         // Iterate through all indices.
         for (var i = 0; i < indices.length; i++) {
@@ -1000,6 +1078,7 @@ Game.EntityMixins.InventoryHolder = {
                 break;
             }
         }
+
         // Update the map items
         this._map.setItemsAt(this.getX(), this.getY(), this.getZ(), mapItems);
         
@@ -1309,35 +1388,25 @@ Game.EntityMixins.Equipper = {
         this._inHands = null;
         this._onBody = null;
     },
-    wield: function(item) {
-        //console.log('called wield');
-        var priorWielded = this._inHands;
+    holdInHands: function(item) {
+        //console.log('called holdInHands');
+        var priorHeld = this._inHands;
         if (item==this._onBody) { this._onBody = null; }
         this._inHands = item;
         this._calculateWeightAndBulk();
-        //if (priorWielded && ! this.canAddItem_bulk(priorWielded)) {
         if (this.isOverloaded_bulk()) {
-            this.dropThisItem(priorWielded);
-            Game.sendMessage(this,'%s was too large for you to stow - it had to be dropped on the ground',[priorWielded.describeThe()])
+            this.dropThisItem(priorHeld);
+            Game.sendMessage(this,'%s was too large for you to stow - it had to be dropped on the ground',[priorHeld.describeThe()])
         }
         var actionDurationMultiplier = this.getActionPenaltyFactor();
         this.alertOnSlowness(actionDurationMultiplier);        
         this.setLastActionDuration(this.getDefaultActionDuration()*actionDurationMultiplier);        
-/*        
-        this.unwield();
-        if (item==this._onBody) { this.takeOff(); }
-        this._inHands = item;
-        var actionDurationMultiplier = this.getActionPenaltyFactor();
-        this.alertOnSlowness(actionDurationMultiplier);        
-        this.setLastActionDuration(this.getDefaultActionDuration()*actionDurationMultiplier);
-*/
         this._calculateWeightAndBulk();
     },
-    unwield: function() {
-        //console.log('called unwield');
+    stowFromHands: function() {
+        //console.log('called stowFromHands');
         if (this._inHands) {
             if (! this.canAddItem_bulk(this._inHands)) {
-            //if (this._inHands.getInvBulk()+this.getCurrentBulk() > this.getBulkCapacity()) {
                 // drop the item instead of putting it in inventory
                 // NOTE: this shuffle avoids a recursive loop that would otherwise occur when the item dropping code tries to unequip the item
                 var w = this._inHands;
@@ -1369,7 +1438,7 @@ Game.EntityMixins.Equipper = {
         this.setLastActionDuration(this.getDefaultActionDuration()*5*actionDurationMultiplier); // putting on armor takes a while
 /*
         this.takeOff();
-        if (item==this._inHands) { this.unwield(); }
+        if (item==this._inHands) { this.stowFromHands(); }
         this._onBody = item;
         var actionDurationMultiplier = this.getActionPenaltyFactor();
         this.alertOnSlowness(actionDurationMultiplier);        
@@ -1407,7 +1476,7 @@ Game.EntityMixins.Equipper = {
         // Helper function to be called before getting rid of an item.
         //console.log('called unequip');
         if (this._inHands === item) {
-            this.unwield();
+            this.stowFromHands();
         }
         if (this._onBody === item) {
             this.takeOff();

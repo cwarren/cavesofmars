@@ -261,7 +261,7 @@ Game.ItemRepository.define('staff', {
     digMultiplier: 1.25,
     isWeapon: true,
     isTool: true,
-    description: "A long fairly thin piece of something that resembles wood, with wrappings where the hands are to be placed. It's light weight and flex makes it more of a defensive tool.",
+    description: "Someone - maybe another quake survivor? - has crafted a long fairly thin piece of something that resembles wood, with wrappings where the hands are to be placed. It's light weight and flex makes it more of a defensive weapon.",
     mixins: [Game.ItemMixins.DigTool]
 }, {
     disableRandomCreation: true

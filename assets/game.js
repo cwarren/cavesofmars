@@ -28,7 +28,7 @@ var Game =  {
         this._player.wear(h);
         var j = Game.ItemRepository.create('JAT tool');
         this._player.addItem(j);
-        this._player.wield(j);        
+        this._player.holdInHands(j);        
 
         
         this._display_main    = new ROT.Display({width: this._screenWidth, height: this._screenHeight, spacing: Game.SPACING});

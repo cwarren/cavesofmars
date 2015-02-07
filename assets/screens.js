@@ -53,7 +53,7 @@ Game.Screen.playScreen = {
     _subScreen: null,
     _parentScreen: null,
     _moveCounter: 0,
-    _helpSections: ['movement','levels','inventory','sense','meta'],
+    _helpSections: ['movement','levels','worldinteraction','inventory','sense','meta'],
     getHelpSections: function() {
         if (this._subScreen) {
             return this._subScreen.getHelpSections();
@@ -288,7 +288,7 @@ Game.Screen.playScreen = {
             return;
 
         } else if (gameAction === Game.Bindings.Actions.Inventory.INVENTORY_HOLD) {
-            this.showItemsSubScreen(Game.Screen.wieldScreen, this._player.getItems(),'You have nothing to put in your hands.');
+            this.showItemsSubScreen(Game.Screen.holdScreen, this._player.getItems(),'You have nothing to put in your hands.');
             return;
 
         } else if (gameAction === Game.Bindings.Actions.Inventory.INVENTORY_WEAR) {
@@ -317,8 +317,13 @@ Game.Screen.playScreen = {
                 Game.refresh();
             } else {
                 this.showItemsSubScreen(Game.Screen.pickupScreen, items,'There is nothing here to pick up.');
-            } 
+            }
+            return;
 
+        } else if (gameAction === Game.Bindings.Actions.Inventory.INVENTORY_GET_TO_HANDS) {
+            var items = this._player.getMap().getItemsAt(this._player.getX(), this._player.getY(), this._player.getZ());
+            this.showItemsSubScreen(Game.Screen.pickupToHandsScreen, items,'There is nothing here to pick up.');
+            return;
 
         //----------------------------
         // world actions
@@ -564,13 +569,13 @@ Game.Screen.ItemListScreen.prototype.render = function(display) {
             var weightNote = (this._items[trueItemIndex].getInvWeight()/1000) + ' kg';
             var bulkNote = (this._items[trueItemIndex].getInvBulk()/1000) + ' L';
 
-            // Check if the item is worn or wielded
+            // Check if the item is worn or holdInHandsed
             var suffix = '';
             if (this._items[trueItemIndex] === this._player.getWearing()) {
                 suffix = ' (wearing)';
                 bulkNote = 'worn';
             } else if (this._items[trueItemIndex] === this._player.getHolding()) {
-                suffix = ' (wielding)';
+                suffix = ' (holding)';
                 bulkNote = 'in hand';
             }
             
@@ -697,7 +702,7 @@ Game.Screen.inventoryScreen.handleInput = function(inputType, inputData) {
         return;
 
     } else if (gameAction === Game.Bindings.Actions.Inventory.INVENTORY_HOLD) {
-        this._parentScreen.showItemsSubScreen(Game.Screen.wieldScreen, this._player.getItems(),'You have nothing to hold in your hands.');
+        this._parentScreen.showItemsSubScreen(Game.Screen.holdScreen, this._player.getItems(),'You have nothing to hold in your hands.');
         return;
 
     } else if (gameAction === Game.Bindings.Actions.Inventory.INVENTORY_WEAR) {
@@ -732,7 +737,7 @@ Game.Screen.inventoryScreen.getHelpSections = function() {
 //-------------------
 
 Game.Screen.pickupScreen = new Game.Screen.ItemListScreen({
-    caption: 'Choose the items you wish to pickup',
+    caption: 'Choose the items you wish to add to your inventory',
     canSelect: true,
     canSelectMultipleItems: true,
     ok: function(selectedItems) {
@@ -746,6 +751,27 @@ Game.Screen.pickupScreen = new Game.Screen.ItemListScreen({
 });
 
 Game.Screen.pickupScreen.getHelpSections = function() {
+    return ['datanav'];
+};
+
+//-------------------
+
+Game.Screen.pickupToHandsScreen = new Game.Screen.ItemListScreen({
+    caption: 'Choose the item you wish to carry in you hands',
+    canSelect: true,
+    canSelectMultipleItems: false,
+    ok: function(selectedItems) {
+        var key = Object.keys(selectedItems)[0];
+        var item = selectedItems[key];
+        //var heldItem = this._player.getHolding();
+        this._player.forceAddItem(item);
+        this._player.holdInHands(item);
+        this._player.getMap().extractItem(item,this._player.getX(),this._player.getY(),this._player.getZ());
+        return true;
+    }
+});
+
+Game.Screen.pickupToHandsScreen.getHelpSections = function() {
     return ['datanav'];
 };
 
@@ -795,7 +821,7 @@ Game.Screen.eatScreen.getHelpSections = function() {
 
 //-------------------
 
-Game.Screen.wieldScreen = new Game.Screen.ItemListScreen({
+Game.Screen.holdScreen = new Game.Screen.ItemListScreen({
     caption: 'Choose the item you wish to carry in your hands',
     canSelect: true,
     canSelectMultipleItems: false,
@@ -807,21 +833,21 @@ Game.Screen.wieldScreen = new Game.Screen.ItemListScreen({
         // Check if we selected 'no item'
         var keys = Object.keys(selectedItems);
         if (keys.length === 0) {
-            this._player.unwield();
+            this._player.stowFromHands();
             Game.sendMessage(this._player, "You are empty handed.")
         } else {
             // Make sure to unequip the item first in case it is the armor.
             var item = selectedItems[keys[0]];
             //this._player.unequip(item);
-            this._player.wield(item);
-            Game.sendMessage(this._player, "You are wielding %s.", [item.describeA()]);
+            this._player.holdInHands(item);
+            Game.sendMessage(this._player, "You are holding %s.", [item.describeA()]);
             //console.dir(this._player);
         }
         return true;
     }
 });
 
-Game.Screen.wieldScreen.getHelpSections = function() {
+Game.Screen.holdScreen.getHelpSections = function() {
     return ['datanav'];
 };
 
@@ -1516,7 +1542,7 @@ Game.Screen.helpScreenNumpad = {
         display.drawText(1, y++, '[x] to examine carried items');
         display.drawText(1, y++, '[E] to eat something');
         display.drawText(1, y++, '[f] to fire/fling something');
-        display.drawText(1, y++, '[w] to wield something');
+        display.drawText(1, y++, '[w] to holdInHands something');
         display.drawText(1, y++, '[W] to wear something');
         display.drawText(1, y++, '[<],[>] up a level and down a level respectively');
         display.drawText(1, y++, '[?] to show this help screen');
@@ -1563,7 +1589,7 @@ Game.Screen.helpScreenLaptop = {
         display.drawText(1, y++, '[X] to examine carried items');
         display.drawText(1, y++, '[E] to eat something');
         display.drawText(1, y++, '[f] to fire/fling something');
-        display.drawText(1, y++, '[h] to wield something');
+        display.drawText(1, y++, '[h] to holdInHands something');
         display.drawText(1, y++, '[H] to wear something');
         display.drawText(1, y++, '[<],[>] up a level and down a level respectively');
         display.drawText(1, y++, '[?] to show this help screen');

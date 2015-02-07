@@ -18,6 +18,9 @@ Game.Item = function(properties) {
     if (!this._listeners['details']) {
         this._listeners['details'] = [];
     }
+    if (!this._listeners['calcDetails']) {
+        this._listeners['calcDetails'] = [];
+    }
     
     // Add the listeners
     this._listeners['details'].push(function() {
