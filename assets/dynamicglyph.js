@@ -173,4 +173,4 @@ Game.DynamicGlyph.prototype.describeA = function(capitalize) {
 Game.DynamicGlyph.prototype.describeThe = function(capitalize) {
     var prefix = capitalize ? 'The' : 'the';
     return prefix + ' ' + this.describe();
-};
+};

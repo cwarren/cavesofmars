@@ -171,4 +171,4 @@ window.onload = function() {
         // Load the start screen
         Game.switchScreen(Game.Screen.startScreen);
     }
-}
+}

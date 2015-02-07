@@ -287,12 +287,12 @@ Game.Screen.playScreen = {
             this.showItemsSubScreen(Game.Screen.eatScreen, this._player.getItems(),'You have nothing to eat.');
             return;
 
-        } else if (gameAction === Game.Bindings.Actions.Inventory.INVENTORY_WIELD) {
-            this.showItemsSubScreen(Game.Screen.wieldScreen, this._player.getItems(),'You have nothing to wield.');
+        } else if (gameAction === Game.Bindings.Actions.Inventory.INVENTORY_HOLD) {
+            this.showItemsSubScreen(Game.Screen.wieldScreen, this._player.getItems(),'You have nothing to put in your hands.');
             return;
 
         } else if (gameAction === Game.Bindings.Actions.Inventory.INVENTORY_WEAR) {
-            this.showItemsSubScreen(Game.Screen.wearScreen, this._player.getItems(),'You have nothing to wear.');
+            this.showItemsSubScreen(Game.Screen.wearScreen, this._player.getItems(),'You have nothing to wear on your body.');
             return;
 
         } else if (gameAction === Game.Bindings.Actions.Inventory.INVENTORY_EXAMINE) {
@@ -566,10 +566,10 @@ Game.Screen.ItemListScreen.prototype.render = function(display) {
 
             // Check if the item is worn or wielded
             var suffix = '';
-            if (this._items[trueItemIndex] === this._player.getArmor()) {
+            if (this._items[trueItemIndex] === this._player.getWearing()) {
                 suffix = ' (wearing)';
                 bulkNote = 'worn';
-            } else if (this._items[trueItemIndex] === this._player.getWeapon()) {
+            } else if (this._items[trueItemIndex] === this._player.getHolding()) {
                 suffix = ' (wielding)';
                 bulkNote = 'in hand';
             }
@@ -696,12 +696,12 @@ Game.Screen.inventoryScreen.handleInput = function(inputType, inputData) {
         this._parentScreen.showItemsSubScreen(Game.Screen.eatScreen, this._player.getItems(),'You have nothing to eat.');
         return;
 
-    } else if (gameAction === Game.Bindings.Actions.Inventory.INVENTORY_WIELD) {
-        this._parentScreen.showItemsSubScreen(Game.Screen.wieldScreen, this._player.getItems(),'You have nothing to wield.');
+    } else if (gameAction === Game.Bindings.Actions.Inventory.INVENTORY_HOLD) {
+        this._parentScreen.showItemsSubScreen(Game.Screen.wieldScreen, this._player.getItems(),'You have nothing to hold in your hands.');
         return;
 
     } else if (gameAction === Game.Bindings.Actions.Inventory.INVENTORY_WEAR) {
-        this._parentScreen.showItemsSubScreen(Game.Screen.wearScreen, this._player.getItems(),'You have nothing to wear.');
+        this._parentScreen.showItemsSubScreen(Game.Screen.wearScreen, this._player.getItems(),'You have nothing to wear on your body.');
         return;
 
     } else if (gameAction === Game.Bindings.Actions.Inventory.INVENTORY_EXAMINE) {
@@ -1540,6 +1540,9 @@ Game.Screen.helpScreenNumpad = {
             }
         }
         
+    },
+    getHelpSections: function() {
+        return ['datanav'];
     }
 };
 
@@ -1584,15 +1587,19 @@ Game.Screen.helpScreenLaptop = {
             }
         }
         
-    }
+    },
+    getHelpSections: function() {
+        return ['datanav'];
+    }    
 };
+
 
 ////////////////////////////////////////////////////////////
 
 Game.Screen.storyScreen = {
     texts: {
-        'was_starting':"You are a part of one of the first human exploration crew on Mars. After years of training, extensive technical preparation, and months of confined travel aboard the ship you finally made it to Mars! With your 6 day acclimation period done you now get to head out on the Martian surface for the first time. Your team has been sent to check out an interesting looking crater on the lower slopes of nearby Elysium Mons.",
-        'was_starting2':"It takes a while to get to the survey site, but that gives you and your team time to double check your gear. The HEM Suits are all in good shape, and everyone seems to be as excited as you are. The last half-kilometer or so is tto rough for the rover, so you pile out and make the rest of the trek on foot. While others eagerly explore around you take a moment to pause near the center of the crater and just take it all in. It is truly amazing! ...but something somehow seems a little bit 'off' here...",
+        'was_starting':"You are a part of one of the first human exploration crews on Mars. After years of training, extensive technical preparation, and months of confined travel aboard the ship you finally made it to Mars! With your 6 day acclimation period done you now get to head out on the Martian surface for the first time. Your team has been sent to check out an interesting looking crater on the lower slopes of nearby Elysium Mons.",
+        'was_starting2':"It takes a while to get to the survey site, but that gives you and your team time to double check your gear. The HEM Suits are all in good shape, and everyone seems to be as excited as you are. The last half-kilometer or so is too rough for the rover, so you pile out and make the rest of the trek on foot. While others eagerly explore around, you take a moment to pause near the center of the crater and just take it all in. It is truly amazing! ...but something somehow seems a little bit 'off' here...",
         'was_surface':"*RUMBLE* Quake! Someone... Dari?... drops out of sight, and almost immediately also out of radio contact. While trying to ignore the screaming over the radio you rush for stable-looking ground. Out of the corner of your eye you see several more of your teammates are swallowed up by the ground. Suddenly some kind of sinkhole opens under your feet! You plunge beneath the surface! The last things you remember are the radio-relayed panic of your team mates as you fall out of sight, the sky vanishing as the edges of the hole fall in after you, a terrific THUMP as you bounce off something on your way down, then blackness....",
         'was_falling':"You awake to discover, to your shock, that you are not dead. Your gear was badly damaged by the fall - there's no way you'll be calling for help with that mess, and your suit integrity is completely shot. About the only thing still working is an emergency light on your helmet, a hand-held analyzer, and your old-fashioned multi-tool. On the plus side, you've made an amazing discovery! The cave air down here is actually breathable (at least for the short term), the temperature is warm enough that the crushed heating unit won't be what does you in, and through your slightly bloodied and swollen nose you think that you detect a faint, strangely organic aroma! Now all you have to do is figure out how to let your team know that you survived, and- Wait a moment! Is that *movement* over there in the shadows....!?",
         'was_uppercaves':'After a harrowing descent you find yourself in a very large cave and dealing with a very foul smell.'

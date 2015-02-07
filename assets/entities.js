@@ -294,4 +294,4 @@ Game.EntityRepository.define('giant zombie symbiote', {
              Game.EntityMixins.ExperienceGainer, Game.EntityMixins.RandomStatGainer, Game.EntityMixins.Allier]
 }, {
     disableRandomCreation: true
-});
+});

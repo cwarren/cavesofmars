@@ -445,4 +445,4 @@ Game.Map.prototype.addItemAtRandomPosition = function(item, z) {
     var position = this.getRandomWalkablePosition(z);
     this.addItem(position.x, position.y, position.z, item);
 };
-
+

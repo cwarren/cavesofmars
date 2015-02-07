@@ -68,24 +68,24 @@ Game.AuxScreen.avatarScreen = {
 
         var y = 11
         
-        var weapon = this._player.getWeapon();
-        if (weapon) {
-            y += this._display.drawText(0,y, weapon.getRepresentation() + ' ' +weapon.getName());
-            if (! weapon.isArmor()) {
-                if (weapon.getAttackValue() != 0 || weapon.getDefenseValue() != 0) {
-                    y += this._display.drawText(1,y,vsprintf('atk: %s, def: %s',[weapon.getAttackValue(),weapon.getDefenseValue()]));
+        var heldItem = this._player.getHolding();
+        if (heldItem) {
+            y += this._display.drawText(0,y, heldItem.getRepresentation() + ' ' +heldItem.getName());
+            if (! heldItem.isArmor()) {
+                if (heldItem.getAttackValue() != 0 || heldItem.getDefenseValue() != 0) {
+                    y += this._display.drawText(1,y,vsprintf('atk: %s, def: %s',[heldItem.getAttackValue(),heldItem.getDefenseValue()]));
                 }
-                if (weapon.hasMixin('Shooter')) {
-                    y += this._display.drawText(1,y,vsprintf('%s: x%s, +%s',[weapon.getAllowedAmmoStr(),weapon.getRangedAttackDamageMultipler(),weapon.getRangedAttackDamageAdder()]));
+                if (heldItem.hasMixin('Shooter')) {
+                    y += this._display.drawText(1,y,vsprintf('%s: x%s, +%s',[heldItem.getAllowedAmmoStr(),heldItem.getRangedAttackDamageMultipler(),heldItem.getRangedAttackDamageAdder()]));
                 }
-                if (weapon.hasMixin('DigTool')) {
-                    y += this._display.drawText(1,y,vsprintf('dig: +%s, x%s',[weapon.getDigAdder(),weapon.getDigMultiplier()]));
+                if (heldItem.hasMixin('DigTool')) {
+                    y += this._display.drawText(1,y,vsprintf('dig: +%s, x%s',[heldItem.getDigAdder(),heldItem.getDigMultiplier()]));
                 }
             }
             y++;
         }
 
-        var armor = this._player.getArmor();
+        var armor = this._player.getWearing();
         if (armor) {
             y += this._display.drawText(0,y, armor.getRepresentation() + ' ' +armor.getName());
             if (armor.hasMixin('Shooter')) {
@@ -194,6 +194,10 @@ Game.AuxScreen.helpScreen = {
             this._display.drawText(5,y,Game.Bindings.Actions.Inventory.INVENTORY_LIST.word);
 
             y++;
+            this._display.drawText(1,y,this._color+this._characterLookups[Game.Bindings.Actions.Inventory.INVENTORY_EXAMINE.unique_id]);
+            this._display.drawText(5,y,Game.Bindings.Actions.Inventory.INVENTORY_EXAMINE.word);
+
+            y++;
             this._display.drawText(1,y,this._color+this._characterLookups[Game.Bindings.Actions.Inventory.INVENTORY_GET.unique_id]);
             this._display.drawText(5,y,Game.Bindings.Actions.Inventory.INVENTORY_GET.word);
 
@@ -202,16 +206,12 @@ Game.AuxScreen.helpScreen = {
             this._display.drawText(5,y,Game.Bindings.Actions.Inventory.INVENTORY_DROP.word);
 
             y++;
+            this._display.drawText(1,y,this._color+this._characterLookups[Game.Bindings.Actions.Inventory.INVENTORY_HOLD.unique_id]);
+            this._display.drawText(5,y,Game.Bindings.Actions.Inventory.INVENTORY_HOLD.word);
+
+            y++;
             this._display.drawText(1,y,this._color+this._characterLookups[Game.Bindings.Actions.Inventory.INVENTORY_WEAR.unique_id]);
             this._display.drawText(5,y,Game.Bindings.Actions.Inventory.INVENTORY_WEAR.word);
-
-            y++;
-            this._display.drawText(1,y,this._color+this._characterLookups[Game.Bindings.Actions.Inventory.INVENTORY_WIELD.unique_id]);
-            this._display.drawText(5,y,Game.Bindings.Actions.Inventory.INVENTORY_WIELD.word);
-
-            y++;
-            this._display.drawText(1,y,this._color+this._characterLookups[Game.Bindings.Actions.Inventory.INVENTORY_EXAMINE.unique_id]);
-            this._display.drawText(5,y,Game.Bindings.Actions.Inventory.INVENTORY_EXAMINE.word);
 
             y++;
             this._display.drawText(1,y,this._color+this._characterLookups[Game.Bindings.Actions.Inventory.INVENTORY_EAT.unique_id]);

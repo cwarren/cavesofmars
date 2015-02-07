@@ -38,31 +38,30 @@ Headlamp
 powerbars
 analyzer
 
+
+
+NOTE: a density function might be useful; consider even doing away with direct mass and instead deal with bulk and density...?
+
+
 TODO NEXT:
 
-1 consider altering wield keybinding to 'h' for hands, and wear keybinding to 'b' for body; generally refactor 'weapon' slot stuff to 'hands', and 'armor' to 'body' (NOTE: NOT the isWeapon and isArmor flag - those are meaningful as is!)
+2. holding (& eating?) inventory commands offers options from items on current space in addition to those in inventory (access using the dash/minus key (NOT the numpad one)?)
+    -- OR: if hands are currently empty, scan through all the items to be picked up and put the one with the highest bulk directly as holded (then pick up others per normal process)
+    -- NOTE: add message re: empty hand option to alert than inven is too full to pick up an item    
 
-2. wielding (& eating?) inventory commands offers options from items on current space in addition to those in inventory (access using the dash/minus key (NOT the numpad one)?)
-    -- OR: if hands are currently empty, scan through all the items to be picked up and put the one with the highest bulk directly as wielded (then pick up others per normal process)
-    -- NOTE: add message re: empty hand option to alert than inven is too full to pick up an item
-    
-
-4. a density function would probably be useful; consider even doing away with direct mass and instead deal with bulk and density...?
-
-5. for food items: first, alter the weight and bulk per uses/consumption; second, figure out some kind of nutritional density for various food items, and give it appropriate uses by setting per-consume amount and total number of consumptions to match target total food value
-
-5.5. do away with explicit food uses entirely - have a nutritional density rating for the food (i.e. represent food amt / L ), and entities have an EatAmount which is measured in L, and each 'E'at of the food increases entity food level by EatAmount * nutri-density of the item, and reduces item L and wght appropriately
-    - entity has eatAmount - how many L the entity eats per 'E'at action
+5. do away with explicit food uses entirely - have a nutritional density rating for the food (i.e. represent food amt / L ), and entities have an EatAmount which is measured in L, and each 'E'at of the food increases entity food level by EatAmount * nutri-density of the item, and reduces item L and wght appropriately
+    - entity has eatAmount - how many L the entity eats per 'E'at action (typically 1 L)
     - item has nutritional density, which is food value per L
     - on 'E'at of an item - 
         if (item bulk > eatAmount) food value eaten = eatAmount * nutritional density; increase satiation by food value, and reduce item bulk by eatAmount
         else if (item bulk <= eatAmount) increase satiation by item bulk * nutritional density, then destroy item
     NOTE: this pattern may be able to be generalized from nutritional density to action-use-density; that might be a way to implement stacking... (or that may be a thing to try in a future game)
+    NOTE: for food items: first, alter the weight and bulk per uses/consumption; second, figure out some kind of nutritional density for various food items, and give it appropriate uses by setting per-consume amount and total number of consumptions to match target total food value
 
 8. container objects
     - containers have a weight, bulk
     - containers have a bulk capacity
-    - containers have an access action duration - it can take more (for packs, pouches, etc) or less (for slings, bandoliers, etc) time to take out items so that they can be used (wielded, thrown, etc.)
+    - containers have an access action duration - it can take more (for packs, pouches, etc) or less (for slings, bandoliers, etc) time to take out items so that they can be used (holded, thrown, etc.)
     - weight goes up as items are added to it, but bulk does NOT
     - items are placed in a container using the p (pack) control key (NOTE: this is a two-stage thing - first the target container must be selected)
     - items in a container are accessed using the P (unPack) control key (NOTE: this is a two-stage thing - first the target container must be selected)
@@ -78,8 +77,6 @@ TODO NEXT:
         give small martians some starting loot
 
 17. figure out where geodic nuts and jelly balls come from (oozes, perhaps? introduce several kinds of ooze, and when they are adjacent they have a chance to spawn a jelly ball or a geodic nut (depending on other circumstances?))
-
-18. fix item sorting minor issue where geodic nut sorts before everything else 
 
 20. crafting system!
         two basic operations - break down (consume?) (create raw materials from something), and construct (build something from raw materials and/or other things)

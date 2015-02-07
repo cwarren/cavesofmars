@@ -208,13 +208,13 @@ Game.EntityMixins.Digger = {
             var digMults = [];
             var digAdds = [];
 
-            var w = this.getWeapon();
+            var w = this.getHolding();
             if (w && w.isTool()) {
                 digMults = digMults.concat(Game.util.scanEventResultsFor(w.raiseEvent('onDigging'),'digMultiplier'));
                 digAdds = digAdds.concat(Game.util.scanEventResultsFor(w.raiseEvent('onDigging'),'digAdder'));
             }
 
-            var a = this.getArmor();
+            var a = this.getWearing();
             if (a) {
                 digMults = digMults.concat(Game.util.scanEventResultsFor(a.raiseEvent('onDigging'),'digMultiplier'));
                 digAdds = digAdds.concat(Game.util.scanEventResultsFor(a.raiseEvent('onDigging'),'digAdder'));
@@ -318,12 +318,12 @@ Game.EntityMixins.NonRecuperatingDestructible = {
         // If we can equip items, then have to take into 
         // consideration weapon and armor
         if (this.hasMixin(Game.EntityMixins.Equipper)) {
-            var w = this.getWeapon();
-            if (w && w.isWeapon()) {
-                modifier += w.getDefenseValue();
+            var heldItem = this.getHolding();
+            if (heldItem && heldItem.isWeapon()) {
+                modifier += heldItem.getDefenseValue();
             }
-            if (this.getArmor()) {
-                modifier += this.getArmor().getDefenseValue();
+            if (this.getWearing()) {
+                modifier += this.getWearing().getDefenseValue();
             }
         }
         return this._defenseValue + modifier;
@@ -533,9 +533,9 @@ Game.EntityMixins.RangedAttacker = {
         var rangedAtk = this._rangedAttackValue + modifier;
         
         if (this.hasMixin('Equipper')) {
-            var w = this.getWeapon();
-            if (w && w.isWeapon()) {
-                var weaponShootEffects = w.raiseEvent('onShooting',ammo);
+            var heldItem = this.getHolding();
+            if (heldItem && heldItem.isWeapon()) {
+                var weaponShootEffects = heldItem.raiseEvent('onShooting',ammo);
 
                 var mults = Game.util.scanEventResultsFor(weaponShootEffects,'rangedAttackDamageMultiplier');
                 for (var i=0;i<mults.length;i++) {
@@ -628,12 +628,12 @@ Game.EntityMixins.MeleeAttacker = {
         // If we can equip items, then have to take into 
         // consideration weapon and armor
         if (this.hasMixin(Game.EntityMixins.Equipper)) {
-            var w = this.getWeapon();
-            if (w && w.isWeapon()) {
-                modifier += w.getAttackValue();
+            var heldItem = this.getHolding();
+            if (heldItem && heldItem.isWeapon()) {
+                modifier += heldItem.getAttackValue();
             }
-            if (this.getArmor()) {
-                modifier += this.getArmor().getAttackValue();
+            if (this.getWearing()) {
+                modifier += this.getWearing().getAttackValue();
             }
         }
         return this._attackValue + modifier;
@@ -894,8 +894,8 @@ Game.EntityMixins.InventoryHolder = {
         var wieldedItem = '';
         var wornItem = '';
         if (this.hasMixin(Game.EntityMixins.Equipper)) {
-            wieldedItem = this.getWeapon();
-            wornItem = this.getArmor();
+            wieldedItem = this.getHolding();
+            wornItem = this.getWearing();
         }
         
         for (var i=0; i<this._items.length; i++) {
@@ -1306,14 +1306,14 @@ Game.EntityMixins.Suicider = {
 Game.EntityMixins.Equipper = {
     name: 'Equipper',
     init: function(template) {
-        this._weapon = null;
-        this._armor = null;
+        this._inHands = null;
+        this._onBody = null;
     },
     wield: function(item) {
         //console.log('called wield');
-        var priorWielded = this._weapon;
-        if (item==this._armor) { this._armor = null; }
-        this._weapon = item;
+        var priorWielded = this._inHands;
+        if (item==this._onBody) { this._onBody = null; }
+        this._inHands = item;
         this._calculateWeightAndBulk();
         //if (priorWielded && ! this.canAddItem_bulk(priorWielded)) {
         if (this.isOverloaded_bulk()) {
@@ -1325,8 +1325,8 @@ Game.EntityMixins.Equipper = {
         this.setLastActionDuration(this.getDefaultActionDuration()*actionDurationMultiplier);        
 /*        
         this.unwield();
-        if (item==this._armor) { this.takeOff(); }
-        this._weapon = item;
+        if (item==this._onBody) { this.takeOff(); }
+        this._inHands = item;
         var actionDurationMultiplier = this.getActionPenaltyFactor();
         this.alertOnSlowness(actionDurationMultiplier);        
         this.setLastActionDuration(this.getDefaultActionDuration()*actionDurationMultiplier);
@@ -1335,17 +1335,17 @@ Game.EntityMixins.Equipper = {
     },
     unwield: function() {
         //console.log('called unwield');
-        if (this._weapon) {
-            if (! this.canAddItem_bulk(this._weapon)) {
-            //if (this._weapon.getInvBulk()+this.getCurrentBulk() > this.getBulkCapacity()) {
+        if (this._inHands) {
+            if (! this.canAddItem_bulk(this._inHands)) {
+            //if (this._inHands.getInvBulk()+this.getCurrentBulk() > this.getBulkCapacity()) {
                 // drop the item instead of putting it in inventory
                 // NOTE: this shuffle avoids a recursive loop that would otherwise occur when the item dropping code tries to unequip the item
-                var w = this._weapon;
-                this._weapon = null;
+                var w = this._inHands;
+                this._inHands = null;
                 this.dropThisItem(w);
                 Game.sendMessage(this,'%s was too large for you to stow - it had to be dropped on the ground',[w.describeThe()])
             } else {
-                this._weapon = null;
+                this._inHands = null;
                 var actionDurationMultiplier = this.getActionPenaltyFactor();
                 this.alertOnSlowness(actionDurationMultiplier);        
                 this.setLastActionDuration(this.getDefaultActionDuration()*actionDurationMultiplier);
@@ -1355,9 +1355,9 @@ Game.EntityMixins.Equipper = {
     },
     wear: function(item) {
         //console.log('called wear');
-        var priorWorn = this._armor;
-        if (item==this._weapon) { this._weapon = null; }
-        this._armor = item;
+        var priorWorn = this._onBody;
+        if (item==this._inHands) { this._inHands = null; }
+        this._onBody = item;
         this._calculateWeightAndBulk();
         //if (priorWorn && ! this.canAddItem_bulk(priorWorn)) {
         if (this.isOverloaded_bulk()) {
@@ -1369,8 +1369,8 @@ Game.EntityMixins.Equipper = {
         this.setLastActionDuration(this.getDefaultActionDuration()*5*actionDurationMultiplier); // putting on armor takes a while
 /*
         this.takeOff();
-        if (item==this._weapon) { this.unwield(); }
-        this._armor = item;
+        if (item==this._inHands) { this.unwield(); }
+        this._onBody = item;
         var actionDurationMultiplier = this.getActionPenaltyFactor();
         this.alertOnSlowness(actionDurationMultiplier);        
         this.setLastActionDuration(this.getDefaultActionDuration()*actionDurationMultiplier);
@@ -1379,17 +1379,17 @@ Game.EntityMixins.Equipper = {
     },
     takeOff: function() {
         //console.log('called takeOff');
-        if (this._armor) {
-            if (! this.canAddItem_bulk(this._armor)) {
-            //if (this._armor.getInvBulk()+this.getCurrentBulk() > this.getBulkCapacity()) {
+        if (this._onBody) {
+            if (! this.canAddItem_bulk(this._onBody)) {
+            //if (this._onBody.getInvBulk()+this.getCurrentBulk() > this.getBulkCapacity()) {
                 // drop the item instead of putting it in inventory
                 // NOTE: this shuffle avoids a recursive loop that would otherwise occur when the item dropping code tries to unequip the item
-                var a = this._armor;
-                this._armor = null;
+                var a = this._onBody;
+                this._onBody = null;
                 this.dropThisItem(a);
                 Game.sendMessage(this,'%s was too large for you to stow - it had to be dropped on the ground',[a.describeThe()])
             } else {
-                this._armor = null;
+                this._onBody = null;
                 var actionDurationMultiplier = this.getActionPenaltyFactor();
                 this.alertOnSlowness(actionDurationMultiplier);        
                 this.setLastActionDuration(this.getDefaultActionDuration()*actionDurationMultiplier);
@@ -1397,19 +1397,19 @@ Game.EntityMixins.Equipper = {
         }
         this._calculateWeightAndBulk();
     },
-    getWeapon: function() {
-        return this._weapon;
+    getHolding: function() {
+        return this._inHands;
     },
-    getArmor: function() {
-        return this._armor;
+    getWearing: function() {
+        return this._onBody;
     },
     unequip: function(item) {
         // Helper function to be called before getting rid of an item.
         //console.log('called unequip');
-        if (this._weapon === item) {
+        if (this._inHands === item) {
             this.unwield();
         }
-        if (this._armor === item) {
+        if (this._onBody === item) {
             this.takeOff();
         }
         Game.AuxScreen.avatarScreen.render();
@@ -2164,4 +2164,4 @@ Game.EntityMixins.PlayerActor = {
         this.getMap().getEngine().unlock();
     }
 }
-
+

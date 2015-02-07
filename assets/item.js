@@ -41,7 +41,7 @@ Game.Item = function(properties) {
     });
     this._listeners['calcDetails'].push(function() {
         var results = [];
-        if (this.isArmor() && (this === Game.getPlayer().getArmor())) {
+        if (this.isArmor() && (this === Game.getPlayer().getWearing())) {
             results.push({key: 'use', value: 'armor'});
             if (this.getDefenseValue() > 0) {
                 results.push({key: 'defense', value: this.getDefenseValue()});
@@ -49,7 +49,7 @@ Game.Item = function(properties) {
             if (this.getAttackValue() > 0) {
                 results.push({key: 'meleeAttack', value: this.getAttackValue()});
             }
-        } else if (this.isWeapon() && (this === Game.getPlayer().getWeapon())) {
+        } else if (this.isWeapon() && (this === Game.getPlayer().getHolding())) {
             results.push({key: 'use', value: 'weapon'});
             if (this.getDefenseValue() > 0) {
                 results.push({key: 'defense', value: this.getDefenseValue()});
@@ -108,4 +108,4 @@ Game.Item.prototype.getUses = function() {
     if (this.isTool()) { uses.push('tool'); }
     if (this.hasMixin('Ammo')) { uses.push('ammo'); }
     return uses;
-}
+}
