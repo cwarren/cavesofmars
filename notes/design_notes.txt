@@ -119,6 +119,7 @@ TODO NEXT:
 
 25. useable items (potions, pods, etc.)
 
+30. cooking - requires certain equipment and conditions; reduces bulk by factor of X, weight by X/2, increases food density by at least 1/X
 
 42.5 consider a spore-y mass repository w/ different kinds of spore-y masses that grow on different things (even consider making this prodecurally generated - can dynamically set targets, exclusions, rates, etc.)
 42.75 consider docile fungi occasionally spawning nearby spore-y masses that share the same traits
