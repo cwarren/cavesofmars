@@ -4,53 +4,97 @@ Game.ItemMixins = {};
 Game.ItemMixins.Edible = {
     name: 'Edible',
     init: function(template) {
-        // Number of points to add to hunger
-        this._foodValue = template['foodValue'] || 5;
+
+//console.dir(template);
+
+        if (template['foodDensity']) {
+            this._foodDensity = template['foodDensity'];  // food value per unit of bulk of this item
+        } else if (template['foodValue']) {
+            this._foodDensity = Math.floor(template['foodValue']/(this._invBulk/1000)) + 1; // foodDensity may be set based on a given foodValue for the item (close, but not exact)
+        } else {
+            this._foodDensity = 10; // default is 10 turns per unit of bulk
+        }
+        
+
+//        this._foodValue = this._foodDensity * this._invBulk;
+//        this._foodValue = template['foodValue'] || 5;
+//        this._foodDensity = Math.floor((this._foodValue/this._invBulk));
         // Number of times the item can be consumed
-        this._maxConsumptions = template['consumptions'] || 1;
-        this._remainingConsumptions = this._maxConsumptions;
+//        this._maxConsumptions = template['consumptions'] || 1;
+//        this._remainingConsumptions = this._maxConsumptions;
     },
     eat: function(entity) {
-        if (entity.hasMixin('FoodConsumer')) {
-            if (this.hasRemainingConsumptions()) {
-                entity.modifyFullnessBy(this._foodValue);
-                this._remainingConsumptions--;
-                entity.raiseEvent('onEat',this);
+//        if (entity.hasMixin('FoodConsumer')) {
+//            if (this.hasRemainingConsumptions()) {
+//                entity.modifyFullnessBy(this._foodValue);
+//                this._remainingConsumptions--;
+//    - entity has eatAmount - how many L the entity eats per 'E'at action (typically 1 L for humans)
+//    - item has nutritional density, which is food value per L
+//    - on 'E'at of an item - 
+//        if (item bulk > eatAmount) food value eaten = eatAmount * nutritional density; increase satiation by food value, and reduce item bulk by eatAmount
+//        else if (item bulk <= eatAmount) increase satiation by item bulk * nutritional density, then destroy item
+        var entConsumeBulk = entity.getConsumeBulk();
+        var consumedFoodValue = 0;
+        this.raiseEvent('consumingItem');
+        if ((this._invBulk) > entConsumeBulk) {
+            this._invWeight = Math.round(this._invWeight * (this._invBulk - entConsumeBulk) / this._invBulk);
+            this._invBulk -= entConsumeBulk;
+            consumedFoodValue = entConsumeBulk * this._foodDensity / 1000; // scale for ml -> L
+        } else {
+            consumedFoodValue = this._invBulk * this._foodDensity / 1000; // scale for ml -> L
+            this._invBulk = 0;
+            if (! entity.getMap().removeItem(this,entity.getX(),entity.getY(),entity.getZ())) {
+                entity.raiseEvent('destroyCarriedItem',this);
             }
         }
+        entity.raiseEvent('onEat',this,consumedFoodValue);
+//            }
+//        }
     },
-    hasRemainingConsumptions: function() {
-        return this._remainingConsumptions > 0;
-    },
+//    hasRemainingConsumptions: function() {
+//        return this._remainingConsumptions > 0;
+//    },
     describe: function() {
-        if (this._maxConsumptions != this._remainingConsumptions) {
-            return 'partly eaten ' + Game.Item.prototype.describe.call(this);
-        } else {
+//        if (this._maxConsumptions != this._remainingConsumptions) {
+//            return 'partly eaten ' + Game.Item.prototype.describe.call(this);
+//        } else {
             return this._name;
-        }
+//        }
     },
+/*
     setFoodValue: function(foodValue) {
         this._foodValue = foodValue;
-    },
-    getFoodValue: function() {
-        return this._foodValue;
     },
     alterFoodValue: function(delta) {
         this._foodValue += delta;
     },
+    */
+    getFoodValue: function() {
+        return Math.trunc(this._foodDensity * this._invBulk / 1000);
+    },
+    setFoodValue: function(v) {
+        this._foodDensity = Math.floor(v/(this._invBulk/1000));
+    },
+    setFoodDensity: function(v) {
+        this._foodDensity = _foodDensity;
+    },
+    getFoodDensity: function() {
+        return this._foodDensity;
+    },
     listeners: {
         'details': function() {
-            var det = [{key: 'food', value: this._foodValue}];
-            if (this._maxConsumptions > 1) {
-                det.push({key: 'food uses', value: this._remainingConsumptions+'/'+this._maxConsumptions});
-            }
+            var det = [{key: 'food', value: this.getFoodValue()}];
+            //if (this._maxConsumptions > 1) {
+            //    det.push({key: 'food uses', value: this._remainingConsumptions+'/'+this._maxConsumptions});
+            //}
             return det;
         },
         'calcDetails': function() {
-            var det = [{key: 'food', value: this._foodValue}];
-            if (this._maxConsumptions > 1) {
-                det.push({key: 'foodUses', value: this._remainingConsumptions+'/'+this._maxConsumptions});
-            }
+            var det = [{key: 'foodValue', value: this._foodValue}];
+            det.push({key: 'foodDensity', value: this._foodDensity});
+            //if (this._maxConsumptions > 1) {
+            //    det.push({key: 'foodUses', value: this._remainingConsumptions+'/'+this._maxConsumptions});
+            //}
             return det;
         }
     }

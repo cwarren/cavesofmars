@@ -115,7 +115,7 @@ Game.EntityRepository.define('fruiting fungus', {
     maxHp: 15,
     corpseName: 'pile of slimey mushroom caps',
     defaultActionDuration: 4600,
-    corpseFoodValue: 15,
+    corpseFoodValue: 20,
     suicideSpawnEntityName: 'quiescent fungus',
     mixins: [Game.EntityMixins.FruitingFungusActor, Game.EntityMixins.Destructible, Game.EntityMixins.CorpseDropper, Game.EntityMixins.SuicideSpawner]
 });
@@ -128,7 +128,7 @@ Game.EntityRepository.define('docile fungus', {
     foreground: 'yellow',
     maxHp: 10,
     corpseName: 'pile of firm, aromatic mushroom caps',
-    corpseFoodValue: 60,
+    corpseFoodValue: 95,
     defaultActionDuration: 10000,
     fixedXp: 0,
     mixins: [Game.EntityMixins.DocileFungusActor, Game.EntityMixins.Destructible, Game.EntityMixins.CorpseDropper, Game.EntityMixins.FixedExperiencePoints]
@@ -210,7 +210,7 @@ Game.EntityRepository.define('bat', {
     description: "This large, bluish, bat-like creature seems non-hostile. It mostly just flies around with it's mouth open, avoiding anything big and living off whatever it can filter out of the air.",
     foreground: 'blue',
     maxHp: 5,
-    corpseFoodValue: 15,
+    corpseFoodValue: 35,
     moveDuration: 500,
     mixins: [Game.EntityMixins.PeacefulRoamingBehaviorController, Game.EntityMixins.Destructible,Game.EntityMixins.CorpseDropper]
 });
@@ -223,7 +223,7 @@ Game.EntityRepository.define('golden lizard', {
     maxHp: 7,
     attackValue: 4,
     defenseValue: 1,
-    corpseFoodValue: 65,
+    corpseFoodValue: 75,
     baseBehavior: Game.EntityBehaviors.AggressiveWanderBehavior,
     behaviors: [Game.EntityBehaviors.AggressiveWanderBehavior],
     mixins: [Game.EntityMixins.AggressiveRoamingBehaviorController, Game.EntityMixins.MeleeAttacker, Game.EntityMixins.Destructible, Game.EntityMixins.CorpseDropper, Game.EntityMixins.Retaliator,
@@ -239,7 +239,7 @@ Game.EntityRepository.define('rock lizard', {
     attackValue: 2,
     defenseValue: 5,
     digRate: 20,
-    corpseFoodValue: 25,
+    corpseFoodValue: 45,
     defaultActionDuration: 1350,
     mixins: [Game.EntityMixins.AggressiveRoamingBehaviorController, Game.EntityMixins.MeleeAttacker, Game.EntityMixins.Destructible, Game.EntityMixins.Digger, Game.EntityMixins.CorpseDropper,
              Game.EntityMixins.ExperienceGainer, Game.EntityMixins.RandomStatGainer]
@@ -252,7 +252,7 @@ Game.EntityRepository.define('whip-spine', {
     foreground: 'green',
     maxHp: 9,
     attackValue: 3,
-    corpseFoodValue: 20,
+    corpseFoodValue: 30,
     moveDuration: 350,
     meleeDuration: 3800,
     mixins: [Game.EntityMixins.AggressiveRoamingBehaviorController, Game.EntityMixins.MeleeAttacker, Game.EntityMixins.Destructible, Game.EntityMixins.Seer, Game.EntityMixins.CorpseDropper,

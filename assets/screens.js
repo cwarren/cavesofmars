@@ -312,7 +312,7 @@ Game.Screen.playScreen = {
                 if (this._player.pickupItems([0])) {
                     Game.sendMessage(this._player, "You pick up %s.", [item.describeA()]);
                 } else {
-                    Game.sendMessage(this._player, "Your inventory is full! Nothing was picked up.");
+                    Game.sendMessage(this._player, "Your inventory is full! Nothing was picked up. Perhaps you could just carry it in your hands...");
                 }
                 Game.refresh();
             } else {
@@ -807,9 +807,9 @@ Game.Screen.eatScreen = new Game.Screen.ItemListScreen({
         var item = selectedItems[key];
         Game.sendMessage(this._player, "You eat %s.", [item.describeThe()]);
         item.eat(this._player);
-        if (!item.hasRemainingConsumptions()) {
-            this._player.removeItem(key);
-        }
+//        if (!item.hasRemainingConsumptions()) {
+//            this._player.removeItem(key);
+//        }
         return true;
     }
 });

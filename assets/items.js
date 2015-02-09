@@ -46,8 +46,7 @@ Game.ItemRepository.define('geodic nut', {
     invWeight: 1300,
     invBulk: 900,
     foreground: 'lightGreen',
-    foodValue: 35,
-    consumptions: 4,
+    foodValue: 160,
     description: "This reminds you of a cross between a coconut and a geode. When you open it up the inside is filled with a soft greyish material that tastes bland and feels a bit chalky, but at least it's apparently nutritious.",
     rangedAttackDamageBonus: 6,
     mixins: [Game.ItemMixins.Edible,Game.ItemMixins.Ammo]
@@ -74,7 +73,7 @@ Game.ItemRepository.define('human corpse', {
     invWeight: 82000,
     invBulk: 74000,
     foreground: '#aba',
-    foodValue: 125,
+    foodValue: 825,
     consumptions: 1,
     description: "Looks like someone else on the team ended up down here as well. I can only hope they were dead before the scavengers started working on them...",
     mixins: [Game.ItemMixins.Edible]

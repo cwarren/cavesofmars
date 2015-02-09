@@ -1,5 +1,8 @@
 Game.Item = function(properties) {
     properties = properties || {};
+    this._invWeight = properties['invWeight'] || 1; // roughly 1g 
+    this._invBulk = properties['invBulk'] || 1; // roughly 1 cc
+
     // Call the glyph's construtor with our set of properties
     Game.DynamicGlyph.call(this, properties);
 
@@ -10,8 +13,6 @@ Game.Item = function(properties) {
     this._attackValue = properties['attackValue'] || 0;
     this._defenseValue = properties['defenseValue'] || 0;
     
-    this._invWeight = properties['invWeight'] || 1; // roughly 1g 
-    this._invBulk = properties['invBulk'] || 1; // roughly 1 cc
     
     
     
@@ -27,7 +28,7 @@ Game.Item = function(properties) {
         var results = [];
         
         var uses = this.getUses();
-        if (uses) {
+        if (uses.length > 0) {
             results.push({key: 'use', value: '('+uses.join()+')'});
         }
         if (this.getAttackValue() > 0) {
@@ -90,6 +91,11 @@ Game.Item.prototype.getInvWeight = function() {
 
 Game.Item.prototype.setInvBulk = function(v) {
     this._invBulk = v;
+}
+Game.Item.prototype.modifyInvBulkByFactor = function(f) {
+    //this._invBulk *= f;
+    this._invBulk = Math.trunc(this._invBulk * f);
+    this._invWeight = Math.trunc(this._invWeight * f);
 }
 Game.Item.prototype.getInvBulk = function() {
     return this._invBulk;

@@ -1106,6 +1106,13 @@ Game.EntityMixins.InventoryHolder = {
         this._calculateWeightAndBulk();
     },
     dropThisItem: function(itm) {
+        var itemIdx = this.getIndexOfItem(itm);
+        if (itemIdx>-1) {
+            this.dropItem(itemIdx);
+        }
+        this._calculateWeightAndBulk();
+    },
+    getIndexOfItem: function(itm) {
         var itemIdx = -1;
         for (var i = 0; i < this._items.length; i++) {
             if (this._items[i].getId() == itm.getId()) {
@@ -1113,10 +1120,7 @@ Game.EntityMixins.InventoryHolder = {
                 break;
             }
         }
-        if (itemIdx>-1) {
-            this.dropItem(itemIdx);
-        }
-        this._calculateWeightAndBulk();
+        return itemIdx;
     },
     dropItems: function(indices) {
         if (indices.length == 1) {
@@ -1151,7 +1155,15 @@ Game.EntityMixins.InventoryHolder = {
             return item;
         }
         return;
-    }    
+    },
+    listeners: {
+        destroyCarriedItem: function(itm) {
+            var itemIdx = this.getIndexOfItem(itm);
+            if (itemIdx>-1) {
+                this.removeItem(itemIdx);
+            }
+        }
+    }
 };
 
 
@@ -1163,6 +1175,13 @@ Game.EntityMixins.FoodConsumer = {
         this._fullness = template['fullness'] || (Math.floor(this._maxFullness *.7));
         // Number of points to decrease fullness by every turn.
         this._fullnessDepletionRate = template['fullnessDepletionRate'] || 1;
+        this._consumeBulk = template['consumeBulk'] || 700;  // ml eaten per 'E'at action
+    },
+    getConsumeBulk: function() {
+        return this._consumeBulk;
+    },
+    setConsumeBulk: function(v) {
+        this._consumeBulk = v;
     },
     doTurnHunger: function() {
         // Remove the standard depletion points
@@ -1216,6 +1235,10 @@ Game.EntityMixins.FoodConsumer = {
         },
         onRecuperated: function() {
             this.modifyFullnessBy(-this._fullnessDepletionRate);
+        },
+        onEat: function(item,foodValue) {
+            this.modifyFullnessBy(foodValue+1); // extra 1 means that the player does not get more hungry when eating - cancels out doTurnHunger for the turn (more or less, but close enough)
+            item.raiseEvent('onEatenBy',this);
         }
     }
 };
@@ -1275,9 +1298,14 @@ Game.EntityMixins.CorpseDropper = {
                 if (this.getGroup()) {
                     newCorpse.setGroup(this.getGroup()+' corpse');
                 }
-//                console.dir(newCorpse);
+                //console.dir(newCorpse);
+
                 if (this.hasMixin('Destructible') && newCorpse.hasMixin('Edible')) {
-                    newCorpse.alterFoodValue(Game.util.getRandomInteger(Math.floor(this.getMaxHp()*.25),Math.floor(this.getMaxHp()*.75)));
+                    var origFoodValue = newCorpse.getFoodValue();
+                    var hpModForFoodValue = Game.util.getRandomInteger(Math.floor(this.getMaxHp()*.25),Math.floor(this.getMaxHp()*.75));
+                    var modFactor = (hpModForFoodValue + origFoodValue) / origFoodValue;
+                    newCorpse.modifyInvBulkByFactor(modFactor);
+                //console.dir(newCorpse);
                 }
                 this._map.addItem(this.getX(), this.getY(), this.getZ(),newCorpse);
             }    

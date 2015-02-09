@@ -45,16 +45,16 @@ NOTE: a density function might be useful; consider even doing away with direct m
 
 TODO NEXT:
 
-5. do away with explicit food uses entirely - have a nutritional density rating for the food (i.e. represent food amt / L ), and entities have an EatAmount which is measured in L, and each 'E'at of the food increases entity food level by EatAmount * nutri-density of the item, and reduces item L and wght appropriately
-    - entity has eatAmount - how many L the entity eats per 'E'at action (typically 1 L for humans)
-    - item has nutritional density, which is food value per L
-    - on 'E'at of an item - 
-        if (item bulk > eatAmount) food value eaten = eatAmount * nutritional density; increase satiation by food value, and reduce item bulk by eatAmount
-        else if (item bulk <= eatAmount) increase satiation by item bulk * nutritional density, then destroy item
-    NOTE: this pattern may be able to be generalized from nutritional density to action-use-density; that might be a way to implement stacking... (or that may be a thing to try in a future game)
-    NOTE: for food items: first, alter the weight and bulk per uses/consumption; second, figure out some kind of nutritional density for various food items, and give it appropriate uses by setting per-consume amount and total number of consumptions to match target total food value
+4. make the examine action NOT take a turn
+
+5. for docile fungus corpses, increase food density more than bulk when the corpse is dropped
 
 6. improve / fix help screen(s)-- show details from binding info, customized for current binding set, with info nav aspects
+
+7. impelment on-going-interuptable actions (e.g. eating, digging)
+    - actor has an action mode, and if the action mode is <an ongoing action> then that action is repeated automatically. This continues until the standard end condition is met (e.g. eaten until full, or else eaten until the item is gone; dig until the stone state changes; etc.), or else until a disturbance event happens
+    - disturbance events: visible mob adjacent, or else visible mob moves towards player, or else damage taken
+    NOTE: action always happens at least once! (i.e. on the turn the command is issued)
 
 8. container objects
     - containers have a weight, bulk
@@ -63,6 +63,7 @@ TODO NEXT:
     - weight goes up as items are added to it, but bulk does NOT
     - items are placed in a container using the p (pack) control key (NOTE: this is a two-stage thing - first the target container must be selected)
     - items in a container are accessed using the P (unPack) control key (NOTE: this is a two-stage thing - first the target container must be selected)
+    - when placing a container in another container, use bulk of container PLUS bulk of all container contents
 
 10. add new entity: small martian
 11.    which can pick up and equip items it finds (5 inven slots)
@@ -106,6 +107,15 @@ TODO NEXT:
             + scutes (generally, creature parts)
             + worked stone (from rocks)
             + dried mycelium (particular fungus, particular techniques?)
+    created:
+        - various weapons & armor
+        - ammo
+        - loose walls (rubble tiles)
+        - tight walls (cracked stone tiles)
+        - containers
+        - security things (e.g. creature deterrent - prevents spawning on/around a given area, creatures tend to wander away from it
+        
+    
 
 25. useable items (potions, pods, etc.)
 

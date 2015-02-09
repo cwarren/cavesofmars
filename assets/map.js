@@ -295,7 +295,7 @@ Game.Map.prototype.nuke = function(dynamicGlyph) {
         this._scheduler.remove(dynamicGlyph);
     }
 
-    // If the entity is the player, set the player.
+    // If the entity is the player, set the player to undefined
     if (dynamicGlyph.hasMixin(Game.EntityMixins.PlayerActor)) {
         this._player = undefined;
     }
@@ -331,17 +331,22 @@ Game.Map.prototype.removeItem = function(itm,x,y,z) {
 
     if (mapItems) {
         // Iterate through all items there until a match is found
+        var mapItemsAltered = false;
         for (var i = 0; i < mapItems.length; i++) {
             if (mapItems[i].getId() == itm.getId()) {
                 mapItems.splice(i, 1);
+                mapItemsAltered = true;
                 break;
             }
         }
         // Update the map items
-        this.setItemsAt(x,y,z, mapItems);
+        if (mapItemsAltered) {
+            this.setItemsAt(x,y,z, mapItems);
+        }
     }
     
     this.nuke(itm);
+    return mapItemsAltered;
 }
 
 // remove it from the map, but don't nuke it
