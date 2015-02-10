@@ -495,6 +495,7 @@ Game.Screen.ItemListScreen.prototype.setup = function(player, items) {
 };
 
 Game.Screen.ItemListScreen.prototype.determineDisplayItems = function() {
+    // start with full slice, and reduce slice until non-null items <= this._displayMaxNum; adjust page up and page down handlers (next two funcs below) similarly
     this._displayItems = this._items.slice(this._displayIndexBase,this._displayIndexBase+this._displayMaxNum);
 }
 
