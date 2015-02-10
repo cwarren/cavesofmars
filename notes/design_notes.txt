@@ -49,7 +49,8 @@ additional player skills / attributes:
 
 TODO NEXT:
 
-6. improve / fix help screen(s)-- show details from binding info, customized for current binding set, with info nav aspects
+
+1. fix item list screens not to show multiple pages when only a few tail-end items are use-able
 
 7. implement on-going-interruptable actions (e.g. eating, digging)
     - actor has an action mode, and if the action mode is <an ongoing action> then that action is repeated automatically. This continues until the standard end condition is met (e.g. eaten until full, or else eaten until the item is gone; dig until the stone state changes; etc.), or else until a disturbance event happens

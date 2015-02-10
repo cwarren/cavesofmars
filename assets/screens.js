@@ -345,12 +345,14 @@ Game.Screen.playScreen = {
             return;
 
         } else if (gameAction === Game.Bindings.Actions.Meta.HELP) {
-            if (Game.getControlScheme() === Game.Bindings.BindingSet_Numpad) {
-                this.setSubScreen(Game.Screen.helpScreenNumpad);
-            } else {
-                this.setSubScreen(Game.Screen.helpScreenLaptop);
-            }
-            return;
+            this.setSubScreen(Game.Screen.helpScreenGeneral);
+//            if (Game.getControlScheme() === Game.Bindings.BindingSet_Numpad) {
+//                this.setSubScreen(Game.Screen.helpScreenNumpad);
+//                
+//            } else {
+//                this.setSubScreen(Game.Screen.helpScreenLaptop);
+//            }
+//            return;
 
 
         //----------------------------
@@ -1520,6 +1522,52 @@ Game.Screen.rangedTargetScreen = new Game.Screen.TargetBasedScreen({
 
 
 ////////////////////////////////////////////////////////////
+
+Game.Screen.helpScreenGeneral = {
+    render: function(display) {
+        var baseColor = '%c{#ccc}';
+        var whiteColor = '%c{#fff}';
+        var text =   'CAVES of MARS';
+        var border = '-------------';
+        var y = 0;
+        //display.drawText(Game.getScreenWidth() / 2 - text.length / 2, y++, whiteColor+text);
+        //display.drawText(Game.getScreenWidth() / 2 - text.length / 2, y++, whiteColor+border);
+
+        y += 1 + display.drawText(1, y++, baseColor+'Caves of Mars is a rogue-like adventure game. Your character, shown as '+Game.getPlayer().getRepresentation()+baseColor+' in the center of the screen, explores the world, fights enemies, finds and makes useful things, gets more powerful, and generally tries to survive and to beat the final big enemy to win the game.');
+
+        y += 1 + display.drawText(1, y++, baseColor+'The main things you have to worry about are avoiding getting killed in combat and getting enough to eat. Enemies (shown as various color letters and symbols) can be fled from or killed. To attack something, run into it. To attack something at range, fling things at it. Various items that you find or make can help in various ways. Some things that you find will be edible, some things you kill will provide edible corpses, and you can grow food as well.');
+
+        y += 1 + display.drawText(1, y++, baseColor+'What you can carry is limited by mass and bulk. Carrying extra mass slows you, eventually completely. Bulk is a hard limit...with some exceptions. Anything held in your hands or worn on your body does not count towards your bulk limit. Also, containers (e.g. backpacks, etc.) count their own bulk, but NOT the bulk of anything stored in them.');
+
+        y += 1 + display.drawText(1, y++, baseColor+'Impassable spaces are shown as various colored #\'s. You can dig at them by running into them. Digging takes quite a while, but lets you make your own passages, and occasionally you find useful things. With the right supplies and skills you can also build structures of various sorts.');
+
+//        y += display.drawText(1, y++, baseColor+'');
+
+        y = Game.getScreenHeight()-1;
+        text = '%c{yellow}--- press space key to continue ---';
+        display.drawText(Game.getScreenWidth() / 2 - text.length / 2, y++, text);
+    },
+    setParentScreen: function(screen) {
+        this._parentScreen = screen;
+    },
+    handleInput: function(inputType, inputData) {
+        if (inputData.keyCode === ROT.VK_SPACE) {
+            if (Game.getGameStage()=='starting') {
+                // NOTE: this brief timeout gives time for the input to clear (so the next screen isn't skipped over)
+                setTimeout(function(){
+                    Game.Screen.playScreen.setSubScreen(Game.Screen.storyScreen);
+                },40);
+            } else {
+                Game.Screen.playScreen.setSubScreen(null);
+            }
+        }
+        
+    },
+    getHelpSections: function() {
+        return ['movement','levels','worldinteraction','inventory','sense','meta'];
+    }
+};
+
 
 // CSW TODO - put key bindings in a separate file to that they can be referenced here
 // Define our help screen

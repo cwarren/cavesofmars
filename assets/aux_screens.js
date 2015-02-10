@@ -138,6 +138,12 @@ Game.AuxScreen.helpScreen = {
         this._characterLookups = Game.Bindings.getDisplayStringsForActions(bindingSet);
         this.render();
     },
+    getForBinding: function() {
+        return this._bindingSet;
+    },
+    getCharacterLookups: function() {
+        return this._characterLookups;
+    },
     render: function(commandSets) {
         if (! this._bindingSet) {
             return;
