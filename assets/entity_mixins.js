@@ -1008,19 +1008,13 @@ Game.EntityMixins.InventoryHolder = {
         return true;
     },
     removeItem: function(i) {
-//        // If we can equip items, then make sure we unequip the item we are removing.
-//        if (this._items[i] && this.hasMixin(Game.EntityMixins.Equipper)) {
-//            this.unequip(this._items[i]);
-//        }
-//        // Simply clear the inventory slot.
-//        this._items[i] = null;
         this._clearOutItem(i);
         this._CleanInventory();
     },
     _clearOutItem: function(i) { // NOTE: this should ALWAYS have _CleanInventory called after it's done being used
         // If we can equip items, then make sure we unequip the item we are removing.
         if (this._items[i] && this.hasMixin(Game.EntityMixins.Equipper)) {
-            this.unequip(this._items[i]);
+            this.unequipSansChecking(this._items[i]);
         }
         // Simply clear the inventory slot.
         this._items[i] = null;
@@ -1052,18 +1046,6 @@ Game.EntityMixins.InventoryHolder = {
         // Allows the user to pick up items from the map, where indices is
         // the indices for the array returned by map.getItemsAt
         var mapItems = this._map.getItemsAt(this.getX(), this.getY(), this.getZ());
-/*
-        var newMapItems = new Array();        
-        var toPickupItems = new Array();
-
-        for (var i = 0; i < mapItems.length; i++) {
-            if (indices.indexOf(i) > -1) {
-                toPickupItems.push(mapItems[i]);
-            } else {
-                newMapItems.push(mapItems[i]);
-            }
-        }
-*/        
         var added = 0;
         // Iterate through all indices.
         for (var i = 0; i < indices.length; i++) {
@@ -1095,7 +1077,9 @@ Game.EntityMixins.InventoryHolder = {
         // Drops an item to the current map tile
         if (this._items[i]) {
             var item = this._items[i];
+        
             this.removeItem(i);
+            
             if (this._map) {
                 this._map.addItem(this.getX(), this.getY(), this.getZ(), item);
                 item.raiseEvent('onDropped',this._map,this.getX(), this.getY(), this.getZ());
@@ -1500,16 +1484,33 @@ Game.EntityMixins.Equipper = {
     getWearing: function() {
         return this._onBody;
     },
-    unequip: function(item) {
+    unequipSansChecking: function(item) {
         // Helper function to be called before getting rid of an item.
         //console.log('called unequip');
         if (this._inHands === item) {
-            this.stowFromHands();
-        }
+            this._inHands = null;
+        } else
         if (this._onBody === item) {
-            this.takeOff();
+            this._onBody = null;
         }
         Game.AuxScreen.avatarScreen.render();
+    },
+    dropEquipped: function(item) {
+        var didDrop = false;
+        if (this._inHands === item) {
+            var w = this._inHands;
+            this._inHands = null;
+            this.dropThisItem(w);
+            didDrop = true;
+        } else
+        if (this._onBody === item) {
+            var a = this._onBody;
+            this._onBody = null;
+            this.dropThisItem(a);
+            didDrop = true;
+        }
+        Game.AuxScreen.avatarScreen.render();
+        return didDrop;
     }
 };
 

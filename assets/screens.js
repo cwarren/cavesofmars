@@ -836,9 +836,7 @@ Game.Screen.holdScreen = new Game.Screen.ItemListScreen({
             this._player.stowFromHands();
             Game.sendMessage(this._player, "You are empty handed.")
         } else {
-            // Make sure to unequip the item first in case it is the armor.
             var item = selectedItems[keys[0]];
-            //this._player.unequip(item);
             this._player.holdInHands(item);
             Game.sendMessage(this._player, "You are holding %s.", [item.describeA()]);
             //console.dir(this._player);
@@ -869,9 +867,7 @@ Game.Screen.wearScreen = new Game.Screen.ItemListScreen({
             this._player.takeOff();
             Game.sendMessage(this._player, "You are not wearing anthing.")
         } else {
-            // Make sure to unequip the item first in case it is the weapon.
             var item = selectedItems[keys[0]];
-            //this._player.unequip(item);
             this._player.wear(item);
             Game.sendMessage(this._player, "You are wearing %s.", [item.describeA()]);
         }
@@ -943,7 +939,8 @@ Game.Screen.examineScreen = new Game.Screen.ItemListScreen({
             //Game.sendMessage(this._player, '');
 
         }
-        return true;
+        Game.refresh();
+        return false;
     }
 });
 
@@ -1432,7 +1429,7 @@ Game.Screen.rangedTargetScreen = new Game.Screen.TargetBasedScreen({
         // NOTE: returning true at this point - from here on out an action is used!
         
         // get the line from the player to the target location
-        // drop the item from the player's inventory (unequipping if necessary)
+        // drop the item from the player's inventory
 
         // set potential next space to space 2 in the path (i.e. NOT on/under the player)
 
@@ -1699,9 +1696,10 @@ Game.Screen.storyScreen = {
                 
                 /////////////////////////////
                 /// CODE FOR ITEM TESTING!!!!
+
 /*
                 console.log('item testing code is active');
-
+player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('human corpse'),player.getX(),player.getY(),player.getZ());
 //                player.addItem(Game.ItemRepository.create('sling'));
 //                player.addItem(Game.ItemRepository.create('stone shot'));
 //                player.addItem(Game.ItemRepository.create('stone shot'));

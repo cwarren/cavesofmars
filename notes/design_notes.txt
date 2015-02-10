@@ -45,13 +45,11 @@ NOTE: a density function might be useful; consider even doing away with direct m
 
 TODO NEXT:
 
-4. make the examine action NOT take a turn
-
 5. for docile fungus corpses, increase food density more than bulk when the corpse is dropped
 
 6. improve / fix help screen(s)-- show details from binding info, customized for current binding set, with info nav aspects
 
-7. impelment on-going-interuptable actions (e.g. eating, digging)
+7. implement on-going-interuptable actions (e.g. eating, digging)
     - actor has an action mode, and if the action mode is <an ongoing action> then that action is repeated automatically. This continues until the standard end condition is met (e.g. eaten until full, or else eaten until the item is gone; dig until the stone state changes; etc.), or else until a disturbance event happens
     - disturbance events: visible mob adjacent, or else visible mob moves towards player, or else damage taken
     NOTE: action always happens at least once! (i.e. on the turn the command is issued)
