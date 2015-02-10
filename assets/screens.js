@@ -1453,7 +1453,7 @@ Game.Screen.rangedTargetScreen = new Game.Screen.TargetBasedScreen({
 
         var pathIdx = 1;
         var rangeTraveled = 0;
-        var potentialPosition;
+        var potentialPosition = {x:player.getX(),y:player.getY()};
         var hasLanded = false;
         while (path.length > pathIdx) {
             potentialPosition = path[pathIdx];
@@ -1787,7 +1787,7 @@ Game.Screen.fallingScreen = {
     },
     enter: function() {
         console.log("Entered falling screen."); 
-        this._player = Game.Screen.playScreen.getPlayer();
+        this._player = Game.getPlayer();
         this._fallLine = '';
         for (var i=0;i<Game.getScreenWidth();i++) {
             if (i == Math.floor(Game.getScreenWidth() / 2)) {
@@ -1802,7 +1802,9 @@ Game.Screen.fallingScreen = {
         setTimeout(this.fallFarther,300);
         Game.AuxScreen.helpScreen.refresh(this.getHelpSections());
     },
-    exit: function() { console.log("Exited falling screen."); },
+    exit: function() {
+        console.log("Exited falling screen.");
+    },
     render: function(display) {
         var wallRep = Game.Tile.STANDARD_WALL_TILES.random().getRepresentation();
         if (this.y <=2) {
@@ -1834,6 +1836,9 @@ Game.Screen.fallingScreen = {
     finishFall: function() {
         Game.Screen.playScreen.setSubScreen(Game.Screen.storyScreen);
         Game.switchScreen(Game.Screen.playScreen);
+        while (Game.getPlayer().hasArchivedMessages()) {
+            Game.getPlayer().clearMessages();
+        }
     },
     handleInput: function(inputType, inputData) {
         // Nothing to do here      

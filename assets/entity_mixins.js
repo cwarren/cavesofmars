@@ -721,6 +721,9 @@ Game.EntityMixins.MessageRecipient = {
     hasAnyMessages: function() {
         return this._messages.length > 0;
     },
+    hasArchivedMessages: function() {
+        return this._messageArchives.length > 0;
+    },
     clearMessages: function() {
         this._messageArchives.pop(); // old messages are gradually cleared away
         

@@ -42,14 +42,16 @@ analyzer
 
 NOTE: a density function might be useful; consider even doing away with direct mass and instead deal with bulk and density...?
 
+additional player skills / attributes:
+    - gardening : improves good-growth rate of seeds
+    - recovery : improves rate of healing
+    - speed : improves (i.e. shortens) default action duration
 
 TODO NEXT:
 
-4. totally clear player messages when the drop screen completes || on entering the caves
-
 6. improve / fix help screen(s)-- show details from binding info, customized for current binding set, with info nav aspects
 
-7. implement on-going-interuptable actions (e.g. eating, digging)
+7. implement on-going-interruptable actions (e.g. eating, digging)
     - actor has an action mode, and if the action mode is <an ongoing action> then that action is repeated automatically. This continues until the standard end condition is met (e.g. eaten until full, or else eaten until the item is gone; dig until the stone state changes; etc.), or else until a disturbance event happens
     - disturbance events: visible mob adjacent, or else visible mob moves towards player, or else damage taken
     NOTE: action always happens at least once! (i.e. on the turn the command is issued)
@@ -74,6 +76,10 @@ TODO NEXT:
         give small martians some starting loot
 
 17. figure out where geodic nuts and jelly balls come from (oozes, perhaps? introduce several kinds of ooze, and when they are adjacent they have a chance to spawn a jelly ball or a geodic nut (depending on other circumstances?))
+
+19. item mixin for materialsSource: max sourced, min sourced, _materialsRemaining (random from min to max), possible materials loot table
+    - figure out how this works with eating!
+
 
 20. crafting system!
         two basic operations - break down (consume?) (create raw materials from something), and construct (build something from raw materials and/or other things)
