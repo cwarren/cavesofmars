@@ -4,9 +4,6 @@ Game.ItemMixins = {};
 Game.ItemMixins.Edible = {
     name: 'Edible',
     init: function(template) {
-
-//console.dir(template);
-
         if (template['foodDensity']) {
             this._foodDensity = template['foodDensity'];  // food value per unit of bulk of this item
         } else if (template['foodValue']) {
@@ -15,19 +12,9 @@ Game.ItemMixins.Edible = {
             this._foodDensity = 10; // default is 10 turns per unit of bulk
         }
         
-
-//        this._foodValue = this._foodDensity * this._invBulk;
-//        this._foodValue = template['foodValue'] || 5;
-//        this._foodDensity = Math.floor((this._foodValue/this._invBulk));
-        // Number of times the item can be consumed
-//        this._maxConsumptions = template['consumptions'] || 1;
-//        this._remainingConsumptions = this._maxConsumptions;
+        this._originalBulk = this._invBulk;
     },
     eat: function(entity) {
-//        if (entity.hasMixin('FoodConsumer')) {
-//            if (this.hasRemainingConsumptions()) {
-//                entity.modifyFullnessBy(this._foodValue);
-//                this._remainingConsumptions--;
 //    - entity has eatAmount - how many L the entity eats per 'E'at action (typically 1 L for humans)
 //    - item has nutritional density, which is food value per L
 //    - on 'E'at of an item - 
@@ -45,30 +32,29 @@ Game.ItemMixins.Edible = {
             this._invBulk = 0;
             if (! entity.getMap().removeItem(this,entity.getX(),entity.getY(),entity.getZ())) {
                 entity.raiseEvent('destroyCarriedItem',this);
+                Game.sendMessage(entity,'You finish '+this.describeThe());
             }
         }
         entity.raiseEvent('onEat',this,consumedFoodValue);
-//            }
-//        }
     },
-//    hasRemainingConsumptions: function() {
-//        return this._remainingConsumptions > 0;
-//    },
+    getConsumptionFractionDescription: function() {
+        var remainsFrac = this._invBulk / this._originalBulk;        
+        if (remainsFrac > .99) { return ''; }
+        if (remainsFrac > .9) { return 'slightly nibbled '; }
+        if (remainsFrac > .7) { return 'nibbled '; }
+        if (remainsFrac > .5) { return 'well chewed '; }
+        if (remainsFrac > .3) { return 'mostly eaten '; }
+        if (remainsFrac > .1) { return 'almost entirely eaten '; }
+        return 'scraps of ';        
+    },
     describe: function() {
-//        if (this._maxConsumptions != this._remainingConsumptions) {
-//            return 'partly eaten ' + Game.Item.prototype.describe.call(this);
-//        } else {
-            return this._name;
-//        }
+        var descrLead = this.getConsumptionFractionDescription();
+        if (descrLead == 'scraps of ') {
+            return descrLead + Game.Item.prototype.describeA.call(this);
+        } else {
+            return descrLead + Game.Item.prototype.describe.call(this);
+        }
     },
-/*
-    setFoodValue: function(foodValue) {
-        this._foodValue = foodValue;
-    },
-    alterFoodValue: function(delta) {
-        this._foodValue += delta;
-    },
-    */
     getFoodValue: function() {
         return Math.trunc(this._foodDensity * this._invBulk / 1000);
     },
@@ -81,20 +67,20 @@ Game.ItemMixins.Edible = {
     getFoodDensity: function() {
         return this._foodDensity;
     },
+    increaseFoodDensityByFactor: function(foodDensityFactor) {
+        this._foodDensity *= foodDensityFactor;
+        this._invBulk = Math.floor(this._invBulk/foodDensityFactor);
+        this._originalBulk = Math.floor(this._originalBulk/foodDensityFactor);
+        this._invWeight = Math.floor(this._invWeight/foodDensityFactor);
+    },
     listeners: {
         'details': function() {
             var det = [{key: 'food', value: this.getFoodValue()}];
-            //if (this._maxConsumptions > 1) {
-            //    det.push({key: 'food uses', value: this._remainingConsumptions+'/'+this._maxConsumptions});
-            //}
             return det;
         },
         'calcDetails': function() {
             var det = [{key: 'foodValue', value: this._foodValue}];
             det.push({key: 'foodDensity', value: this._foodDensity});
-            //if (this._maxConsumptions > 1) {
-            //    det.push({key: 'foodUses', value: this._remainingConsumptions+'/'+this._maxConsumptions});
-            //}
             return det;
         }
     }

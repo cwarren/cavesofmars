@@ -1235,6 +1235,8 @@ Game.EntityMixins.CorpseDropper = {
         this._corpseDropRate = template['corpseDropRate'] || 100;
         this._corpseName = template['corpseName'] || (this._name + ' corpse');
         this._corpseFoodValue = template['corpseFoodValue'] || 0;
+        this._corpseFoodDensityFactor = template['corpseFoodDensityFactor'] || 1;
+        this._corpseSizeFactor = template['corpseSizeFactor'] || Game.util.getRandomInteger(450,550);
     },
     getCorpseFoodValue: function() {
         return this._corpseFoodValue;
@@ -1245,22 +1247,6 @@ Game.EntityMixins.CorpseDropper = {
     adjustCorpseFoodValue: function(delta) {
         this._corpseFoodValue += delta;
     },
-/*
-    tryDropCorpse: function(corpse_name) {
-        if (Math.round(Math.random() * 100) <= this._corpseDropRate) {
-
-            // Create a new corpse item and drop it.
-            var newCorpse = Game.ItemRepository.create('corpse', {
-                    name: this._corpseName,
-                    foreground: this._foreground,
-                });
-            if (this._corpseFoodValue) {
-                newCorpse.setFoodValue(this._corpseFoodValue);
-            }
-            this._map.addItem(this.getX(), this.getY(), this.getZ(),newCorpse);
-        }
-    },
-*/
     listeners: {
         onDeath: function(attacker) {
             // Check if we should drop a corpse.
@@ -1273,8 +1259,8 @@ Game.EntityMixins.CorpseDropper = {
                     newCorpse = Game.ItemRepository.create('corpse', {
                         name: this._corpseName,
                         foreground: this._foreground,
-                        invWeight: this._corpseFoodValue * (100 + Game.util.getRandomInteger(-10,10)),
-                        invBulk: this._corpseFoodValue * (100 + Game.util.getRandomInteger(-10,10)),
+                        invWeight:  Math.floor(this._corpseSizeFactor*(this.getMaxHp() + Game.util.getRandomInteger(0,5))),
+                        invBulk: Math.floor(this._corpseSizeFactor*((this.getMaxHp()*.8) + Game.util.getRandomInteger(0,5))),
                         foodValue: this._corpseFoodValue
                     });
 
@@ -1289,6 +1275,9 @@ Game.EntityMixins.CorpseDropper = {
                     var hpModForFoodValue = Game.util.getRandomInteger(Math.floor(this.getMaxHp()*.25),Math.floor(this.getMaxHp()*.75));
                     var modFactor = (hpModForFoodValue + origFoodValue) / origFoodValue;
                     newCorpse.modifyInvBulkByFactor(modFactor);
+                    if (this._corpseFoodDensityFactor != 1) {
+                        newCorpse.increaseFoodDensityByFactor(this._corpseFoodDensityFactor);
+                    }
                 //console.dir(newCorpse);
                 }
                 this._map.addItem(this.getX(), this.getY(), this.getZ(),newCorpse);

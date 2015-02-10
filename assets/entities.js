@@ -116,6 +116,7 @@ Game.EntityRepository.define('fruiting fungus', {
     corpseName: 'pile of slimey mushroom caps',
     defaultActionDuration: 4600,
     corpseFoodValue: 20,
+    corpseSizeFactor: 130,
     suicideSpawnEntityName: 'quiescent fungus',
     mixins: [Game.EntityMixins.FruitingFungusActor, Game.EntityMixins.Destructible, Game.EntityMixins.CorpseDropper, Game.EntityMixins.SuicideSpawner]
 });
@@ -129,6 +130,7 @@ Game.EntityRepository.define('docile fungus', {
     maxHp: 10,
     corpseName: 'pile of firm, aromatic mushroom caps',
     corpseFoodValue: 95,
+    corpseFoodDensityFactor: 2.5,
     defaultActionDuration: 10000,
     fixedXp: 0,
     mixins: [Game.EntityMixins.DocileFungusActor, Game.EntityMixins.Destructible, Game.EntityMixins.CorpseDropper, Game.EntityMixins.FixedExperiencePoints]
@@ -147,6 +149,7 @@ Game.EntityRepository.define('spreading fungus', {
     maxHp: 25,
     corpseName: 'spore-y mass',
     corpseFoodValue: 1,
+    corpseSizeFactor: 230,
     defaultActionDuration: 1250,
     suicideSpawnEntityName: 'fruiting fungus',
     awakenPercentRate: 6,
@@ -165,6 +168,7 @@ Game.EntityRepository.define('quiescent fungus', {
     maxHp: 5,
     corpseName: 'spore-y mass',
     corpseFoodValue: 1,
+    corpseSizeFactor: 24,
     awakenPercentRate: 12,
     fixedXp: 1,
     awakenSpawnEntityName: 'spreading fungus',

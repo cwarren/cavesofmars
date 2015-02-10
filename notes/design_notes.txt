@@ -45,7 +45,7 @@ NOTE: a density function might be useful; consider even doing away with direct m
 
 TODO NEXT:
 
-5. for docile fungus corpses, increase food density more than bulk when the corpse is dropped
+4. totally clear player messages when the drop screen completes || on entering the caves
 
 6. improve / fix help screen(s)-- show details from binding info, customized for current binding set, with info nav aspects
 
