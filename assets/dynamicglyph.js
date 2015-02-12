@@ -150,6 +150,10 @@ Game.DynamicGlyph.prototype.getSuperGroup = function() {
     return this._supergroup;
 };
 
+Game.DynamicGlyph.prototype.isA = function(toCheck) {
+    return (toCheck == this._name) || (toCheck == this._group) || (toCheck == this._supergroup);
+}
+
 Game.DynamicGlyph.prototype.getId = function() {
     return this._uniqueIdString;
 }

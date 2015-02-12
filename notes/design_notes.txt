@@ -50,17 +50,6 @@ additional player skills / attributes available for improvement during leveling 
 
 TODO NEXT:
 
-
-X. fix item list screens not to show multiple pages when only a few tail-end items are use-able
-
-X. show inven status info in item drop screen and extended pickup screen
-
-2. something's not quite right with docile fungus corpse stuff... I think..... need to set up more test cases to iron it out....
-    - make a fixedCorpseValues entity mixin that's similar to the fixedXP one (perhaps modify the latter to encompass the former in a general fixedValues mixin...? probalby not...)
-
-
-
-
 5. implement on-going-interruptable actions (e.g. eating, digging)
     - actor has an action mode, and if the action mode is <an ongoing action> then that action is repeated automatically. This continues until the standard end condition is met (e.g. eaten until full, or else eaten until the item is gone; dig until the stone state changes; etc.), or else until a disturbance event happens
     - disturbance events: visible mob adjacent, or else visible mob moves towards player, or else damage taken

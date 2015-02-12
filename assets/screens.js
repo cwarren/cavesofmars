@@ -1784,10 +1784,12 @@ Game.Screen.storyScreen = {
                 player.addItem(h);
                 player.wear(h);
                 
+                var itemTesting = false;
                 /////////////////////////////
                 /// CODE FOR ITEM TESTING!!!!
-
-                console.log('item testing code is active');
+                if (itemTesting) {
+                    console.log('item testing code is active');
+                
 //                player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('human corpse'),player.getX(),player.getY(),player.getZ());
 //                player.addItem(Game.ItemRepository.create('sling'));
 //                player.addItem(Game.ItemRepository.create('stone shot'));
@@ -1795,17 +1797,20 @@ Game.Screen.storyScreen = {
 //                player.addItem(Game.ItemRepository.create('iron shot'));
 //                player.addItem(Game.ItemRepository.create('iron shot'));
 
-                for (var i=0;i<45;i++) {
-                    player.addItem(Game.ItemRepository.createRandom());
-                }
+//                for (var i=0;i<45;i++) {
+//                    player.addItem(Game.ItemRepository.createRandom());
+//                }
                 
-//                for (var i=0;i<15;i++) {
+//                for (var i=0;i<6;i++) {
+//                    player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('human corpse'),player.getX(),player.getY(),player.getZ());
+//                    player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('spore-y mass'),player.getX(),player.getY(),player.getZ());
 //                    player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('lodestone'),player.getX(),player.getY(),player.getZ());
 //                }
 /*
                   player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('plated leather armor'),player.getX(),player.getY(),player.getZ());
 
                 */
+                }
                 /// CODE FOR ITEM TESTING!!!!
                 /////////////////////////////
 
@@ -1817,22 +1822,24 @@ Game.Screen.storyScreen = {
                 map.addItem(px,py,0,Game.ItemRepository.create('JAT tool, damaged'));
 
                 // scatter rocks around
-                var adjCoords = Game.util.coordsNeighboring(px,py);
-                for (var i=0;i<adjCoords.length;i++) {
-                    if (map.getTile(adjCoords[i].x, adjCoords[i].y, 0) == Game.Tile.floorTile) {
-                        map.addItem(adjCoords[i].x, adjCoords[i].y,0,Game.ItemRepository.create('rock'));
-                    }
+                if (! itemTesting) {
+                    var adjCoords = Game.util.coordsNeighboring(px,py);
+                    for (var i=0;i<adjCoords.length;i++) {
+                        if (map.getTile(adjCoords[i].x, adjCoords[i].y, 0) == Game.Tile.floorTile) {
+                            map.addItem(adjCoords[i].x, adjCoords[i].y,0,Game.ItemRepository.create('rock'));
+                        }
 
-                    var adjCoords2 = Game.util.coordsNeighboring(adjCoords[i].x, adjCoords[i].y);
-                    for (var j=0;j<adjCoords2.length;j++) {
-                        var addX = adjCoords2[j].x;
-                        var addY = adjCoords2[j].y;
-                        if ((ROT.RNG.getUniform() < .5) && (addX!=px) && (addY!=py) && (map.getTile(addX, addY, 0) == Game.Tile.floorTile)) {
-                            map.addItem(addX, addY,0,Game.ItemRepository.create('rock'));
+                        var adjCoords2 = Game.util.coordsNeighboring(adjCoords[i].x, adjCoords[i].y);
+                        for (var j=0;j<adjCoords2.length;j++) {
+                            var addX = adjCoords2[j].x;
+                            var addY = adjCoords2[j].y;
+                            if ((ROT.RNG.getUniform() < .5) && (addX!=px) && (addY!=py) && (map.getTile(addX, addY, 0) == Game.Tile.floorTile)) {
+                                map.addItem(addX, addY,0,Game.ItemRepository.create('rock'));
+                            }
                         }
                     }
                 }
-
+                
                 // falling from that height *HURTS*
                 player.takeDamage(player,Math.floor(player.getMaxHp()*(.3+ROT.RNG.getUniform()/2)));                
                 Game.Screen.playScreen.setSubScreen(null);

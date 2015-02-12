@@ -1242,6 +1242,7 @@ Game.EntityMixins.CorpseDropper = {
         // Chance of dropping a cropse (out of 100).
         this._corpseDropRate = template['corpseDropRate'] || 100;
         this._corpseName = template['corpseName'] || (this._name + ' corpse');
+        this._corpseDescription = template['corpseDescription'] || '';
         this._corpseFoodValue = template['corpseFoodValue'] || 0;
         this._corpseFoodDensityFactor = template['corpseFoodDensityFactor'] || 1;
         this._corpseSizeFactor = template['corpseSizeFactor'] || Game.util.getRandomInteger(450,550);
@@ -1272,6 +1273,10 @@ Game.EntityMixins.CorpseDropper = {
                         foodValue: this._corpseFoodValue
                     });
 
+                    if (this._corpseDescription) {
+                        newCorpse.setDescription(this._corpseDescription);
+                    }
+                    console.dir(newCorpse);
                 }
                 if (this.getGroup()) {
                     newCorpse.setGroup(this.getGroup()+' corpse');

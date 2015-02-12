@@ -297,6 +297,8 @@ Game.ItemMixins.Seeder = {
         map.addEntity(newEntity);
         
         Game.sendMessageNearby(map,x,y,z, 'The %s grows into %s', [this.getName(),newEntity.describeA(false)]);
+        
+        return newEntity;
     },
     listeners: {
          'onPlanted': function(map,x,y,z) {
@@ -310,7 +312,7 @@ Game.ItemMixins.Seeder = {
             var entity = map.getEntityAt(x,y,z);
             if (entity && this.canGrowOn(entity)) {
                 map.removeEntity(entity);
-                this.growAt(map,x,y,z);
+                newEntity = this.growAt(map,x,y,z);
                 return;
             }
 
@@ -322,7 +324,10 @@ Game.ItemMixins.Seeder = {
                 var item = items[i];
                 if (item && this.canGrowOn(item)) {
                     map.removeItem(item,x,y,z);
-                    this.growAt(map,x,y,z);
+                    newEntity = this.growAt(map,x,y,z);
+                    if (item.isA('corpse')) {
+                        newEntity.raiseEvent('onSpawnedFromCorpse',item);
+                    }
                     return;
                 }
             }
@@ -334,7 +339,7 @@ Game.ItemMixins.Seeder = {
                 if (tile.isDiggable()) {
                     map.dig(null,1,x,y,z);
                 }
-                this.growAt(map,x,y,z);
+                newEntity = this.growAt(map,x,y,z);
                 return;
             }
         },
