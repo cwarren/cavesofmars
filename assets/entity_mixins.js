@@ -835,6 +835,11 @@ Game.EntityMixins.InventoryHolder = {
         return '';
     },
 
+    getInvenLimitsSummary : function() {
+        return this.getWeightStatusColor()+'mass: '+this.getWeightStatusString()+Game.Screen.DEFAULT_COLOR_SETTER+'       '+this.getBulkStatusColor()+'volume: '+this.getBulkStatusString()    
+    },
+
+
     getItems: function() {
         return this._items;
     },

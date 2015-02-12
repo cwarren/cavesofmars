@@ -457,9 +457,12 @@ Game.Screen.ItemListScreen = function(template) {
     // Whether a 'no item' option should appear.
     this._hasNoItemOption = template['hasNoItemOption'];
     
-    this._displayIndexBase = 0;
+    this._displayIndexLower = 0;
+    this._displayIndexUpper = 0;
     this._displayItems;
     this._displayMaxNum = Game.getScreenHeight()-3;
+    this._items = [];
+    this._itemIdxReverseLookup = {};
 };
 
 Game.Screen.ItemListScreen.prototype.getHelpSections = function() {
@@ -470,9 +473,20 @@ Game.Screen.ItemListScreen.prototype.setParentScreen = function(screen) {
     this._parentScreen = screen;
 }
 
+// Should be called before switching to the screen.
 Game.Screen.ItemListScreen.prototype.setup = function(player, items) {
     this._player = player;
-    // Should be called before switching to the screen.
+    
+    this._items = [];
+    this._itemIdxReverseLookup = {};
+    for (var i=0;i<items.length;i++) {
+        if (this._isAcceptableFunction(items[i])) {
+            this._items.push(items[i]);
+            this._itemIdxReverseLookup[items[i].getId()] = i;
+        }
+    }
+/*
+
     var count = 0;
     // Iterate over each item, keeping only the aceptable ones and counting
     // the number of acceptable items.
@@ -486,51 +500,68 @@ Game.Screen.ItemListScreen.prototype.setup = function(player, items) {
             return null;
         }
     });
+*/
+
     // Clean set of selected indices
-    this._selectedIndices = {}; // TODO: handle _displayIndexBase offset correctly
-    this._displayIndexBase = 0;
+    this._selectedIndices = {}; 
+    this._displayIndexLower = 0;
+    //this._displayIndexUpper = this._items.length-1;
     this._displayItems = [];
     this.determineDisplayItems();
-    return count;
+    return this._items.length;
 };
 
 Game.Screen.ItemListScreen.prototype.determineDisplayItems = function() {
-    // start with full slice, and reduce slice until non-null items <= this._displayMaxNum; adjust page up and page down handlers (next two funcs below) similarly
-    this._displayItems = this._items.slice(this._displayIndexBase,this._displayIndexBase+this._displayMaxNum);
+//    // start with full slice, and reduce slice until non-null items <= this._displayMaxNum; adjust page up and page down handlers (next two funcs below) similarly
+/*
+    this._displayIndexUpper = this._items.length-1;
+    var protoItems = this._items.slice(this._displayIndexLower,this._displayIndexUpper+1);
+    var nonNullCount = protoItems.filter(String).length;
+    while (nonNullCount > this._displayMaxNum) {
+        this._displayIndexUpper--;
+        protoItems = this._items.slice(this._displayIndexLower,this._displayIndexUpper+1);
+        nonNullCount = protoItems.filter(String).length;
+    }
+
+    console.dir(protoItems);    
+    this._displayItems = protoItems;
+*/    
+    
+    this._displayItems = this._items.slice(this._displayIndexLower,this._displayIndexLower+this._displayMaxNum);
 }
 
 Game.Screen.ItemListScreen.prototype.handlePageUp = function() {
     //console.log('page up');
-    //console.log('this._displayIndexBase='+this._displayIndexBase);
+    //console.log('this._displayIndexLower='+this._displayIndexLower);
     //console.dir(this._items);    
     //console.dir(this._displayItems);
     //console.log('---');
-    this._displayIndexBase -= this._displayMaxNum;
-    if (this._displayIndexBase < 0) {
-        this._displayIndexBase = 0;
+    this._displayIndexLower -= this._displayMaxNum;
+    if (this._displayIndexLower < 0) {
+        this._displayIndexLower = 0;
     }
     this.determineDisplayItems();
-    //console.log('this._displayIndexBase='+this._displayIndexBase);
+    //console.log('this._displayIndexLower='+this._displayIndexLower);
     //console.dir(this._items);    
     //console.dir(this._displayItems);
     Game.refresh();
 }
 Game.Screen.ItemListScreen.prototype.handlePageDown = function() {
     //console.log('page down');
-    //console.log('this._displayIndexBase='+this._displayIndexBase);
+    //console.log('this._displayIndexLower='+this._displayIndexLower);
     //console.dir(this._items);    
     //console.dir(this._displayItems);
     //console.log('---');
-    var numUnseenItems = this._items.length - (this._displayIndexBase + this._displayItems.length);
-    this._displayIndexBase += this._displayMaxNum;
-    if (this._displayIndexBase > this._items.length) {
-        this._displayIndexBase -= this._displayMaxNum;
+    var numUnseenItems = this._items.length - (this._displayIndexLower + this._displayItems.length);
+    this._displayIndexLower += this._displayMaxNum;
+    if (this._displayIndexLower > this._items.length) {
+        this._displayIndexLower -= this._displayMaxNum;
     }    
-    //if (this._displayIndexBase >= this._items.length - this._displayMaxNum) {
-    //    this._displayIndexBase = Math.max(0,this._items.length - this._displayMaxNum - 1);
+    //if (this._displayIndexLower >= this._items.length - this._displayMaxNum) {
+    //    this._displayIndexLower = Math.max(0,this._items.length - this._displayMaxNum - 1);
     //}    
     this.determineDisplayItems();
-    //console.log('this._displayIndexBase='+this._displayIndexBase);
+    //console.log('this._displayIndexLower='+this._displayIndexLower);
     //console.dir(this._items);    
     //console.dir(this._displayItems);
     Game.refresh();
@@ -553,13 +584,13 @@ Game.Screen.ItemListScreen.prototype.render = function(display) {
             display.drawText(0, 1, Game.Screen.DEFAULT_COLOR_SETTER + '0 - no item');
             row++;
     }
-    if (this._displayIndexBase > 0) {
+    if (this._displayIndexLower > 0) {
             display.drawText(0, 1 + row, '%c{black}%b{yellow}page up for more');
             row++;
     }
     for (var i = 0; i < this._displayItems.length; i++) {
         // If we have an item, we want to render it.
-        var trueItemIndex = this._displayIndexBase + i;
+        var trueItemIndex = this._displayIndexLower + i;
         if (this._displayItems[i]) {
             // Get the letter matching the item's index
             var letter = letters.substring(i, i + 1);
@@ -591,7 +622,7 @@ Game.Screen.ItemListScreen.prototype.render = function(display) {
             row++;
         }
     }
-    if ((this._displayIndexBase + this._displayItems.length) < this._items.length) {
+    if ((this._displayIndexLower + this._displayItems.length) < this._items.length) {
             display.drawText(0, 1 + row, '%c{black}%b{yellow}page down for more');
             row++;
     }
@@ -601,11 +632,13 @@ Game.Screen.ItemListScreen.prototype.executeOkFunction = function() {
     // Gather the selected items.
     var selectedItems = {};
     for (var key in this._selectedIndices) {
-        selectedItems[key] = this._items[key];
+        var trueKey = this._itemIdxReverseLookup[this._items[key].getId()];
+        selectedItems[trueKey] = this._items[key];
     }
     // Switch back to the play screen.
     Game.Screen.playScreen.setSubScreen(undefined);
-    // Call the OK function and end the player's turn if it return true.
+    
+    // Call the OK function and end the player's turn if it returns true.
     if (this._okFunction(selectedItems)) {
         this._player.finishAction();
     }
@@ -637,7 +670,7 @@ Game.Screen.ItemListScreen.prototype.handleInput = function(inputType, inputData
             // Check if it maps to a valid item by subtracting 'a' from the character
             // to know what letter of the alphabet we used.
             var index = inputData.keyCode - ROT.VK_A;
-            var trueItemIndex = this._displayIndexBase + index;
+            var trueItemIndex = this._displayIndexLower + index;
             if (this._items[trueItemIndex]) {
                 // If multiple selection is allowed, toggle the selection status, else
                 // select the item and exit the screen
@@ -678,7 +711,7 @@ Game.Screen.ItemListScreen.prototype.handleInput = function(inputType, inputData
 
 Game.Screen.inventoryScreen = new Game.Screen.ItemListScreen({
     caption: function() {
-        return 'Inventory      '+this._player.getWeightStatusColor()+'mass: '+this._player.getWeightStatusString()+Game.Screen.DEFAULT_COLOR_SETTER+'       '+this._player.getBulkStatusColor()+'volume: '+this._player.getBulkStatusString();
+        return 'Inventory      '+this._player.getInvenLimitsSummary(); //getWeightStatusColor()+'mass: '+this._player.getWeightStatusString()+Game.Screen.DEFAULT_COLOR_SETTER+'       '+this._player.getBulkStatusColor()+'volume: '+this._player.getBulkStatusString();
     },
     canSelect: false,
     
@@ -740,7 +773,9 @@ Game.Screen.inventoryScreen.getHelpSections = function() {
 //-------------------
 
 Game.Screen.pickupScreen = new Game.Screen.ItemListScreen({
-    caption: 'Choose the items you wish to add to your inventory',
+    caption: function() {
+        return 'Pick up      '+this._player.getInvenLimitsSummary();
+    },
     canSelect: true,
     canSelectMultipleItems: true,
     ok: function(selectedItems) {
@@ -760,7 +795,7 @@ Game.Screen.pickupScreen.getHelpSections = function() {
 //-------------------
 
 Game.Screen.pickupToHandsScreen = new Game.Screen.ItemListScreen({
-    caption: 'Choose the item you wish to carry in you hands',
+    caption: 'Carry in you hands',
     canSelect: true,
     canSelectMultipleItems: false,
     ok: function(selectedItems) {
@@ -781,7 +816,10 @@ Game.Screen.pickupToHandsScreen.getHelpSections = function() {
 //-------------------
 
 Game.Screen.dropScreen = new Game.Screen.ItemListScreen({
-    caption: 'Choose the items you wish to drop',
+    caption: function() {
+        return 'Drop      '+this._player.getInvenLimitsSummary();
+    },
+//    caption: 'Choose the items you wish to drop',
     canSelect: true,
     canSelectMultipleItems: true,
     ok: function(selectedItems) {
@@ -798,7 +836,7 @@ Game.Screen.dropScreen.getHelpSections = function() {
 //-------------------
 
 Game.Screen.eatScreen = new Game.Screen.ItemListScreen({
-    caption: 'Choose the item you wish to eat',
+    caption: 'Eat',
     canSelect: true,
     canSelectMultipleItems: false,
     isAcceptable: function(item) {
@@ -825,7 +863,7 @@ Game.Screen.eatScreen.getHelpSections = function() {
 //-------------------
 
 Game.Screen.holdScreen = new Game.Screen.ItemListScreen({
-    caption: 'Choose the item you wish to carry in your hands',
+    caption: 'Carry in your hands',
     canSelect: true,
     canSelectMultipleItems: false,
     hasNoItemOption: true,
@@ -856,7 +894,7 @@ Game.Screen.holdScreen.getHelpSections = function() {
 //-------------------
 
 Game.Screen.wearScreen = new Game.Screen.ItemListScreen({
-    caption: 'Choose the item you wish to wear',
+    caption: 'Wear',
     canSelect: true,
     canSelectMultipleItems: false,
     hasNoItemOption: true,
@@ -886,7 +924,7 @@ Game.Screen.wearScreen.getHelpSections = function() {
 //-------------------
 
 Game.Screen.fireFlingScreen = new Game.Screen.ItemListScreen({
-    caption: 'Choose the item you wish to fire/fling',
+    caption: 'Fire/fling',
     canSelect: true,
     canSelectMultipleItems: false,
     hasNoItemOption: true,
@@ -921,7 +959,10 @@ Game.Screen.fireFlingScreen.getAmmo = function() {
 //-------------------
 
 Game.Screen.examineScreen = new Game.Screen.ItemListScreen({
-    caption: 'Choose the item you wish to examine',
+    caption: function() {
+        return 'Examine      '+this._player.getInvenLimitsSummary();
+    },
+//    caption: 'Choose the item you wish to examine',
     canSelect: true,
     canSelectMultipleItems: false,
     isAcceptable: function(item) {
@@ -1746,23 +1787,22 @@ Game.Screen.storyScreen = {
                 /////////////////////////////
                 /// CODE FOR ITEM TESTING!!!!
 
-/*
                 console.log('item testing code is active');
-player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('human corpse'),player.getX(),player.getY(),player.getZ());
+//                player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('human corpse'),player.getX(),player.getY(),player.getZ());
 //                player.addItem(Game.ItemRepository.create('sling'));
 //                player.addItem(Game.ItemRepository.create('stone shot'));
 //                player.addItem(Game.ItemRepository.create('stone shot'));
 //                player.addItem(Game.ItemRepository.create('iron shot'));
 //                player.addItem(Game.ItemRepository.create('iron shot'));
 
-//                for (var i=0;i<15;i++) {
-//                    player.addItem(Game.ItemRepository.createRandom());
-//                }
+                for (var i=0;i<45;i++) {
+                    player.addItem(Game.ItemRepository.createRandom());
+                }
                 
 //                for (var i=0;i<15;i++) {
 //                    player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('lodestone'),player.getX(),player.getY(),player.getZ());
 //                }
-
+/*
                   player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('plated leather armor'),player.getX(),player.getY(),player.getZ());
 
                 */
