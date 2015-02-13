@@ -162,7 +162,7 @@ Game.Map.prototype.setDigStatus = function(digAmount, x, y, z) {
     this._dig_status[x+','+y+','+z] = digAmount;
 }
 
-Game.Map.prototype.dig = function(digger,digAmount, x, y, z) {
+Game.Map.prototype.dig = function(digger, digAmount, x, y, z) {
     // If the tile is diggable, update it to a floor
     var dugTile = this.getTile(x, y, z);
     if (dugTile.isDiggable()) {

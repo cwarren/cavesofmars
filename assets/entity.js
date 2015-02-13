@@ -18,12 +18,64 @@ Game.Entity = function(properties) {
     
     this._lastActionDuration = this._defaultActionDuration;    
 
+    // on-going action support
+    this._ogaActivity = null;
+    this._ogaParams = {};
+    this._ogaDuration = this._defaultActionDuration / 10;
+    this._ogaInterrupt = false;
+    this._ogaCounter = 0;
+
     // Call the glyph's construtor with our set of properties
     Game.DynamicGlyph.call(this, properties);
 }
 // Make entities inherit all the functionality from dynamicglyphs (i.e. mixin support et al)
 Game.Entity.extend(Game.DynamicGlyph);
 
+Game.Entity.prototype.setOgaActivity = function(v) {
+    this._ogaActivity = v;
+}
+Game.Entity.prototype.getOgaActivity = function() {
+    return this._ogaActivity;
+}
+
+Game.Entity.prototype.setOgaParams = function(v) {
+    this._ogaParams = v;
+}
+Game.Entity.prototype.getOgaParams = function() {
+    return this._ogaParams;
+}
+
+Game.Entity.prototype.setOgaDuration = function(v) {
+    this._ogaDuration = v;
+}
+Game.Entity.prototype.getOgaDuration = function() {
+    return this._ogaDuration;
+}
+
+Game.Entity.prototype.setOgaInterrupt = function(v) {
+    this._ogaInterrupt = v;
+}
+Game.Entity.prototype.getOgaInterrupt = function() {
+    return this._ogaInterrupt;
+}
+
+Game.Entity.prototype.setOgaCounter = function(v) {
+    this._ogaCounter = v;
+}
+Game.Entity.prototype.stepOgaCounter = function() {
+    this._ogaCounter++;
+}
+Game.Entity.prototype.getOgaCounter = function() {
+    return this._ogaCounter;
+}
+
+Game.Entity.prototype.setupOngoingActivity = function(activity,params,activityDuration) {
+    this.setOgaInterrupt(false);
+    this.setOgaCounter(0);
+    this.setOgaActivity(activity);
+    this.setOgaParams(params);
+    this.setOgaDuration(activityDuration);
+}
 
 Game.Entity.prototype.setX = function(x) {
     this._x = x;

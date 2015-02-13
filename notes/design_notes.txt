@@ -49,11 +49,13 @@ additional player skills / attributes available for improvement during leveling 
         - split into movement speed and combat speed
 
 TODO NEXT:
+    
+5. implement on-going-action interrupts
+    - disturbance events: any key pressed, visible (dangerous) mob adjacent, visible (dangerous) mob moves towards player (NOTE: this is MUCH harder to track!)
 
-5. implement on-going-interruptable actions (e.g. eating, digging)
-    - actor has an action mode, and if the action mode is <an ongoing action> then that action is repeated automatically. This continues until the standard end condition is met (e.g. eaten until full, or else eaten until the item is gone; dig until the stone state changes; etc.), or else until a disturbance event happens
-    - disturbance events: visible mob adjacent, or else visible mob moves towards player, or else damage taken
-    NOTE: action always happens at least once! (i.e. on the turn the command is issued)
+6. implement ongoing action stuff for eating
+
+7. player must be holding a tool to do any digging on anything other than rubble (or perhaps anything with a tile type that has a base dig resistance above X?)
 
 8. container objects
     - containers have a weight, bulk
@@ -75,6 +77,9 @@ TODO NEXT:
         give small martians some starting loot
 
 17. figure out where geodic nuts and jelly balls come from (oozes, perhaps? introduce several kinds of ooze, and when they are adjacent they have a chance to spawn a jelly ball or a geodic nut (depending on other circumstances?))
+    - when an ooze en
+
+18. mobs respond to ranged attacks by moving towards the source IF the source is in visual range
 
 19. item mixin for materialsSource: max sourced, min sourced, _materialsRemaining (random from min to max), possible materials loot table
     - figure out how this works with eating!

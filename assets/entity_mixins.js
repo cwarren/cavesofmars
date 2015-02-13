@@ -1,6 +1,6 @@
 Game._player_name_match_pattern = new RegExp('\\bplayer\\b','i');
 
-Game.sendMessage = function(recipient, message, args) {
+Game.sendMessage = function(recipient, message, args, coloring) {
     // Make sure the recipient can receive the message 
     // before doing any work.
     if (recipient && recipient.hasMixin(Game.EntityMixins.MessageRecipient)) {
@@ -8,6 +8,10 @@ Game.sendMessage = function(recipient, message, args) {
         // no formatting is necessary
         if (args) {
             message = vsprintf(message, args);
+        }
+
+        if (coloring) {
+            message = coloring + message;
         }
 
         // CSW NOTE : hack to avoid double-messagin the player        
@@ -237,8 +241,32 @@ Game.EntityMixins.Digger = {
         Game.sendMessage(this, "You are a better digger!");
     },
     digAt: function(x,y,z) {
-        this.getMap().dig(this,this.getDigRate(), x, y, z);
-        this.setLastActionDuration(this.getDigDuration());
+//        this.getMap().dig(this,this.getDigRate(), x, y, z);
+//        this.setLastActionDuration(this.getDigDuration());
+        var baseRate = this.getDigRate();
+        var baseDur = this.getDigDuration();
+        var incrementalActivityDuration = 100;
+        var incrementalFactor = this.getDefaultActionDuration()/incrementalActivityDuration;        
+        var adjRate = baseRate/(incrementalFactor*baseDur/this.getDefaultActionDuration());
+
+//        Game.sendMessage(this,'You begin digging...');
+//        Game.refresh();
+        this.setupOngoingActivity(function(p) {
+                var preTile = p.digger.getMap().getTile(p.digX, p.digY, p.digZ);
+                p.digger.getMap().dig(p.digger,p.digRate, p.digX, p.digY, p.digZ);
+                var postTile = p.digger.getMap().getTile(p.digX, p.digY, p.digZ);
+                p.digger.setOgaInterrupt(preTile.getName() != postTile.getName());
+                p.digger.setLastActionDuration(p.digDur);
+                p.digger.raiseEvent('onActed');
+                p.digger.stepOgaCounter()
+                Game.sendMessage(p.digger,'You are digging ('+p.digger.getOgaCounter()+') ...');
+                //Game.refresh();
+            },
+            {digger: this, digRate: adjRate, digX: x, digY: y, digZ: z, digDur: incrementalActivityDuration},
+            incrementalActivityDuration);
+        
+//        this.setLastActionDuration(incrementalActivityDuration);
+        this.setLastActionDuration(1);
     },
     getDigDuration: function() {
         var actionDurationMultiplier = 1;
@@ -361,6 +389,7 @@ Game.EntityMixins.NonRecuperatingDestructible = {
     takeDamage: function(attacker, damage) {
         damage = Math.max(0,damage); // no healing via negative damage!
         this._hp -= damage;
+        this.setOgaInterrupt(true);
         // If have 0 or less HP, then remove ourseles from the map
         if (this._hp <= 0) {
             this.raiseEvent('onDeath', attacker);
@@ -577,7 +606,7 @@ Game.EntityMixins.RangedAttacker = {
             }
             if (target.hasMixin('MessageRecipient')) {
                 Game.sendMessage(target, 'The %s hits you with the %s for %d damage', 
-                    [this.getName(), ammo.getName(), damage]);
+                    [this.getName(), ammo.getName(), damage],'%b{#422}');
                 Game.refresh();
             }
 
@@ -664,7 +693,7 @@ Game.EntityMixins.MeleeAttacker = {
             }
             if (target.hasMixin('MessageRecipient')) {
                 Game.sendMessage(target, 'The %s strikes you for %d damage', 
-                    [this.getName(), damage]);
+                    [this.getName(), damage],'%b{#422}');
             }
 
             var actionDurationMultiplier = 1;
@@ -1178,11 +1207,22 @@ Game.EntityMixins.FoodConsumer = {
     doTurnHunger: function() {
         // Remove the standard depletion points
         var hungerAmt = this._fullnessDepletionRate*(this.getLastActionDuration()/this.getDefaultActionDuration());
+//        console.log("hungerAmt = "+hungerAmt);
+//        console.dir(this);
+        hungerAmt = 1; // DEV
         this.modifyFullnessBy(-hungerAmt);
     },
     modifyFullnessBy: function(points) {
         // console.log("player fullness change: "+points);
+        var preHungerState = this.getHungerState();
         this._fullness = this._fullness + points;
+        var postHungerState = this.getHungerState();
+        if (this.getOgaActivity() && ! this.getOgaInterrupt() && (preHungerState != postHungerState)) {
+            this.setOgaInterrupt(true);
+        }
+        if (preHungerState != postHungerState) {
+            Game.sendMessage(this,"%b{#444}You are "+postHungerState);
+        }
         
         if (this._fullness <= 0) {
             this.kill({},"You have died of starvation!");
@@ -1276,7 +1316,7 @@ Game.EntityMixins.CorpseDropper = {
                     if (this._corpseDescription) {
                         newCorpse.setDescription(this._corpseDescription);
                     }
-                    console.dir(newCorpse);
+                    //console.dir(newCorpse);
                 }
                 if (this.getGroup()) {
                     newCorpse.setGroup(this.getGroup()+' corpse');
@@ -2247,14 +2287,28 @@ Game.EntityMixins.PlayerActor = {
 
         // Re-render the screen
         Game.refresh();
-        
+                
         // Lock the engine and wait asynchronously
         // for the player to press a key.
         this.getMap().getEngine().lock();
-        
+
         // Clear the message queue
         this.clearMessages();
         this._acting = false;
+
+        if (this._ogaInterrupt) {
+            this._ogaActivity = null;
+            this._ogaInterrupt = false;
+        }
+        if (this._ogaActivity) {
+            this._ogaActivity(this._ogaParams);            
+            Game.refresh();
+            this.getMap().getScheduler().setDuration(this._ogaDuration);
+            this.clearMessages();
+            setTimeout(function() {
+                    Game.getPlayer().getMap().getEngine().unlock();
+            },15);
+        }        
     },
     finishAction: function() {
         this.raiseEvent('onActed');
