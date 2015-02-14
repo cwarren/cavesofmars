@@ -51,6 +51,8 @@ additional player skills / attributes available for improvement during leveling 
 TODO NEXT:
     
 5. implement on-going actions for non-player entities
+    - add a 'handleOga' function at the entity level, then the action method calls that to do it (and examines return val from it to determine what to do next)
+    NOTE: current oga prox interrupt is only for the player! modify and relocate that code to make it work for other entities! (also push it to the entity object, perhaps)
 
 6. implement ongoing action stuff for eating
 
