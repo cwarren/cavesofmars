@@ -50,11 +50,7 @@ additional player skills / attributes available for improvement during leveling 
 
 TODO NEXT:
     
-5. implement on-going-action interrupts
-    - disturbance events: visible (dangerous) mob adjacent, visible (dangerous) mob moves towards player (NOTE: this is MUCH harder to track!)
-        - simplify this to: dangerous, mobile mob within 2 spaces
-
-5.5. implement on-going actions for non-player entities
+5. implement on-going actions for non-player entities
 
 6. implement ongoing action stuff for eating
 

@@ -166,9 +166,33 @@ Game.Screen.playScreen = {
                                 glyph = Game.Glyph.itemPile;
                             }
                         }
-                        // Check if we have an entity at the position
+                        // Check if we have an entity at the position 
                         if (map.getEntityAt(x, y, z)) {
                             glyph = map.getEntityAt(x, y, z);
+
+                            // if the entity is mobile, dangerous, and not allied then interrupt any ongoing action
+                            if (glyph!=this._player && this._player._ogaActivity) {
+                                var dist = Math.max( Math.abs(glyph.getX()-this._player.getX()) , Math.abs(glyph.getY()-this._player.getY()) );
+                                // CSW NOTE: this is where a player-set interrupt control could come in - the player could choose the radius of interruption, but for now it's fixed at 3
+                                if (dist <= 3) {
+//                                    console.log('interrupt possible due to mob prox of '+dist);
+//                                    console.dir(glyph);
+//                                    Game.ALL_THINGS[glyph.getId()] = glyph;
+                                    if (glyph.hasMixin('Attacker') && 
+                                        (glyph.hasMixin('AggressiveWanderBehavior') || glyph.hasMixin('DangerousWanderBehavior') || glyph.hasMixin('MeleeHunterBehavior') || glyph.hasMixin('MeleeHunterBehavior'))
+                                       )
+                                    {
+                                        if (glyph.hasMixin('Allier')) {
+                                            if (! glyph.isAlliedWith(this._player)) {
+                                                this._player.setOgaInterrupt(true);
+                                            }
+                                        } else {
+                                            this._player.setOgaInterrupt(true);
+                                        }
+                                    }
+                                }
+                            }
+                            
                         }
                         // Update the foreground color in case our glyph changed
                         foreground = glyph.getForeground();
@@ -212,8 +236,8 @@ Game.Screen.playScreen = {
         
     },
     handleInput: function(inputType, inputData) {
-        if (this._player) {
-            this._player.setOgaInterrupt(true);
+        if (this._player._ogaActivity) {
+            return;
         }
         
         // If the game is over, enter will bring the user to the losing screen.

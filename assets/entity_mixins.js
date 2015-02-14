@@ -305,7 +305,7 @@ Game.EntityMixins.FixedExperiencePoints = {
 
 Game.EntityMixins.NonRecuperatingDestructible = {
     name: 'NonRecuperatingDestructible',
-    group: 'Destructible',
+    groupName: 'Destructible',
     init: function(template) {
         this._maxHp = template['maxHp'] || 10;
         // We allow taking in health from the template incase we want
@@ -435,7 +435,7 @@ Game.EntityMixins.NonRecuperatingDestructible = {
 
 Game.EntityMixins.Destructible = Game.util.extendedObj(Game.EntityMixins.NonRecuperatingDestructible, {
     name: 'Destructible',
-    group: 'Destructible',
+    groupName: 'Destructible',
     init: function(template) {
         Game.EntityMixins.NonRecuperatingDestructible.init.call(this,template);
         
@@ -1372,7 +1372,7 @@ Game.EntityMixins.SuicideSpawner = {
 
 Game.EntityMixins.DamageAwakener = {
     name: 'DamageAwakener',
-    group: 'Awakener',
+    groupName: 'Awakener',
     init: function(template) {
         this._awakenPercentRate = template['awakenPercentRate'] || 5;
         this._awakenSpawnEntityName = template['awakenSpawnEntityName'] || '';
