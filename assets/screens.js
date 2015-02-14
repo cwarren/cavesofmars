@@ -189,46 +189,10 @@ Game.Screen.playScreen = {
         }
     },
     renderPlayerMessages: function(display) {
-        // Get the messages in the player's queue and render them
-/*
-        var messages = this._player.getMessages();
-        var messageY = 0;
-        for (var i = 0; i < messages.length; i++) {
-            // Draw each message, adding the number of lines
-            messageY += display.drawText(
-                0, 
-                messageY,
-                Game.Screen.DEFAULT_COLOR_SETTER + messages[i]
-            );
-        }
-        */
         Game.AuxScreen.messageScreen.render();
     },
     renderPlayerStats: function(display) {
         Game.AuxScreen.avatarScreen.render();
-    /*
-        var screenWidth = Game.getScreenWidth();
-        var screenHeight = Game.getScreenHeight();
-
-        // Render stats et al
-        
-        // player HP, Atk, Def, Level, and Current Exp
-        
-        var stats = Game.Screen.DEFAULT_COLOR_SETTER;
-        stats += vsprintf('HP: %d/%d  ', [this._player.getHp(), this._player.getMaxHp()]);
-        stats += vsprintf('Atk: %d  ', [this._player.getAttackValue()]);
-        stats += vsprintf('Def: %d  ', [this._player.getDefenseValue()]);
-        stats += vsprintf('Lvl: %d (%d/%d)  ', [this._player.getLevel(),this._player.getExperience(), this._player.getNextLevelExperience()]);
-        display.drawText(0, screenHeight, stats);
-
-        // player hunger
-        var hungerState = this._player.getHungerState();
-        display.drawText(screenWidth*.7, screenHeight, hungerState);        
-
-        // current level
-        var curLevelText = Game.Screen.DEFAULT_COLOR_SETTER + vsprintf('Depth %d ', [this._player.getZ()+1]);
-        display.drawText(screenWidth-12, screenHeight, curLevelText);
-    */
     },
     render: function(display) {
         var screenWidth = Game.getScreenWidth();
@@ -248,6 +212,10 @@ Game.Screen.playScreen = {
         
     },
     handleInput: function(inputType, inputData) {
+        if (this._player) {
+            this._player.setOgaInterrupt(true);
+        }
+        
         // If the game is over, enter will bring the user to the losing screen.
         if (this._gameEnded) {
             if (inputType === 'keydown' && inputData.keyCode === ROT.VK_RETURN) {
