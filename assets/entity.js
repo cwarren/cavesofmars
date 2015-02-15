@@ -77,6 +77,27 @@ Game.Entity.prototype.setupOngoingActivity = function(activity,params,activityDu
     this.setOgaDuration(activityDuration);
 }
 
+Game.Entity.prototype.handleOngoingAction = function() {
+    var ret = false;
+    if (this._ogaInterrupt) {
+        this._ogaActivity = null;
+        this._ogaInterrupt = false;
+    }
+    if (this._ogaActivity) {
+        this._ogaActivity(this._ogaParams);
+        ret = true;
+        Game.refresh();
+        this.getMap().getScheduler().setDuration(this._ogaDuration);
+        this.raiseEvent('handleClearMessages');
+        if (this.hasMixin('PlayerActor')) {
+            setTimeout(function() {
+                    Game.getPlayer().getMap().getEngine().unlock();
+            },15);
+        }
+    }
+    return ret;
+}
+
 Game.Entity.prototype.setX = function(x) {
     this._x = x;
 }

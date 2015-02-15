@@ -1806,6 +1806,37 @@ Game.Screen.storyScreen = {
                 /// CODE FOR ITEM TESTING!!!!
                 /////////////////////////////
 
+                var entityTesting = false;
+                /////////////////////////////
+                /// CODE FOR ITEM TESTING!!!!
+                if (entityTesting) {
+                    console.log('entity testing code is active');
+                
+//                player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('human corpse'),player.getX(),player.getY(),player.getZ());
+//                player.addItem(Game.ItemRepository.create('sling'));
+//                player.addItem(Game.ItemRepository.create('stone shot'));
+//                player.addItem(Game.ItemRepository.create('stone shot'));
+//                player.addItem(Game.ItemRepository.create('iron shot'));
+//                player.addItem(Game.ItemRepository.create('iron shot'));
+
+                for (var i=0;i<15;i++) {
+                    player.getMap().addEntityAtRandomPosition(Game.EntityRepository.create('rock lizard'),0);
+
+                }
+                
+//                for (var i=0;i<6;i++) {
+//                    player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('human corpse'),player.getX(),player.getY(),player.getZ());
+//                    player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('spore-y mass'),player.getX(),player.getY(),player.getZ());
+//                    player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('lodestone'),player.getX(),player.getY(),player.getZ());
+//                }
+/*
+                  player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('plated leather armor'),player.getX(),player.getY(),player.getZ());
+
+                */
+                }
+                /// CODE FOR ITEM TESTING!!!!
+                /////////////////////////////
+
 
                 // place the damaged tool
                 var map = player.getMap();

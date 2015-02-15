@@ -252,6 +252,7 @@ Game.EntityMixins.Digger = {
 //        Game.sendMessage(this,'You begin digging...');
 //        Game.refresh();
         this.setupOngoingActivity(function(p) {
+                //console.log(p.digger.describeThe()+' digs ('+p.digger.getId()+')');
                 var preTile = p.digger.getMap().getTile(p.digX, p.digY, p.digZ);
                 p.digger.getMap().dig(p.digger,p.digRate, p.digX, p.digY, p.digZ);
                 var postTile = p.digger.getMap().getTile(p.digX, p.digY, p.digZ);
@@ -754,12 +755,15 @@ Game.EntityMixins.MessageRecipient = {
         return this._messageArchives.length > 0;
     },
     clearMessages: function() {
+    /*
         this._messageArchives.pop(); // old messages are gradually cleared away
         
         // new ones are moved to the archive
         while (this._messages.length > 0) {
             this.archiveMessage(this._messages.pop());
         }
+        */
+        this.raiseEvent('handleClearMessages');
     },
     archiveMessage: function(msg) {
         if (this._messageArchives.length > this._messageArchiveLimit) {
@@ -786,6 +790,14 @@ Game.EntityMixins.MessageRecipient = {
 
 
             //Game.sendMessage(this, "You advance to level %d.", [this._level]);
+        },
+        handleClearMessages:  function() {
+            this._messageArchives.pop(); // old messages are gradually cleared away
+
+            // new ones are moved to the archive
+            while (this._messages.length > 0) {
+                this.archiveMessage(this._messages.pop());
+            }
         }
 
     }
@@ -1944,19 +1956,20 @@ Game.EntityMixins.PeacefulRoamingBehaviorController = {
         this._currentBehavior = Game.EntityBehaviors.PeacefulWanderBehavior;
     },
     act: function() {
-        //console.dir(this);
-        if (! this._currentBehavior) {
-            this._currentBehavior = this._baseBehavior;
-        }
-        this._currentBehavior = this._currentBehavior.doBehavior(this);
-        if (! this._currentBehavior) {
-            this.act();
-        }
+        if (! this.handleOngoingAction()) {
+            if (! this._currentBehavior) {
+                this._currentBehavior = this._baseBehavior;
+            }
+            this._currentBehavior = this._currentBehavior.doBehavior(this);
+            if (! this._currentBehavior) {
+                this.act();
+            }
 
-        this.getMap().getScheduler().setDuration(this.getLastActionDuration());
-        this.setLastActionDuration(this.getDefaultActionDuration());
-        
-        this.raiseEvent('onActed');
+            this.getMap().getScheduler().setDuration(this.getLastActionDuration());
+            this.setLastActionDuration(this.getDefaultActionDuration());
+
+            this.raiseEvent('onActed');
+        }
     }
 }
 
@@ -1970,21 +1983,23 @@ Game.EntityMixins.AggressiveRoamingBehaviorController = {
     },
     act: function() {
         //console.dir(this);
-        if (! this._currentBehavior) {
-            this._currentBehavior = this._baseBehavior;
-        }
-        if (this.hasMixin('Seer') && this.canSee(this.getMap().getPlayer())) {        
-            this._currentBehavior = Game.EntityBehaviors.MeleeHunterBehavior;
-        }
-        this._currentBehavior = this._currentBehavior.doBehavior(this);
-        if (! this._currentBehavior) {
-            this.act();
-        }
+        if (! this.handleOngoingAction()) {
+            if (! this._currentBehavior) {
+                this._currentBehavior = this._baseBehavior;
+            }
+            if (this.hasMixin('Seer') && this.canSee(this.getMap().getPlayer())) {        
+                this._currentBehavior = Game.EntityBehaviors.MeleeHunterBehavior;
+            }
+            this._currentBehavior = this._currentBehavior.doBehavior(this);
+            if (! this._currentBehavior) {
+                this.act();
+            }
 
-        this.getMap().getScheduler().setDuration(this.getLastActionDuration());
-        this.setLastActionDuration(this.getDefaultActionDuration());
-        
-        this.raiseEvent('onActed');
+            this.getMap().getScheduler().setDuration(this.getLastActionDuration());
+            this.setLastActionDuration(this.getDefaultActionDuration());
+
+            this.raiseEvent('onActed');
+        }
     }
 }
 
@@ -2051,39 +2066,41 @@ Game.EntityMixins.FruitingFungusActor = {
     act: function() {
         //console.log('GrowingFungusActor '+Math.random());
         // Check if we are going to try growing this turn
-        if (this._growthsRemaining > 0) {
-            if (ROT.RNG.getUniform() <= 0.01) {
-                // Generate the coordinates of a random adjacent square by
-                // generating an offset between [-1, 0, 1] for both the x and
-                // y directions. To do this, we generate a number from 0-2 and then
-                // subtract 1.
-                var xOffset = Math.floor(ROT.RNG.getUniform() * 3) - 1;
-                var yOffset = Math.floor(ROT.RNG.getUniform() * 3) - 1;
-                // Make sure we aren't trying to spawn on the same tile as us
-                if (xOffset != 0 || yOffset != 0) {
-                    // Check if we can actually spawn at that location, and if so
-                    // then we grow!
-                    if (this.getMap().isEmptyFloor(this.getX() + xOffset,
-                                                   this.getY() + yOffset,
-                                                   this.getZ())) {
-                        var entity;
-                        if (ROT.RNG.getUniform() < .25) {
-                            entity = Game.EntityRepository.create('fruiting fungus'); //  new Game.Entity(Game.GrowingFungusTemplate);
-                        } else {
-                            entity = Game.EntityRepository.create('quiescent fungus'); //    new Game.Entity(Game.StaticFungusTemplate);
+        if (! this.handleOngoingAction()) {
+            if (this._growthsRemaining > 0) {
+                if (ROT.RNG.getUniform() <= 0.01) {
+                    // Generate the coordinates of a random adjacent square by
+                    // generating an offset between [-1, 0, 1] for both the x and
+                    // y directions. To do this, we generate a number from 0-2 and then
+                    // subtract 1.
+                    var xOffset = Math.floor(ROT.RNG.getUniform() * 3) - 1;
+                    var yOffset = Math.floor(ROT.RNG.getUniform() * 3) - 1;
+                    // Make sure we aren't trying to spawn on the same tile as us
+                    if (xOffset != 0 || yOffset != 0) {
+                        // Check if we can actually spawn at that location, and if so
+                        // then we grow!
+                        if (this.getMap().isEmptyFloor(this.getX() + xOffset,
+                                                       this.getY() + yOffset,
+                                                       this.getZ())) {
+                            var entity;
+                            if (ROT.RNG.getUniform() < .25) {
+                                entity = Game.EntityRepository.create('fruiting fungus'); //  new Game.Entity(Game.GrowingFungusTemplate);
+                            } else {
+                                entity = Game.EntityRepository.create('quiescent fungus'); //    new Game.Entity(Game.StaticFungusTemplate);
+                            }
+                            entity.setPosition(this.getX() + xOffset,this.getY() + yOffset,this.getZ());
+                            entity.raiseEvent('onSpawned',this.getZ());
+                            this.getMap().addEntity(entity);
+                            this._growthsRemaining--;
                         }
-                        entity.setPosition(this.getX() + xOffset,this.getY() + yOffset,this.getZ());
-                        entity.raiseEvent('onSpawned',this.getZ());
-                        this.getMap().addEntity(entity);
-                        this._growthsRemaining--;
                     }
                 }
+                this.getMap().getScheduler().setDuration(this.getLastActionDuration());
+                this.setLastActionDuration(this.getDefaultActionDuration());
+            } else {
+                // once this has run out of growths replace it with a quiescent fungus
+                this.raiseEvent('onSuicide');
             }
-            this.getMap().getScheduler().setDuration(this.getLastActionDuration());
-            this.setLastActionDuration(this.getDefaultActionDuration());
-        } else {
-            // once this has run out of growths replace it with a quiescent fungus
-            this.raiseEvent('onSuicide');
         }
     },
     getGrowthsRemaining: function() {
@@ -2109,47 +2126,49 @@ Game.EntityMixins.DocileFungusActor = {
     act: function() {
         //console.log('GrowingFungusActor '+Math.random());
         // Check if we are going to try growing this turn
-        if (this._growthsRemaining > 0) {
-            var adjCoords = Game.util.coordsNeighboring(this.getX(),this.getY());
-            var map = this.getMap();
-            var z = this.getZ();
+        if (! this.handleOngoingAction()) {
+            if (this._growthsRemaining > 0) {
+                var adjCoords = Game.util.coordsNeighboring(this.getX(),this.getY());
+                var map = this.getMap();
+                var z = this.getZ();
 
-            var spreadCount = 0;
+                var spreadCount = 0;
 
-            for (var i=0; i<adjCoords.length; i++) {
-                var x = adjCoords[i].x;
-                var y = adjCoords[i].y;
+                for (var i=0; i<adjCoords.length; i++) {
+                    var x = adjCoords[i].x;
+                    var y = adjCoords[i].y;
 
-                var adjEntity = map.getEntityAt(x,y,z);
-                var adjItems = map.getItemsAt(x,y,z);
+                    var adjEntity = map.getEntityAt(x,y,z);
+                    var adjItems = map.getItemsAt(x,y,z);
 
-                // if there's no entity in the way then see if there are any adjacent corpses to spread to
-                if (!adjEntity && adjItems) {
-                    for (var j=0;j<adjItems.length;j++) {                    
-                        if ((adjItems[j].getSuperGroup() == 'corpse') && (adjItems[j].getGroup() != 'fungus corpse')) {
-                        
-                            if (ROT.RNG.getUniform() < .4) {
-                                
-                                var corpse = adjItems[j];
-                                
-                                // remove the corpse
-                                map.removeItem(adjItems[j],x,y,z);
+                    // if there's no entity in the way then see if there are any adjacent corpses to spread to
+                    if (!adjEntity && adjItems) {
+                        for (var j=0;j<adjItems.length;j++) {                    
+                            if ((adjItems[j].getSuperGroup() == 'corpse') && (adjItems[j].getGroup() != 'fungus corpse')) {
 
-                                // spawn a docile fungus entity
-                                var entity = Game.EntityRepository.create('docile fungus');
-                                entity.raiseEvent('onSpawnedFromCorpse',corpse);
-                                entity.setPosition(x,y,z);
-                                this.getMap().addEntity(entity);
-                                this._growthsRemaining--;
-                                break;
+                                if (ROT.RNG.getUniform() < .4) {
+
+                                    var corpse = adjItems[j];
+
+                                    // remove the corpse
+                                    map.removeItem(adjItems[j],x,y,z);
+
+                                    // spawn a docile fungus entity
+                                    var entity = Game.EntityRepository.create('docile fungus');
+                                    entity.raiseEvent('onSpawnedFromCorpse',corpse);
+                                    entity.setPosition(x,y,z);
+                                    this.getMap().addEntity(entity);
+                                    this._growthsRemaining--;
+                                    break;
+                                }
                             }
                         }
                     }
                 }
-            }
 
-            this.getMap().getScheduler().setDuration(this.getLastActionDuration());
-            this.setLastActionDuration(this.getDefaultActionDuration());
+                this.getMap().getScheduler().setDuration(this.getLastActionDuration());
+                this.setLastActionDuration(this.getDefaultActionDuration());
+            }
         }
     },
     getGrowthsRemaining: function() {
@@ -2172,76 +2191,78 @@ Game.EntityMixins.SpreadingFungusActor = {
         this._senescence_countdown = 10;
     },
     act: function() {
-        var adjCoords = Game.util.coordsNeighboring(this.getX(),this.getY());
-        var map = this.getMap();
-        var z = this.getZ();
-        
-        var spreadCount = 0;
+        if (! this.handleOngoingAction()) {
+            var adjCoords = Game.util.coordsNeighboring(this.getX(),this.getY());
+            var map = this.getMap();
+            var z = this.getZ();
 
-        // NOTE: attacks ALL adjacent enemies on its turn
-        for (var i=0; i<adjCoords.length; i++) {
-            var x = adjCoords[i].x;
-            var y = adjCoords[i].y;
-            
-            var adjEntity = map.getEntityAt(x,y,z);
-            var adjItems = map.getItemsAt(x,y,z);
-            
-            // first see if there's anything adjacent to attack
-            if (adjEntity && ! this.isAlliedWith(adjEntity)) {
-                this.attack(adjEntity);
-            } else {
-                // second, if there's no entity adjacent then see if there are any adjacent corpses to spread to
-                if (!adjEntity && adjItems) {
-                    for (var j=0;j<adjItems.length;j++) {
-                        if ((adjItems[j].getSuperGroup() == 'corpse') && (adjItems[j].getGroup() != 'fungus corpse')){
-                            var corpse = adjItems[j];
-                            
-                            // remove the corpse
-                            map.removeItem(adjItems[j],x,y,z);
-                            
-                            // spawn either a spreading fungus entity or a fungus zombie
-                            var entity;
-                            if (ROT.RNG.getUniform() < .25) {
-                                entity = Game.EntityRepository.create('fungus zombie');
-                                entity.raiseEvent('onSpawned',[1,z-1,z].random());
+            var spreadCount = 0;
+
+            // NOTE: attacks ALL adjacent enemies on its turn
+            for (var i=0; i<adjCoords.length; i++) {
+                var x = adjCoords[i].x;
+                var y = adjCoords[i].y;
+
+                var adjEntity = map.getEntityAt(x,y,z);
+                var adjItems = map.getItemsAt(x,y,z);
+
+                // first see if there's anything adjacent to attack
+                if (adjEntity && ! this.isAlliedWith(adjEntity)) {
+                    this.attack(adjEntity);
+                } else {
+                    // second, if there's no entity adjacent then see if there are any adjacent corpses to spread to
+                    if (!adjEntity && adjItems) {
+                        for (var j=0;j<adjItems.length;j++) {
+                            if ((adjItems[j].getSuperGroup() == 'corpse') && (adjItems[j].getGroup() != 'fungus corpse')){
+                                var corpse = adjItems[j];
+
+                                // remove the corpse
+                                map.removeItem(adjItems[j],x,y,z);
+
+                                // spawn either a spreading fungus entity or a fungus zombie
+                                var entity;
+                                if (ROT.RNG.getUniform() < .25) {
+                                    entity = Game.EntityRepository.create('fungus zombie');
+                                    entity.raiseEvent('onSpawned',[1,z-1,z].random());
+
+                                    spreadCount++;
+                                } else {
+                                    entity = Game.EntityRepository.create('spreading fungus');
+                                }
+                                entity.setPosition(x,y,z);
+                                entity.raiseEvent('onSpawnedFromCorpse',corpse);
+                                this.getMap().addEntity(entity);
 
                                 spreadCount++;
-                            } else {
-                                entity = Game.EntityRepository.create('spreading fungus');
+                                break;
                             }
-                            entity.setPosition(x,y,z);
-                            entity.raiseEvent('onSpawnedFromCorpse',corpse);
-                            this.getMap().addEntity(entity);
-
-                            spreadCount++;
-                            break;
                         }
                     }
                 }
             }
-        }
 
-        // then do senescence check
-        if (ROT.RNG.getUniform() <= 0.02) {
-            this._senescence_countdown--;
-        }
-        this._senescence_countdown -= spreadCount;
-        
-        if (this._senescence_countdown < 1) {
-            this.raiseEvent('onSuicide');
-/*
-            var entity = Game.EntityRepository.create('fruiting fungus');
-            var oX = this.getX();
-            var oY = this.getY();
-            var oZ = this.getZ();
-            this.getMap().removeEntity(this);
-            entity.setPosition(oX,oY,oZ);
-            this.getMap().addEntity(entity);
-            */
-        }
+            // then do senescence check
+            if (ROT.RNG.getUniform() <= 0.02) {
+                this._senescence_countdown--;
+            }
+            this._senescence_countdown -= spreadCount;
 
-        this.getMap().getScheduler().setDuration(this.getLastActionDuration());
-        this.setLastActionDuration(this.getDefaultActionDuration());
+            if (this._senescence_countdown < 1) {
+                this.raiseEvent('onSuicide');
+    /*
+                var entity = Game.EntityRepository.create('fruiting fungus');
+                var oX = this.getX();
+                var oY = this.getY();
+                var oZ = this.getZ();
+                this.getMap().removeEntity(this);
+                entity.setPosition(oX,oY,oZ);
+                this.getMap().addEntity(entity);
+                */
+            }
+
+            this.getMap().getScheduler().setDuration(this.getLastActionDuration());
+            this.setLastActionDuration(this.getDefaultActionDuration());
+        }
     },
     getSenescenceCountdown: function() {
         return this._senescence_countdown;
@@ -2296,6 +2317,8 @@ Game.EntityMixins.PlayerActor = {
         this.clearMessages();
         this._acting = false;
 
+        var hasOngoingAction = this.handleOngoingAction();
+        /*
         if (this._ogaInterrupt) {
             this._ogaActivity = null;
             this._ogaInterrupt = false;
@@ -2308,7 +2331,8 @@ Game.EntityMixins.PlayerActor = {
             setTimeout(function() {
                     Game.getPlayer().getMap().getEngine().unlock();
             },15);
-        }        
+        }
+        */
     },
     finishAction: function() {
         this.raiseEvent('onActed');
