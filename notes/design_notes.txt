@@ -50,9 +50,8 @@ additional player skills / attributes available for improvement during leveling 
 
 TODO NEXT:
 
-4. BUG: player getting double-messaged on looking at a pile of things on the ground
-    
 6. implement ongoing action stuff for eating
+    - alter the per-eat food bonus to match the food consumption cost
 
 7. player must be holding a tool to do any digging on anything other than rubble (or perhaps anything with a tile type that has a base dig resistance above X?)
 

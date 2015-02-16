@@ -740,7 +740,10 @@ Game.EntityMixins.MessageRecipient = {
         this._messageArchiveLimit = template['messageArchiveLimit'] || 1;
     },
     receiveMessage: function(message) {
-        this._messages.push(message);
+        //this._messages.push(message);
+        if (message != this._messages[0]) {
+            this._messages.unshift(message);
+        }
     },
     getMessages: function() {
         return this._messages;
