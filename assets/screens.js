@@ -68,10 +68,6 @@ Game.Screen.playScreen = {
             }
             Game.AuxScreen.helpScreen.refresh(this.getHelpSections());
             
-            // Refresh screen on changing the subscreen
-            //if (this._player) {
-                //this._player.clearMessages();
-            //}
             Game.refresh();
     },
     getPlayer: function() {
@@ -237,6 +233,9 @@ Game.Screen.playScreen = {
     },
     handleInput: function(inputType, inputData) {
         if (this._player._ogaActivity) {
+            if ((inputData.keyCode === ROT.VK_ESCAPE) || (inputData.keyCode === ROT.VK_SPACE)) {
+                this._player.setOgaInterrupt(true);
+            }
             return;
         }
         
@@ -256,7 +255,6 @@ Game.Screen.playScreen = {
         }
 
         if ((inputData.keyCode === ROT.VK_ESCAPE) || (inputData.keyCode === ROT.VK_SPACE)) {
-            //this._player.clearMessages();
             Game.refresh();
             return;
         }
@@ -384,6 +382,7 @@ Game.Screen.playScreen = {
         // after 9 moves on the surface the player goes to the next stage of the story
         if (tookAction && Game.getGameStage()=='surface') {
             if (this._moveCounter > (5 + ROT.RNG.getUniform()*10)) {
+                this._player.setOgaInterrupt(true);
                 this.setSubScreen(Game.Screen.storyScreen);
             }
         }
@@ -838,8 +837,8 @@ Game.Screen.eatScreen = new Game.Screen.ItemListScreen({
         // Eat the item, removing it if there are no consumptions remaining.
         var key = Object.keys(selectedItems)[0];
         var item = selectedItems[key];
-        Game.sendMessage(this._player, "You eat %s.", [item.describeThe()]);
-        item.eat(this._player);
+        
+        this._player.eat(item);
 //        if (!item.hasRemainingConsumptions()) {
 //            this._player.removeItem(key);
 //        }
@@ -1011,16 +1010,6 @@ Game.Screen.gainStatScreen = {
             this._parentScreen.renderPlayerStats(display);
         }
         
-//        if (this._entity.hasMixin('MessageRecipient')) {
-//            if (this._entity.hasAnyMessages()) {
-//                var localEntity = this._entity;
-//                setTimeout(function(){
-//                    localEntity.clearMessages();
-//                    Game.refresh();
-//                }, 1000);
-//            }
-//        }
-
         var lines = display.drawText(0, 0, "Your nano-docs are really working overtime, scavenging whatever bio-compatible materials they can from the environment to patch you together and help you adapt. It's actually a little scary how effective they are - they weren't described  during your mission prep as being this pro-active. Hopefully nothing has gone wrong...");
         
         var letters = 'abcdefghijklmnopqrstuvwxyz';
@@ -1795,6 +1784,8 @@ Game.Screen.storyScreen = {
                 
 //                for (var i=0;i<6;i++) {
 //                    player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('human corpse'),player.getX(),player.getY(),player.getZ());
+                    player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('geodic nut'),player.getX(),player.getY(),player.getZ());
+                    player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('geodic nut'),player.getX(),player.getY(),player.getZ());
 //                    player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('spore-y mass'),player.getX(),player.getY(),player.getZ());
 //                    player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('lodestone'),player.getX(),player.getY(),player.getZ());
 //                }

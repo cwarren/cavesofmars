@@ -1211,7 +1211,7 @@ Game.EntityMixins.FoodConsumer = {
         this._fullness = template['fullness'] || (Math.floor(this._maxFullness *.7));
         // Number of points to decrease fullness by every turn.
         this._fullnessDepletionRate = template['fullnessDepletionRate'] || 1;
-        this._consumeBulk = template['consumeBulk'] || 700;  // ml eaten per 'E'at action
+        this._consumeBulk = template['consumeBulk'] || 35;  // ml eaten per 'E'at action
     },
     getConsumeBulk: function() {
         return this._consumeBulk;
@@ -1222,13 +1222,13 @@ Game.EntityMixins.FoodConsumer = {
     doTurnHunger: function() {
         // Remove the standard depletion points
         var hungerAmt = this._fullnessDepletionRate*(this.getLastActionDuration()/this.getDefaultActionDuration());
-//        console.log("hungerAmt = "+hungerAmt);
-//        console.dir(this);
-        hungerAmt = 1; // DEV
         this.modifyFullnessBy(-hungerAmt);
+   //     console.log("hungerAmt = "+hungerAmt);
+   //     console.log("current fullness: "+this._fullness);
+        //hungerAmt = 1; // DEV
     },
     modifyFullnessBy: function(points) {
-        // console.log("player fullness change: "+points);
+   //     console.log("player fullness change: "+points);
         var preHungerState = this.getHungerState();
         this._fullness = this._fullness + points;
         var postHungerState = this.getHungerState();
@@ -1236,7 +1236,11 @@ Game.EntityMixins.FoodConsumer = {
             this.setOgaInterrupt(true);
         }
         if (preHungerState != postHungerState) {
-            Game.sendMessage(this,"%b{#444}You are "+postHungerState);
+            if (! postHungerState) {
+                Game.sendMessage(this,"%b{#444}You are no longer "+preHungerState);
+            } else {
+                Game.sendMessage(this,"%b{#444}You are "+postHungerState);
+            }
         }
         
         if (this._fullness <= 0) {
@@ -1276,6 +1280,52 @@ Game.EntityMixins.FoodConsumer = {
             return '';
         }
     },
+    eat: function(foodItem) {
+//    - entity has eatAmount - how many L the entity eats per 'E'at activity (typically 35 ml for humans)
+//    - item has nutritional density, which is food value per L
+//    - on 'E'at of an item - 
+//        if (item bulk > eatAmount) food value eaten = eatAmount * nutritional density; increase satiation by food value, and reduce item bulk by eatAmount
+//        else if (item bulk <= eatAmount) increase satiation by item bulk * nutritional density, then destroy item
+        var entConsumeBulk = this.getConsumeBulk();
+        this.raiseEvent('consumingItem',foodItem);
+        
+        var incrementalActivityDuration = 50; // twenty eats per typical turn duration CSW NOTE: will need to generalize speed scaling to handle this kind of thing...
+        
+        this.setupOngoingActivity(function(p) {
+                var consumedFoodValue = 0;
+                if ((p.eaten._invBulk) > p.eatBulk) {
+                    p.eaten._invWeight = Math.round(p.eaten._invWeight * (p.eaten._invBulk - p.eatBulk) / p.eaten._invBulk);
+                    p.eaten._invBulk -= p.eatBulk;
+                    consumedFoodValue = p.eatBulk * p.eaten._foodDensity / 1000; // scale for ml -> L
+                    //console.log('You are eating... ('+p.eater.getOgaCounter()+') ...');
+                    Game.sendMessage(p.eater,'You are eating... ('+p.eater.getOgaCounter()+') ...');
+//                    Game.refresh();
+                } else {
+                    consumedFoodValue = p.eaten._invBulk * p.eaten._foodDensity / 1000; // scale for ml -> L
+                    p.eaten._invBulk = 0;
+                    if (! this.getMap().removeItem(p.eaten,this.getX(),this.getY(),this.getZ())) {
+                        p.eaten.raiseEvent('onEatenBy',this);
+                        Game.sendMessage(p.eater,'You finish '+p.eaten.describeThe());
+                        Game.refresh();
+                        this.raiseEvent('destroyCarriedItem',p.eaten);
+                    }
+                    this.setOgaInterrupt(true);
+                }
+                
+                //console.log('modifyFullnessBy('+(consumedFoodValue+.05)+')');
+                this.modifyFullnessBy(consumedFoodValue+.05); // extra .05 negates the food consumed in the time used to eat - entities do not get hungrier while eating (this is tied to activityDuration)
+
+
+                p.eater.setLastActionDuration(p.eatDur);
+                p.eater.raiseEvent('onActed');
+                p.eater.stepOgaCounter()
+//                Game._aux_screen_message.refresh();
+            },
+            {eater: this, eaten: foodItem, eatBulk: entConsumeBulk, eatDur: incrementalActivityDuration},
+            incrementalActivityDuration);
+            
+            this.setLastActionDuration(1);
+    },
     listeners: {
         onActed: function() {
             this.doTurnHunger();  
@@ -1283,9 +1333,8 @@ Game.EntityMixins.FoodConsumer = {
         onRecuperated: function() {
             this.modifyFullnessBy(-this._fullnessDepletionRate);
         },
-        onEat: function(item,foodValue) {
-            this.modifyFullnessBy(foodValue+1); // extra 1 means that the player does not get more hungry when eating - cancels out doTurnHunger for the turn (more or less, but close enough)
-            item.raiseEvent('onEatenBy',this);
+        consumingItem: function(foodItem) {
+            Game.sendMessage(this, "You eat %s.", [foodItem.describeThe()]);
         }
     }
 };
@@ -2321,21 +2370,6 @@ Game.EntityMixins.PlayerActor = {
         this._acting = false;
 
         var hasOngoingAction = this.handleOngoingAction();
-        /*
-        if (this._ogaInterrupt) {
-            this._ogaActivity = null;
-            this._ogaInterrupt = false;
-        }
-        if (this._ogaActivity) {
-            this._ogaActivity(this._ogaParams);            
-            Game.refresh();
-            this.getMap().getScheduler().setDuration(this._ogaDuration);
-            this.clearMessages();
-            setTimeout(function() {
-                    Game.getPlayer().getMap().getEngine().unlock();
-            },15);
-        }
-        */
     },
     finishAction: function() {
         this.raiseEvent('onActed');

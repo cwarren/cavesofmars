@@ -14,29 +14,6 @@ Game.ItemMixins.Edible = {
         
         this._originalBulk = this._invBulk;
     },
-    eat: function(entity) {
-//    - entity has eatAmount - how many L the entity eats per 'E'at action (typically 1 L for humans)
-//    - item has nutritional density, which is food value per L
-//    - on 'E'at of an item - 
-//        if (item bulk > eatAmount) food value eaten = eatAmount * nutritional density; increase satiation by food value, and reduce item bulk by eatAmount
-//        else if (item bulk <= eatAmount) increase satiation by item bulk * nutritional density, then destroy item
-        var entConsumeBulk = entity.getConsumeBulk();
-        var consumedFoodValue = 0;
-        this.raiseEvent('consumingItem');
-        if ((this._invBulk) > entConsumeBulk) {
-            this._invWeight = Math.round(this._invWeight * (this._invBulk - entConsumeBulk) / this._invBulk);
-            this._invBulk -= entConsumeBulk;
-            consumedFoodValue = entConsumeBulk * this._foodDensity / 1000; // scale for ml -> L
-        } else {
-            consumedFoodValue = this._invBulk * this._foodDensity / 1000; // scale for ml -> L
-            this._invBulk = 0;
-            if (! entity.getMap().removeItem(this,entity.getX(),entity.getY(),entity.getZ())) {
-                entity.raiseEvent('destroyCarriedItem',this);
-                Game.sendMessage(entity,'You finish '+this.describeThe());
-            }
-        }
-        entity.raiseEvent('onEat',this,consumedFoodValue);
-    },
     getConsumptionFractionDescription: function() {
         var remainsFrac = this._invBulk / this._originalBulk;        
         if (remainsFrac > .99) { return ''; }

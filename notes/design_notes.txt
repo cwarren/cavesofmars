@@ -50,12 +50,9 @@ additional player skills / attributes available for improvement during leveling 
 
 TODO NEXT:
 
-6. implement ongoing action stuff for eating
-    - alter the per-eat food bonus to match the food consumption cost
+1. player must be holding a tool to do any digging on anything other than rubble (or perhaps anything with a tile type that has a base dig resistance above X?)
 
-7. player must be holding a tool to do any digging on anything other than rubble (or perhaps anything with a tile type that has a base dig resistance above X?)
-
-8. container objects
+4. container objects
     - containers have a weight, bulk
     - containers have a bulk capacity
     - containers have an access action duration - it can take more (for packs, pouches, etc) or less (for slings, bandoliers, etc) time to take out items so that they can be used (holded, thrown, etc.)
