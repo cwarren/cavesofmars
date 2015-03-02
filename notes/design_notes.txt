@@ -50,8 +50,6 @@ additional player skills / attributes available for improvement during leveling 
 
 TODO NEXT:
 
-1. player must be holding a tool to do any digging on anything other than rubble (or perhaps anything with a tile type that has a base dig resistance above X?)
-
 4. container objects
     - containers have a weight, bulk
     - containers have a bulk capacity

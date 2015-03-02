@@ -235,7 +235,7 @@ Game.EntityMixins.Digger = {
     },
     increaseDigRate: function(value) {
         // If no value was passed, default to 2.
-        value = value || 3;
+        value = value || 2;
         // Add to the defense value.
         this._digRate += value;
         Game.sendMessage(this, "You are a better digger!");
@@ -244,6 +244,13 @@ Game.EntityMixins.Digger = {
 //        this.getMap().dig(this,this.getDigRate(), x, y, z);
 //        this.setLastActionDuration(this.getDigDuration());
         var baseRate = this.getDigRate();
+        var targetTile = this.getMap().getTile(x,y,z);
+        if (targetTile.getDigResistance() > baseRate*2.5) {
+            Game.sendMessage(this,'The %s is too tough for you to dig; you might need a better digging tool...',[targetTile.getName()]);
+            this.setLastActionDuration(25);
+            return false;
+        }
+        
         var baseDur = this.getDigDuration();
         var incrementalActivityDuration = 100;
         var incrementalFactor = this.getDefaultActionDuration()/incrementalActivityDuration;        
