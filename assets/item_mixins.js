@@ -340,3 +340,197 @@ Game.ItemMixins.Seeder = {
         }
     }
 };
+
+
+
+Game.ItemMixins.Container = {
+    name: 'Container',
+    init: function(template) {
+        this._maxCarryWeight = template['maxCarryWeight'] || 10000;
+        this._maxCarryBulk = template['maxCarryBulk'] || 10000;
+        this._accessDuration = template['accessDuration'] || 1000;
+        
+        this._currentCarryWeight = 0;
+        this._currentCarryBulk = 0;
+
+        this._items = new Array();
+    },
+    
+    getMaxCarryWeight: function() {
+        return this._maxCarryWeight;
+    },
+    setMaxCarryWeight: function(v) {
+        this._maxCarryWeight = v;
+    },
+    getMaxCarryBulk: function() {
+        return this._maxCarryBulk;
+    },
+    setMaxCarryBulk: function(v) {
+        this._maxCarryBulk = v;
+    },
+    getAccessDuration: function() {
+        return this._accessDuration;
+    },
+    setAccessDuration: function(v) {
+        this._accessDuration = v;
+    },
+    
+    
+    getCurrentCarriedWeight: function() {
+        return this._currentCarryWeight;
+    },
+    getInvWeight:function() {
+        return this.getCurrentCarriedWeight()+Game.Item.prototype.getInvWeight.call(this);
+    },
+    getCurrentCarriedBulk: function() {
+        return this._currentCarryBulk;
+    },
+    
+    getWeightStatusString: function() {
+        return (this.getCurrentCarriedWeight()/1000)+'/'+(this.getMaxCarryWeight()/1000)+' kg';
+    },
+
+    getBulkStatusString: function() {
+        return (this.getCurrentCarriedBulk()/1000)+'/'+(this.getMaxCarryBulk()/1000)+' L';
+    },
+    getBulkStatusColor: function() {
+        var fillRatio = this._currentCarryBulk/this._maxCarryBulk;
+        if (fillRatio >= 1) {return '%c{red}';}
+        if (fillRatio >= .9) {return '%c{orange}';}
+        if (fillRatio >= .8) {return '%c{yellow}';}
+        return '';
+    },
+
+    _calculateWeightAndBulk: function() {
+        this._currentCarryBulk = 0;
+        this._currentCarryWeight = 0;        
+        for (var i=0; i<this._items.length; i++) {
+            this._currentCarryWeight += this._items[i].getInvWeight();
+            this._currentCarryBulk +=  this._items[i].getInvBulk();
+        }
+    },
+    
+    _sortItemsListByType: function() {
+        Game.Item.sortItemArrayByType(this._items);
+    },
+    _sortItemsListByBulkDesc: function() {
+        Game.Item.sortItemArrayByBulkDesc(this._items);
+    },
+    _sortItemsListByWeightDesc: function() {
+        Game.Item.sortItemArrayByWeightDesc(this._items);
+    },
+    _compactItemsList: function() {
+        this._items = Game.Item.compactedItemArrayFrom(this._items);
+    },
+    _cleanItemsList: function() {
+        this._compactItemsList();
+        this._sortItemsListByType();
+        this._calculateWeightAndBulk();
+    },
+    
+    
+    canAddItem: function(itm) {
+        return this.canAddItem_bulk(itm) && this.canAddItem_weight(itm);
+    },
+    canAddItem_bulk: function(itm) {
+        return (itm.getInvBulk() + this._currentCarryBulk <= this._maxCarryBulk);
+    },    
+    canAddItem_weight: function(itm) {
+        return (itm.getInvWeight() + this._currentCarryWeight <= this._maxCarryWeight);
+    },
+    isOverloaded_bulk: function() {
+        return this._currentCarryBulk > this._maxCarryBulk;
+    },
+    isOverloaded_weight: function() {
+        return this._currentCarryWeight > this._maxCarryWeight;
+    },
+
+
+    forceAddItems: function(itmAry) {
+        while (itmAry.length > 0) {
+            this._items.push(itmAry.shift());
+        }
+        this._CleanInventory();
+        return true;
+    },
+    addItems: function(itmAry) {
+        var leftovers = new Array();
+        while (itmAry.length > 0) {
+            var itm = itmAry.shift();
+            if (this.canAddItem(itm)) {
+                this._items.push(itm);
+                this._calculateWeightAndBulk();
+            } else {
+                leftovers.push(itm);
+            }
+        }
+        itmAry = leftovers;
+        this._cleanItemsList();
+        return leftovers.length == 0;
+    },
+    extractItems: function(itmAry) {
+        var itmIdsAry = itmAry.map(function(curItm){
+            curItm.getId();
+        });
+
+        for (var i=0;i<this._items.length;i++) {
+            if (itmIdsAry.includes(this._items[i].getId())) {
+                this._items[i] = false;
+            }
+        }
+        
+        this._cleanItemsList();
+        return itmAry;
+    },
+    extractItemsAt: function(idxAry) {
+        var extracted = new Array();
+        
+        for (var i=0;i<idxAry.length;i++) {
+            if (this._items[idxAry[i]]) {
+                extracted.push(this._items[idxAry[i]]);
+                this._items[idxAry[i]] = false;
+            }
+        }
+    
+        this._cleanItemsList();
+        return extracted;
+    },
+    extractAllItems: function() {
+        var extracted = this._items;
+        this._items = new Array();
+    
+        this._cleanItemsList();
+        return extracted;
+    },
+    
+    
+    getIndicesOf: function(itmAry) {
+        var itmIdxAry = new Array();
+        var itmIdsAry = itmAry.map(function(curItm){
+            curItm.getId();
+        });
+
+        for (var i=0;i<this._items.length;i++) {
+            if (itmIdsAry.includes(this._items[i].getId())) {
+                itmIdxAry.push(i);
+            }
+        }
+        
+        return itmIdxAry;
+    },
+
+    listeners: {
+        'details': function() {
+            return [{key: 'capacity', value: this.getWeightStatusString()+', '+this.getBulkStatusString()},
+                    {key: 'access time', value: this.getAccessDuration()/1000+'x normal'}
+                    ];
+        },
+        'calcDetails': function() {
+            return [{key: 'maxCarryWeight', value: this.getMaxCarryWeight()},
+                    {key: 'maxCarryBulk', value: this.getMaxCarryBulk()},
+                    {key: 'accessDuration', value: this.getAccessDuration()}
+                    ];
+        }
+    }
+};
+

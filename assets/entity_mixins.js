@@ -968,6 +968,8 @@ Game.EntityMixins.InventoryHolder = {
         });
         */
     },
+    
+    // TODO: make these static functions on the Item class
     _sortItemArrayByType: function(ar) {
         ar.sort(function(a,b) {
             //console.dir(a);

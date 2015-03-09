@@ -1765,14 +1765,14 @@ Game.Screen.storyScreen = {
                 player.addItem(h);
                 player.wear(h);
                 
-                var itemTesting = false;
+                var itemTesting = true;
                 /////////////////////////////
                 /// CODE FOR ITEM TESTING!!!!
                 if (itemTesting) {
                     console.log('item testing code is active');
                 
 //                player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('human corpse'),player.getX(),player.getY(),player.getZ());
-//                player.addItem(Game.ItemRepository.create('sling'));
+                player.addItem(Game.ItemRepository.create('sack'));
 //                player.addItem(Game.ItemRepository.create('stone shot'));
 //                player.addItem(Game.ItemRepository.create('stone shot'));
 //                player.addItem(Game.ItemRepository.create('iron shot'));
@@ -1784,8 +1784,8 @@ Game.Screen.storyScreen = {
                 
 //                for (var i=0;i<6;i++) {
 //                    player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('human corpse'),player.getX(),player.getY(),player.getZ());
-                    player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('geodic nut'),player.getX(),player.getY(),player.getZ());
-                    player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('geodic nut'),player.getX(),player.getY(),player.getZ());
+//                    player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('geodic nut'),player.getX(),player.getY(),player.getZ());
+//                    player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('geodic nut'),player.getX(),player.getY(),player.getZ());
 //                    player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('spore-y mass'),player.getX(),player.getY(),player.getZ());
 //                    player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('lodestone'),player.getX(),player.getY(),player.getZ());
 //                }

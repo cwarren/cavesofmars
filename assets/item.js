@@ -12,9 +12,7 @@ Game.Item = function(properties) {
     
     this._attackValue = properties['attackValue'] || 0;
     this._defenseValue = properties['defenseValue'] || 0;
-    
-    
-    
+        
     
     if (!this._listeners['details']) {
         this._listeners['details'] = [];
@@ -118,3 +116,54 @@ Game.Item.prototype.getUses = function() {
     if (this.hasMixin('Ammo')) { uses.push('ammo'); }
     return uses;
 }
+//------------------------------------
+
+Game.Item.compactedItemArrayFrom = function(ar) {
+    var newAr = new Array();
+    for (var i=0; i< ar.length; i++) {
+        if (ar[i]) {
+            newAr.push(ar[i]);
+        }
+    }
+    return newAr;
+}
+    
+
+Game.Item.sortItemArrayByType = function(ar) {
+    ar.sort(function(a,b) {
+        var vaSuper = a.getSuperGroup(); if (! vaSuper) { vaSuper = ''; }
+        var vaGroup = a.getGroup();      if (! vaGroup) { vaGroup = ''; }
+        var vaName = a.getName();        if (! vaName) { vaName = ''; }
+
+        var vbSuper = b.getSuperGroup(); if (! vaSuper) { vaSuper = ''; }
+        var vbGroup = b.getGroup();      if (! vbGroup) { vbGroup = ''; }
+        var vbName = b.getName();        if (! vbName) { vbName = ''; }
+
+        var cmpSuper = vaSuper.localeCompare(vbSuper);
+        var cmpGroup = vaGroup.localeCompare(vbGroup);
+        var cmpName  = vaName.localeCompare(vbName);
+
+        if (cmpSuper === 0) {
+            if (cmpGroup === 0) {
+                return cmpName;
+            } else {
+                return cmpGroup;
+            }
+        } else {
+            return cmpSuper;
+        }
+    });
+}
+
+Game.Item.sortItemArrayByBulkDesc = function(ar) {
+    ar.sort(function(a,b) {
+        return b.getInvBulk() - a.getInvBulk();
+    });
+}
+    
+Game.Item.sortItemArrayByWeightDesc = function(ar) {
+    // sorts in descending order of bulk
+    ar.sort(function(a,b) {
+        return b.getInvWeight() - a.getInvWeight();
+    });    
+}

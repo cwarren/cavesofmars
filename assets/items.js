@@ -360,3 +360,23 @@ Game.ItemRepository.define('HEM-A suit', {
 }, {
     disableRandomCreation: true
 });
+
+// ----------------------------------------------
+
+// Containers
+
+Game.ItemRepository.define('sack', {
+    name: 'sack',
+    group: 'container',
+    character: '?',
+    invWeight: 650,
+    invBulk: 3200,
+    foreground: '#a84',
+    description: "a medium-sized bag that can make it easier to carry things that aren't too large",
+    maxCarryWeight: 18000,
+    maxCarryBulk: 12000,
+    accessDuration: 3500, // how long it takes to get something out of or put something in this container
+    mixins: [Game.ItemMixins.Container]
+}, {
+    disableRandomCreation: true
+});

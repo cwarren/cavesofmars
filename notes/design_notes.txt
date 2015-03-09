@@ -50,14 +50,20 @@ additional player skills / attributes available for improvement during leveling 
 
 TODO NEXT:
 
+2. refactor inventory to use a container object behind the scenes
+
 4. container objects
-    - containers have a weight, bulk
-    - containers have a bulk capacity
     - containers have an access action duration - it can take more (for packs, pouches, etc) or less (for slings, bandoliers, etc) time to take out items so that they can be used (holded, thrown, etc.)
-    - weight goes up as items are added to it, but bulk does NOT
     - items are placed in a container using the p (pack) control key (NOTE: this is a two-stage thing - first the target container must be selected)
     - items in a container are accessed using the P (unPack) control key (NOTE: this is a two-stage thing - first the target container must be selected)
     - when placing a container in another container, use bulk of container PLUS bulk of all container contents
+
+6. refactor equipping to remove the given items from their source container
+    - alter inventory listing game screen to show equipped items at top, in separate list from carried/packed stuff
+
+8. add stackability to some items
+    - Stackable mixin
+        - store a function for isStackable (function defined in the item template)
 
 10. add new entity: small martian
 11.    which can pick up and equip items it finds (5 inven slots)
