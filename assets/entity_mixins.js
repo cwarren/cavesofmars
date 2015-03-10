@@ -816,17 +816,25 @@ Game.EntityMixins.MessageRecipient = {
 Game.EntityMixins.InventoryHolder = {
     name: 'InventoryHolder',
     init: function(template) {
-        // Default to 10 inventory slots.
-        //this._inventorySlots = template['inventorySlots'] || 10;
         // Set up an empty inventory.
-        this._items = new Array();
-        
+        this._itemHolder = new Game.Item({
+            name: 'itemHolder',
+            group: 'container',
+            character: '?',
+            foreground: '#fff',
+            description: "internal item container used to implement InventoryHolder entity mixin",
+            maxCarryWeight: -1,
+            maxCarryBulk: -1,
+            accessDuration: 1000, // how long it takes to get something out of or put something in this container
+            mixins: [Game.ItemMixins.Container]
+        });        
+        this._itemHolder.setInvWeight(0);
+        this._itemHolder.setInvBulk(0);
+
         this._weightCapacity = template['weightCapacity'] || 52000; // 52 kg (20 on earth, but mars is 38% of earth gravity); NOTE: this is a soft limit, up until 5x that amount
-        this._bulkCapacity = template['bulkCapacity'] || 20000; // 20 l
-        
-        this._currentBulk = 0;
-        this._currentWeight = 0;
+        this._bulkCapacity = template['bulkCapacity'] || 20000; // 20 liters
     },
+    
     
     getWeightCapacity: function() {
         return this._weightCapacity;
@@ -838,16 +846,15 @@ Game.EntityMixins.InventoryHolder = {
         this._weightCapacity += v;
     },
     getCurrentWeight: function() {
-        return this._currentWeight;
-    },
-    setCurrentWeight: function(v) {
-        this._currentWeight = v;
-    },
-    increaseCurrentWeight: function(v) {
-        this._currentWeight += v;
+        var curWt = this._itemHolder.getInvWeight();
+        if (this.hasMixin('Equipper')) {
+            curWt += this.getEquippedWeight();
+        }
+        return curWt;
     },
     getWeightStatusString: function() {
-        return (this._currentWeight/1000)+'/'+(this._weightCapacity/1000)+' kg';
+        //return this._itemHolder.getWeightStatusString()
+        return (this.getCurrentWeight()/1000)+'/'+(this.getWeightCapacity()/1000)+' kg';
     },
     getWeightStatusColor: function() {
         return this.getSlownessColorMod(this.getActionPenaltyFactor());
@@ -856,6 +863,7 @@ Game.EntityMixins.InventoryHolder = {
     getActionPenaltyFactor: function() {
         return Math.max(1,this.getCurrentWeight() / this.getWeightCapacity());
     },
+
 
     getBulkCapacity: function() {
         return this._bulkCapacity;
@@ -867,23 +875,14 @@ Game.EntityMixins.InventoryHolder = {
         this._bulkCapacity += v;
     },
     getCurrentBulk: function() {
-        return this._currentBulk;
-    },
-    setCurrentBulk: function(v) {
-        this._currentBulk = v;
-    },
-    increaseCurrentBulk: function(v) {
-        this._currentBulk += v;
+        return this._itemHolder.getCurrentCarriedBulk();
     },
     getBulkStatusString: function() {
-        return (this._currentBulk/1000)+'/'+(this._bulkCapacity/1000)+' L';
+        //return this._itemHolder.getBulkStatusString();
+        return (this.getCurrentBulk()/1000)+'/'+(this.getBulkCapacity()/1000)+' L';
     },
     getBulkStatusColor: function() {
-        var fillRatio = this._currentBulk/this._bulkCapacity;
-        if (fillRatio >= 1) {return '%c{red}';}
-        if (fillRatio >= .9) {return '%c{orange}';}
-        if (fillRatio >= .8) {return '%c{yellow}';}
-        return '';
+        return this._itemHolder.getBulkStatusColor();
     },
 
     getInvenLimitsSummary : function() {
@@ -892,229 +891,65 @@ Game.EntityMixins.InventoryHolder = {
 
 
     getItems: function() {
-        return this._items;
+        if (this.hasMixin('Equipper')) {
+            return this.getEquippedItems().concat(this._itemHolder.getItems());
+        }
+        return this._itemHolder.getItems();
     },
     getItem: function(i) {
-        return this._items[i];
-    },
-    _CompactInventory: function() {
-/*
-        var newItems = new Array();
-        for (var i=0; i< this._items.length; i++) {
-            if (this._items[i]) {
-                newItems.push(this._items[i]);
-            }
-        }
-        this._items = newItems;
-*/
-        this._items = this._compactItemArray(this._items);
-    },
-    _compactItemArray: function(ar) {
-        var newAr = new Array();
-        for (var i=0; i< ar.length; i++) {
-            if (ar[i]) {
-                newAr.push(ar[i]);
-            }
-        }
-        return newAr;
-    },
-    _SortInventoryByType: function() {
-        this._sortItemArrayByType(this._items);
-    /*
-        this._items.sort(function(a,b) {
-            //console.dir(a);
-            //console.dir(b);
-            var vaSuper = a.getSuperGroup(); if (! vaSuper) { vaSuper = ''; }
-            var vaGroup = a.getGroup();      if (! vaGroup) { vaGroup = ''; }
-            var vaName = a.getName();        if (! vaName) { vaName = ''; }
-
-            var vbSuper = b.getSuperGroup(); if (! vaSuper) { vaSuper = ''; }
-            var vbGroup = b.getGroup();      if (! vbGroup) { vbGroup = ''; }
-            var vbName = b.getName();        if (! vbName) { vbName = ''; }
-
-            var cmpSuper = vaSuper.localeCompare(vbSuper);
-            var cmpGroup = vaGroup.localeCompare(vbGroup);
-            var cmpName  = vaName.localeCompare(vbName);
-
-            //var ret = 0;
-            
-            if (cmpSuper === 0) {
-                if (cmpGroup === 0) {
-                    return cmpName;
-                } else {
-                    return cmpGroup;
-                }
-            } else {
-                return cmpSuper;
-            }
-        });
-        */
-    },
-    _SortInventoryByBulkDesc: function() {
-        this._sortItemArrayByBulkDesc(this._items);
-    /*
-        // sorts in descending order of bulk
-        this._items.sort(function(a,b) {
-            return b.getInvBulk() - a.getInvBulk();
-        });
-        */
-    },
-    _SortInventoryByWeightDesc: function() {
-        this._sortItemArrayByWeightDesc(this._items);
-    /*
-        // sorts in descending order of weight
-        this._items.sort(function(a,b) {
-            return b.getInvWeight() - a.getInvWeight();
-        });
-        */
-    },
-    
-    // TODO: make these static functions on the Item class
-    _sortItemArrayByType: function(ar) {
-        ar.sort(function(a,b) {
-            //console.dir(a);
-            //console.dir(b);
-            var vaSuper = a.getSuperGroup(); if (! vaSuper) { vaSuper = ''; }
-            var vaGroup = a.getGroup();      if (! vaGroup) { vaGroup = ''; }
-            var vaName = a.getName();        if (! vaName) { vaName = ''; }
-
-            var vbSuper = b.getSuperGroup(); if (! vaSuper) { vaSuper = ''; }
-            var vbGroup = b.getGroup();      if (! vbGroup) { vbGroup = ''; }
-            var vbName = b.getName();        if (! vbName) { vbName = ''; }
-
-            var cmpSuper = vaSuper.localeCompare(vbSuper);
-            var cmpGroup = vaGroup.localeCompare(vbGroup);
-            var cmpName  = vaName.localeCompare(vbName);
-
-            //var ret = 0;
-            
-            if (cmpSuper === 0) {
-                if (cmpGroup === 0) {
-                    return cmpName;
-                } else {
-                    return cmpGroup;
-                }
-            } else {
-                return cmpSuper;
-            }
-        });
-    },
-    _sortItemArrayByBulkDesc: function(ar) {
-        ar.sort(function(a,b) {
-            return b.getInvBulk() - a.getInvBulk();
-        });
-    },
-    _sortItemArrayByWeightDesc: function(ar) {
-        // sorts in descending order of bulk
-        ar.sort(function(a,b) {
-            return b.getInvWeight() - a.getInvWeight();
-        });    
-    },
-    _calculateWeightAndBulk: function() {
-        this._currentBulk = 0;
-        this._currentWeight = 0;
-        var heldItem = '';
-        var wornItem = '';
-        if (this.hasMixin(Game.EntityMixins.Equipper)) {
-            heldItem = this.getHolding();
-            wornItem = this.getWearing();
-        }
-        
-        for (var i=0; i<this._items.length; i++) {
-            this._currentWeight += this._items[i].getInvWeight();
-//            console.log('heldItem');
-//            console.dir(heldItem);
-//            console.log('wornItem');
-//            console.dir(wornItem);
-//            console.log('this._items[i]');
-//            console.dir(this._items[i]);
-            if ((heldItem && this._items[i] === heldItem) || (wornItem && this._items[i] === wornItem)) {
-                continue;
-            }
-            this._currentBulk +=  this._items[i].getInvBulk();
-        }
-    },
-    _CleanInventory: function() {
-        this._CompactInventory();
-        this._SortInventoryByType();
-        this._calculateWeightAndBulk();
+        return (this._itemHolder.getItemsAt([i]))[0];
     },
     clearInventory: function() {
-        //console.dir(Game.getPlayer());
-        //console.log('...clearInventory');
-        while(this._items.length > 0) {
-        //console.log('......removing item');
-            this.removeItem(0);
+        var eqs = new Array();
+        if (this.hasMixin('Equipper')) {
+            eqs = this.getEquippedItems();
+            this.clearAllEquipped();
         }
-        //console.dir(Game.getPlayer());
-        this._currentBulk = 0;
-        this._currentWeight = 0;
-    },
-    dropAllInventory: function() {
-        while(this._items.length > 0) {
-            this.dropItem(0);
-        }
+        return eqs.concat(this._itemHolder.extractAllItems());
     },
     forceAddItem: function(item) {
-        this._items.push(item);
-        this._CleanInventory();
-        return true;
+        return this._itemHolder.forceAddItems([item]);
     },
     addItem: function(item) {
         if (! this.canAddItem(item)) {
             return false;
         }
-        this._items.push(item);
-        this._CleanInventory();
-        return true;
+        return this._itemHolder.addItems([item]);
     },
     removeItem: function(i) {
-        this._clearOutItem(i);
-        this._CleanInventory();
+        return this._itemHolder.extractItemsAt([i]);
     },
-    _clearOutItem: function(i) { // NOTE: this should ALWAYS have _CleanInventory called after it's done being used
-        // If we can equip items, then make sure we unequip the item we are removing.
-        if (this._items[i] && this.hasMixin(Game.EntityMixins.Equipper)) {
-            this.unequipSansChecking(this._items[i]);
-        }
-        // Simply clear the inventory slot.
-        this._items[i] = null;
-    },
+    
+    
     canAddItem: function(itm) {
-        //console.dir(itm);
-        this._calculateWeightAndBulk();
-        // check bulk and weight limits
         return this.canAddItem_bulk(itm) && this.canAddItem_weight(itm);
     },
     canAddItem_bulk: function(itm) {
-        //console.log('canAddItem_bulk '+this._currentBulk +'/'+ this._bulkCapacity);
-        //console.dir(itm);
-        // check bulk limit: must be under bulk limit
-        return (itm.getInvBulk() + this._currentBulk <= this._bulkCapacity);
+        return (itm.getInvBulk() + this.getCurrentBulk() <= this._bulkCapacity);
     },    
     canAddItem_weight: function(itm) {
-        //console.dir(itm);
-        // check weight limit: must be under 5x weight limit
-        return (itm.getInvWeight() + this._currentWeight <= this._weightCapacity * 5);
+        return (itm.getInvWeight() + this.getCurrentWeight() <= this._weightCapacity * 5);
     },
     isOverloaded_bulk: function() {
-        return this._currentBulk > this._bulkCapacity;
+        return this.getCurrentBulk() > this._bulkCapacity;
     },
     isOverloaded_weight: function() {
-        return this._currentWeight > this._weightCapacity * 5;
+        return this.getCurrentWeight() > this._weightCapacity * 5;
     },
-    pickupItems: function(indices) {
+    
+    
+    pickupItems: function(indicesOfMapList) {
         // Allows the user to pick up items from the map, where indices is
         // the indices for the array returned by map.getItemsAt
         var mapItems = this._map.getItemsAt(this.getX(), this.getY(), this.getZ());
         var added = 0;
         // Iterate through all indices.
-        for (var i = 0; i < indices.length; i++) {
+        for (var i = 0; i < indicesOfMapList.length; i++) {
             // Try to add the item. If our inventory is not full, then splice the 
             // item out of the list of items. In order to fetch the right item, we
             // have to offset the number of items already added.
-            if (this.addItem(mapItems[indices[i]  - added])) {
-                mapItems.splice(indices[i] - added, 1);
+            if (this.addItem(mapItems[indicesOfMapList[i]  - added])) {
+                mapItems.splice(indicesOfMapList[i] - added, 1);
                 added++;
             } else {
                 // Inventory is full
@@ -1132,83 +967,223 @@ Game.EntityMixins.InventoryHolder = {
         }
         
         // Return true only if we added all items
-        return added === indices.length;
+        return added === indicesOfMapList.length;
     },
-    dropItem: function(i) {
-        // Drops an item to the current map tile
-        if (this._items[i]) {
-            var item = this._items[i];
-        
-            this.removeItem(i);
-            
-            if (this._map) {
+    dropAllInventory: function() {
+        var allItems = this._itemHolder.extractAllItems();                    
+        var eqs = new Array();
+        if (this._map) {
+            if (this.hasMixin('Equipper')) {
+                eqs = this.getEquippedItems();
+                this.dropAllEquipped();
+            }
+            for (var i=0; i<allItems.length; i++) {
+                var item = allItems[i];
                 this._map.addItem(this.getX(), this.getY(), this.getZ(), item);
                 item.raiseEvent('onDropped',this._map,this.getX(), this.getY(), this.getZ());
             }
-            this.setLastActionDuration(this.getDefaultActionDuration()*.5);
-            
-        }
-        this._calculateWeightAndBulk();
+        }        
+        return eqs.concat(allItems);
     },
     dropThisItem: function(itm) {
-        var itemIdx = this.getIndexOfItem(itm);
-        if (itemIdx>-1) {
-            this.dropItem(itemIdx);
-        }
-        this._calculateWeightAndBulk();
-    },
-    getIndexOfItem: function(itm) {
-        var itemIdx = -1;
-        for (var i = 0; i < this._items.length; i++) {
-            if (this._items[i].getId() == itm.getId()) {
-                itemIdx = i;
-                break;
-            }
-        }
-        return itemIdx;
+        var item = (this._itemHolder.extractItems([itm]))[0];
+        if (this._map) {
+            this._map.addItem(this.getX(), this.getY(), this.getZ(), item);
+            item.raiseEvent('onDropped',this._map,this.getX(), this.getY(), this.getZ());
+        }        
+        return item;
     },
     dropItems: function(indices) {
-        if (indices.length == 1) {
-            this.dropItem(indices[0]);
-            return;
-        }
-        
-        var didDrop = false;
-        // Drops multiple items to the current map tile
-        for (var i = 0; i < indices.length; i++) {
-            if (this._items[indices[i]]) {
-                var item = this._items[indices[i]];
-                this._clearOutItem(indices[i]);
-                if (this._map) {
-                    this._map.addItem(this.getX(), this.getY(), this.getZ(), item);
-                    item.raiseEvent('onDropped',this._map,this.getX(), this.getY(), this.getZ());
+        var numEquipped = 0;
+        // handle special case of equipped items
+        if (this.hasMixin('Equipper')) {
+            var theEquipped = this.getEquippedItems();
+            numEquipped = theEquipped.length;
+            if (numEquipped > 0) {
+                // cycle through indices passed in, and if the idx is < numEquipped, handle the equipment drop, else decrease the idx appropriately
+                for (var i=0; i<indices.length; i++) {
+                    if (indices[i] < numEquipped) {
+                        this.dropEquippedByItem(theEquipped[indices[i]]);
+                    } else {
+                        indices[i] -= numEquipped;
+                    }
                 }
-                didDrop = true;
             }
         }
-        if (didDrop) {
-            this._CleanInventory();
-            this.setLastActionDuration(this.getDefaultActionDuration());
-        }
-        this._calculateWeightAndBulk();
+    
+        var droppedItems = this._itemHolder.extractItemsAt(indices);       
+        if (this._map) {
+            for (var i=0; i<droppedItems.length; i++) {
+                var item = droppedItems[i];
+                this._map.addItem(this.getX(), this.getY(), this.getZ(), item);
+                item.raiseEvent('onDropped',this._map,this.getX(), this.getY(), this.getZ());
+            }
+        }        
+        return droppedItems;
     },
-    extractItem: function(i) {
-        // removes the item from the inventory and returns it
-        if (this._items[i]) {
-            var item = this._items[i];
-            this.removeItem(i);
-            return item;
+    extractThisItem: function(itm) {
+        if (this.hasMixin('Equipper')) {
+            if (this.removeEquippedByItem(itm)) {
+                return itm;
+            }
         }
-        return;
+        return (this._itemHolder.extractItems([itm]))[0];
+    },
+    getIndexOfItem: function(itm) {
+        return (this._itemHolder.getIndicesOf([itm]))[0];
     },
     listeners: {
         destroyCarriedItem: function(itm) {
-            var itemIdx = this.getIndexOfItem(itm);
-            if (itemIdx>-1) {
-                this.removeItem(itemIdx);
+            if (this.hasMixin('Equipper')) {
+                if (this.removeEquippedByItem(itm)) {
+                    return itm;
+                }
             }
+            return (this._itemHolder.extractItems([itm]))[0];
         }
     }
+};
+
+// NOTE: an Equipper MUST also be an InventoryHolder
+Game.EntityMixins.Equipper = {
+    name: 'Equipper',
+    init: function(template) {
+        this._inHands = null;
+        this._onBody = null;
+    },
+    getEquippedWeight: function() {
+        var wt = 0;
+        if (this._inHands) {
+            wt += this._inHands.getInvWeight();
+        }
+        if (this._onBody) {
+            wt += this._onBody.getInvWeight();
+        }
+        return wt;
+    },
+    getEquippedItems: function() {
+        var items = new Array();
+        if (this._inHands) {
+            items.push(this._inHands);
+        }
+        if (this._onBody) {
+            items.push(this._onBody);
+        }
+        return items;
+    },
+    removeEquippedByItem: function(itm) {
+        if (itm == this._inHands) {
+            this._inHands = null;
+            return true;
+        } else
+        if (itm == this._onBody) {
+            this._onBody = null;
+            return true;
+        }
+        return false;
+    },
+    dropEquippedByItem: function(itm) {
+        if (itm == this._inHands) {
+            this._inHands = null;
+            this.dropItemToMap(itm,false);
+            return true;
+        } else
+        if (itm == this._onBody) {
+            this._onBody = null;
+            this.dropItemToMap(itm,false);
+            return true;
+        }
+        return false;
+    },
+    dropAllEquipped: function() {
+        if (this._inHands) {
+            this.dropItemToMap(this._inHands,false);
+            this._inHands = null;
+        }
+        if (this._onBody) {
+            this.dropItemToMap(this._onBody,false);
+            this._onBody = null;
+        }
+    },
+    dropItemToMap: function(itm,flagTooMuch) {
+        if (this._map) {
+            this._map.addItem(this.getX(), this.getY(), this.getZ(), itm);
+            itm.raiseEvent('onDropped',this._map,this.getX(), this.getY(), this.getZ());
+            if (flagTooMuch) {
+                Game.sendMessage(this,'%s was too large for you to stow - it had to be dropped',[itm.describeThe()]);
+            }
+        }
+    },
+    clearAllEquipped: function() {
+        var eqs = this.getEquippedItems();
+        this._inHands = null;
+        this._onBody = null;
+        return eqs;
+    },
+    holdInHands: function(item) {
+        //console.log('called holdInHands');
+        this.stowFromHands();
+        if (item==this._onBody) { this._onBody = null; }
+        this._inHands = item;
+        var actionDurationMultiplier = this.getActionPenaltyFactor();
+        this.alertOnSlowness(actionDurationMultiplier);        
+        this.setLastActionDuration(this.getDefaultActionDuration()*actionDurationMultiplier);        
+    },
+    stowFromHands: function() {
+        //console.log('called stowFromHands');
+        if (this._inHands) {        
+            var priorHeld = this._inHands;
+            this._inHands = null;
+
+            if (! this.addItem(priorHeld)) {
+                this.dropItemToMap(priorHeld,true);
+//                if (this._map) {
+//                    this._map.addItem(this.getX(), this.getY(), this.getZ(), priorHeld);
+//                    priorHeld.raiseEvent('onDropped',this._map,this.getX(), this.getY(), this.getZ());
+//                    Game.sendMessage(this,'%s was too large for you to stow - it had to be dropped',[priorHeld.describeThe()]);
+//                }
+            } else {
+                var actionDurationMultiplier = this.getActionPenaltyFactor();
+                this.alertOnSlowness(actionDurationMultiplier);        
+                this.setLastActionDuration(this.getDefaultActionDuration()*actionDurationMultiplier);        
+            }
+        }
+    },
+    wear: function(item) {
+        //console.log('called wear');
+        this.stowFromBody();
+        if (item==this._inHands) { this._inHands = null; }
+        this._onBody = item;
+        var actionDurationMultiplier = this.getActionPenaltyFactor();
+        this.alertOnSlowness(actionDurationMultiplier);        
+        this.setLastActionDuration(this.getDefaultActionDuration()*5*actionDurationMultiplier); // putting on armor takes a while
+    },
+    stowFromBody: function() {
+        //console.log('called stowFromBody');
+        if (this._onBody) {        
+            var prior = this._onBody;
+            this._onBody = null;
+
+            if (! this.addItem(prior)) {
+                this.dropItemToMap(prior,true);
+//                if (this._map) {
+//                    this._map.addItem(this.getX(), this.getY(), this.getZ(), prior);
+//                    prior.raiseEvent('onDropped',this._map,this.getX(), this.getY(), this.getZ());
+//                    Game.sendMessage(this,'%s was too large for you to stow - it had to be dropped',[prior.describeThe()]);
+//                }
+            } else {
+                var actionDurationMultiplier = this.getActionPenaltyFactor();
+                this.alertOnSlowness(actionDurationMultiplier);        
+                this.setLastActionDuration(this.getDefaultActionDuration()*actionDurationMultiplier);        
+            }
+        }
+    },
+    getHolding: function() {
+        return this._inHands;
+    },
+    getWearing: function() {
+        return this._onBody;
+    },
 };
 
 
@@ -1509,125 +1484,7 @@ Game.EntityMixins.Suicider = {
 };
 
 
-Game.EntityMixins.Equipper = {
-    name: 'Equipper',
-    init: function(template) {
-        this._inHands = null;
-        this._onBody = null;
-    },
-    holdInHands: function(item) {
-        //console.log('called holdInHands');
-        var priorHeld = this._inHands;
-        if (item==this._onBody) { this._onBody = null; }
-        this._inHands = item;
-        this._calculateWeightAndBulk();
-        if (this.isOverloaded_bulk()) {
-            this.dropThisItem(priorHeld);
-            Game.sendMessage(this,'%s was too large for you to stow - it had to be dropped on the ground',[priorHeld.describeThe()])
-        }
-        var actionDurationMultiplier = this.getActionPenaltyFactor();
-        this.alertOnSlowness(actionDurationMultiplier);        
-        this.setLastActionDuration(this.getDefaultActionDuration()*actionDurationMultiplier);        
-        this._calculateWeightAndBulk();
-    },
-    stowFromHands: function() {
-        //console.log('called stowFromHands');
-        if (this._inHands) {
-            if (! this.canAddItem_bulk(this._inHands)) {
-                // drop the item instead of putting it in inventory
-                // NOTE: this shuffle avoids a recursive loop that would otherwise occur when the item dropping code tries to unequip the item
-                var w = this._inHands;
-                this._inHands = null;
-                this.dropThisItem(w);
-                Game.sendMessage(this,'%s was too large for you to stow - it had to be dropped on the ground',[w.describeThe()])
-            } else {
-                this._inHands = null;
-                var actionDurationMultiplier = this.getActionPenaltyFactor();
-                this.alertOnSlowness(actionDurationMultiplier);        
-                this.setLastActionDuration(this.getDefaultActionDuration()*actionDurationMultiplier);
-            }
-        }
-        this._calculateWeightAndBulk();
-    },
-    wear: function(item) {
-        //console.log('called wear');
-        var priorWorn = this._onBody;
-        if (item==this._inHands) { this._inHands = null; }
-        this._onBody = item;
-        this._calculateWeightAndBulk();
-        //if (priorWorn && ! this.canAddItem_bulk(priorWorn)) {
-        if (this.isOverloaded_bulk()) {
-            this.dropThisItem(priorWorn);
-            Game.sendMessage(this,'%s was too large for you to stow - it had to be dropped on the ground',[priorWorn.describeThe()])
-        }
-        var actionDurationMultiplier = this.getActionPenaltyFactor();
-        this.alertOnSlowness(actionDurationMultiplier);        
-        this.setLastActionDuration(this.getDefaultActionDuration()*5*actionDurationMultiplier); // putting on armor takes a while
-/*
-        this.takeOff();
-        if (item==this._inHands) { this.stowFromHands(); }
-        this._onBody = item;
-        var actionDurationMultiplier = this.getActionPenaltyFactor();
-        this.alertOnSlowness(actionDurationMultiplier);        
-        this.setLastActionDuration(this.getDefaultActionDuration()*actionDurationMultiplier);
-*/
-        this._calculateWeightAndBulk();
-    },
-    takeOff: function() {
-        //console.log('called takeOff');
-        if (this._onBody) {
-            if (! this.canAddItem_bulk(this._onBody)) {
-            //if (this._onBody.getInvBulk()+this.getCurrentBulk() > this.getBulkCapacity()) {
-                // drop the item instead of putting it in inventory
-                // NOTE: this shuffle avoids a recursive loop that would otherwise occur when the item dropping code tries to unequip the item
-                var a = this._onBody;
-                this._onBody = null;
-                this.dropThisItem(a);
-                Game.sendMessage(this,'%s was too large for you to stow - it had to be dropped on the ground',[a.describeThe()])
-            } else {
-                this._onBody = null;
-                var actionDurationMultiplier = this.getActionPenaltyFactor();
-                this.alertOnSlowness(actionDurationMultiplier);        
-                this.setLastActionDuration(this.getDefaultActionDuration()*actionDurationMultiplier);
-            }
-        }
-        this._calculateWeightAndBulk();
-    },
-    getHolding: function() {
-        return this._inHands;
-    },
-    getWearing: function() {
-        return this._onBody;
-    },
-    unequipSansChecking: function(item) {
-        // Helper function to be called before getting rid of an item.
-        //console.log('called unequip');
-        if (this._inHands === item) {
-            this._inHands = null;
-        } else
-        if (this._onBody === item) {
-            this._onBody = null;
-        }
-        Game.AuxScreen.avatarScreen.render();
-    },
-    dropEquipped: function(item) {
-        var didDrop = false;
-        if (this._inHands === item) {
-            var w = this._inHands;
-            this._inHands = null;
-            this.dropThisItem(w);
-            didDrop = true;
-        } else
-        if (this._onBody === item) {
-            var a = this._onBody;
-            this._onBody = null;
-            this.dropThisItem(a);
-            didDrop = true;
-        }
-        Game.AuxScreen.avatarScreen.render();
-        return didDrop;
-    }
-};
+
 
 Game.EntityMixins.ExperienceGainer = {
     name: 'ExperienceGainer',

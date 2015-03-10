@@ -394,6 +394,7 @@ Game.ItemMixins.Container = {
         return (this.getCurrentCarriedBulk()/1000)+'/'+(this.getMaxCarryBulk()/1000)+' L';
     },
     getBulkStatusColor: function() {
+        if (this._maxCarryBulk == -1) { return ''; }
         var fillRatio = this._currentCarryBulk/this._maxCarryBulk;
         if (fillRatio >= 1) {return '%c{red}';}
         if (fillRatio >= .9) {return '%c{orange}';}
@@ -433,16 +434,16 @@ Game.ItemMixins.Container = {
         return this.canAddItem_bulk(itm) && this.canAddItem_weight(itm);
     },
     canAddItem_bulk: function(itm) {
-        return (itm.getInvBulk() + this._currentCarryBulk <= this._maxCarryBulk);
+        return (this._maxCarryBulk == -1) || (itm.getInvBulk() + this._currentCarryBulk <= this._maxCarryBulk);
     },    
     canAddItem_weight: function(itm) {
-        return (itm.getInvWeight() + this._currentCarryWeight <= this._maxCarryWeight);
+        return (this._maxCarryWeight == -1) || (itm.getInvWeight() + this._currentCarryWeight <= this._maxCarryWeight);
     },
     isOverloaded_bulk: function() {
-        return this._currentCarryBulk > this._maxCarryBulk;
+        return (this._maxCarryBulk > -1) && (this._currentCarryBulk > this._maxCarryBulk);
     },
     isOverloaded_weight: function() {
-        return this._currentCarryWeight > this._maxCarryWeight;
+        return (this._maxCarryWeight > -1) && (this._currentCarryWeight > this._maxCarryWeight);
     },
 
 
@@ -468,13 +469,33 @@ Game.ItemMixins.Container = {
         this._cleanItemsList();
         return leftovers.length == 0;
     },
+    getItems: function() {
+        return this._items;
+    },
+    getItemsAt: function(idxAry) {
+        var fetched = new Array();
+        
+        for (var i=0;i<idxAry.length;i++) {
+            if (this._items[idxAry[i]]) {
+                fetched.push(this._items[idxAry[i]]);
+            }
+        }
+    
+        return fetched;
+    },    
     extractItems: function(itmAry) {
+//        console.dir(itmAry);
         var itmIdsAry = itmAry.map(function(curItm){
-            curItm.getId();
+//            console.dir(curItm);
+            return curItm.getId();
         });
+//        console.dir(itmIdsAry);
 
         for (var i=0;i<this._items.length;i++) {
-            if (itmIdsAry.includes(this._items[i].getId())) {
+            //console.dir(itmIdsAry);
+            //console.dir(this._items[i]);
+            //console.log('itmIdsAry.includes(1) == '+itmIdsAry.includes(1));
+            if (itmIdsAry.indexOf(this._items[i].getId()) > -1 ) {
                 this._items[i] = false;
             }
         }
@@ -511,7 +532,7 @@ Game.ItemMixins.Container = {
         });
 
         for (var i=0;i<this._items.length;i++) {
-            if (itmIdsAry.includes(this._items[i].getId())) {
+            if (itmIdsAry.indexOf(this._items[i].getId()) > -1) {
                 itmIdxAry.push(i);
             }
         }

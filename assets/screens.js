@@ -265,7 +265,7 @@ Game.Screen.playScreen = {
         //----------------------------
         // inventory actions
         if (gameAction === Game.Bindings.Actions.Inventory.INVENTORY_LIST) {
-            this._player._CleanInventory();
+//            this._player._CleanInventory();
             this.showItemsSubScreen(Game.Screen.inventoryScreen, this._player.getItems(),'You are not carrying anything.');
             return;
 
@@ -793,7 +793,7 @@ Game.Screen.pickupToHandsScreen = new Game.Screen.ItemListScreen({
         var key = Object.keys(selectedItems)[0];
         var item = selectedItems[key];
         //var heldItem = this._player.getHolding();
-        this._player.forceAddItem(item);
+        //this._player.forceAddItem(item);
         this._player.holdInHands(item);
         this._player.getMap().extractItem(item,this._player.getX(),this._player.getY(),this._player.getZ());
         return true;
@@ -869,7 +869,9 @@ Game.Screen.holdScreen = new Game.Screen.ItemListScreen({
             Game.sendMessage(this._player, "You are empty handed.")
         } else {
             var item = selectedItems[keys[0]];
-            this._player.holdInHands(item);
+            console.log('trying to hold:');
+            console.dir(item);
+            this._player.holdInHands(this._player.extractThisItem(item));
             Game.sendMessage(this._player, "You are holding %s.", [item.describeA()]);
             //console.dir(this._player);
         }
@@ -896,11 +898,11 @@ Game.Screen.wearScreen = new Game.Screen.ItemListScreen({
         // Check if we selected 'no item'
         var keys = Object.keys(selectedItems);
         if (keys.length === 0) {
-            this._player.takeOff();
+            this._player.stowFromBody();
             Game.sendMessage(this._player, "You are not wearing anthing.")
         } else {
             var item = selectedItems[keys[0]];
-            this._player.wear(item);
+            this._player.wear(this._player.extractThisItem(item));
             Game.sendMessage(this._player, "You are wearing %s.", [item.describeA()]);
         }
         return true;
@@ -926,7 +928,7 @@ Game.Screen.fireFlingScreen = new Game.Screen.ItemListScreen({
         var keys = Object.keys(selectedItems);
         if (keys.length > 0) {
             var item = selectedItems[keys[0]];
-            this.setAmmo(item);
+            this.setAmmo(this._player.extractThisItem(item));
 
             var offsets = Game.Screen.playScreen.getScreenOffsets();
             Game.Screen.rangedTargetScreen.setup(this._player,this._player.getX(), this._player.getY(),offsets.x, offsets.y);
@@ -1471,7 +1473,8 @@ Game.Screen.rangedTargetScreen = new Game.Screen.TargetBasedScreen({
         
         var maxRange = player.getSightRadius()+2;
         
-        player.extractItem(player.getItems().indexOf(ammo));
+//        player.extractItem(player.getItems().indexOf(ammo));
+//        player.extractThisItem(ammo);
         
         var path = Game.Geometry.getLine(player.getX(), player.getY(), x, y);
         map.addItem(path[0].x,path[0].y,z,ammo);
@@ -1591,7 +1594,7 @@ Game.Screen.helpScreenGeneral = {
     }
 };
 
-
+/*
 // CSW TODO - put key bindings in a separate file to that they can be referenced here
 // Define our help screen
 Game.Screen.helpScreenNumpad = {
@@ -1687,7 +1690,7 @@ Game.Screen.helpScreenLaptop = {
     }    
 };
 
-
+*/
 ////////////////////////////////////////////////////////////
 
 Game.Screen.storyScreen = {
@@ -1762,7 +1765,7 @@ Game.Screen.storyScreen = {
 
                 // give the player just a damaged suit
                 var h = Game.ItemRepository.create('HEM suit, damaged');
-                player.addItem(h);
+                //player.addItem(h);
                 player.wear(h);
                 
                 var itemTesting = true;
@@ -1836,7 +1839,7 @@ Game.Screen.storyScreen = {
                 map.addItem(px,py,0,Game.ItemRepository.create('JAT tool, damaged'));
 
                 // scatter rocks around
-                if (! itemTesting) {
+                if (! itemTesting || true) {
                     var adjCoords = Game.util.coordsNeighboring(px,py);
                     for (var i=0;i<adjCoords.length;i++) {
                         if (map.getTile(adjCoords[i].x, adjCoords[i].y, 0) == Game.Tile.floorTile) {

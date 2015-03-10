@@ -24,10 +24,10 @@ var Game =  {
         this._player = new Game.Entity(Game.PlayerTemplate);
         // initial inventory/gear
         var h = Game.ItemRepository.create('HEM suit');
-        this._player.addItem(h);
+        //this._player.addItem(h);
         this._player.wear(h);
         var j = Game.ItemRepository.create('JAT tool');
-        this._player.addItem(j);
+        //this._player.addItem(j);
         this._player.holdInHands(j);        
 
         
