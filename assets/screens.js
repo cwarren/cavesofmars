@@ -299,6 +299,7 @@ Game.Screen.playScreen = {
             // If there is only one item, directly pick it up
             if (items && items.length === 1) { 
                 var item = items[0];
+                tookAction = true;
                 if (this._player.pickupItems([0])) {
                     Game.sendMessage(this._player, "You pick up %s.", [item.describeA()]);
                 } else {
@@ -307,8 +308,8 @@ Game.Screen.playScreen = {
                 Game.refresh();
             } else {
                 this.showItemsSubScreen(Game.Screen.pickupScreen, items,'There is nothing here to pick up.');
+                return;
             }
-            return;
 
         } else if (gameAction === Game.Bindings.Actions.Inventory.INVENTORY_GET_TO_HANDS) {
             var items = this._player.getMap().getItemsAt(this._player.getX(), this._player.getY(), this._player.getZ());
@@ -391,6 +392,15 @@ Game.Screen.playScreen = {
         Game.AuxScreen.infoScreen.setCurrentDetailInfo('');
 
         if (tookAction) {
+            if (Game.getGameStage()=='surface') {
+                if (! this._player.getWearing() || this._player.getWearing().getName() != 'HEM suit') {
+                    Game.AuxScreen.infoScreen.setCurrentShortInfo('Your nano-docs can\'t keep up with the combination of the internal hemoraging from low pressue and the lack of oxygen!');
+                    Game.AuxScreen.infoScreen.setCurrentDetailInfo('This was a really bad idea. Someone is painting blood all over your eyes while simultaneously reaching into your chest through your mouth in an attempt to pull your lungs inside out.... it\'s.... not pleasant. Maybe you should put your suit back on... If you survive this you should probably get the oxygen flow valve checked once you get back to base - clearly something is messing with your head.');
+                    var damage = Game.util.getRandomInteger(3,6);
+                    Game.sendMessage(this._player, 'You take %d damage',[damage],'%b{#422}'); 
+                    this._player.takeDamage(Game.Entity.Stupidity,damage);
+                }
+            }
             this._player.finishAction();
             return true;
         }
@@ -412,6 +422,9 @@ Game.Screen.playScreen = {
     },
     setGameEnded: function(state) {
             this._gameEnded = state;
+    },
+    getGameEnded: function() {
+            return this._gameEnded;
     },
     showItemsSubScreen: function(subScreen, items, emptyMessage) {
         if (items && subScreen.setup(this._player, items) > 0) {
@@ -1856,9 +1869,19 @@ Game.Screen.storyScreen = {
                         }
                     }
                 }
-                
+                /*
                 // falling from that height *HURTS*
-                player.takeDamage(player,Math.floor(player.getMaxHp()*(.3+ROT.RNG.getUniform()/2)));                
+                var fallingDamage = Math.floor(player.getMaxHp()*(.3+ROT.RNG.getUniform()/2)) + 30;
+                player.takeDamage(player,fallingDamage);
+                Game.sendMessage(player,'That was a long way down with a hard surface waiting at the bottom. Luckily there were some pointy rocks to cushion your fall...');
+                Game.sendMessage(player,'You take %d damage',[fallingDamage],'%b{#422}');
+                if (!player.isAlive()) {
+                    Game.AuxScreen.messageScreen.refresh();
+                    Game.Screen.playScreen.setGameEnded(true);
+                    Game.switchScreen(Game.Screen.loseScreen);
+                    return;
+                }
+                */
                 Game.Screen.playScreen.setSubScreen(null);
 
 //                setTimeout(function() {
@@ -1947,16 +1970,38 @@ Game.Screen.fallingScreen = {
         }
     },
     finishFall: function() {
-        Game.Screen.playScreen.setSubScreen(Game.Screen.storyScreen);
-        Game.switchScreen(Game.Screen.playScreen);
-        while (Game.getPlayer().hasArchivedMessages()) {
-            Game.getPlayer().clearMessages();
+        if (! Game.Screen.finishedInitialFall) {
+            Game.Screen.finishedInitialFall = true;
+            
+            while (Game.getPlayer().hasArchivedMessages()) {
+                Game.getPlayer().clearMessages();
+            }
+        
+            // falling from that height *HURTS*
+            var player = Game.getPlayer();
+            var fallingDamage = Math.floor(player.getMaxHp()*(.3+ROT.RNG.getUniform()/2));
+            player.takeDamage(player,fallingDamage);
+            Game.sendMessage(player,'That was a long way down with a hard surface waiting at the bottom. Luckily there were some pointy rocks to cushion your fall...');
+            Game.sendMessage(player,'You take %d damage',[fallingDamage],'%b{#422}');
+            if (!player.isAlive()) {
+                player.switchMap(new Game.Map.Cave());
+                Game.AuxScreen.messageScreen.refresh();
+                Game.Screen.playScreen.setGameEnded(true);
+                Game.Screen.playScreen.setSubScreen(null);
+                Game.switchScreen(Game.Screen.playScreen);
+                return;
+            }
+            Game.Screen.playScreen.setSubScreen(Game.Screen.storyScreen);
+            Game.switchScreen(Game.Screen.playScreen);        
         }
+        
     },
     handleInput: function(inputType, inputData) {
         // Nothing to do here      
     }
 }
+
+Game.Screen.finishedInitialFall = false;
 
 ////////////////////////////////////////////////////////////
 
@@ -2028,10 +2073,15 @@ Game.Screen.winScreen = {
     }
 }
 
-// Define our winning screen
+// Define our losing screen
 Game.Screen.loseScreen = {
     enter: function() {    console.log("Entered lose screen.");
         Game.AuxScreen.helpScreen.refresh(this.getHelpSections());
+        Game.AuxScreen.infoScreen.setCurrentShortInfo('');
+        Game.AuxScreen.infoScreen.setCurrentDetailInfo('');
+        Game.AuxScreen.avatarScreen.refresh();
+        Game.getPlayer().resetMessages();
+        Game.AuxScreen.messageScreen.refresh();
     },
     exit: function() { console.log("Exited lose screen."); },
     getHelpSections: function() {

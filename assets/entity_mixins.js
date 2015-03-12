@@ -775,6 +775,10 @@ Game.EntityMixins.MessageRecipient = {
         */
         this.raiseEvent('handleClearMessages');
     },
+    resetMessages: function() {
+        this._messages = [];
+        this._messageArchives = [];
+    },
     archiveMessage: function(msg) {
         if (this._messageArchives.length > this._messageArchiveLimit) {
              this._messageArchives.pop();
@@ -2221,7 +2225,7 @@ Game.EntityMixins.PlayerActor = {
         if (!this.isAlive()) {
             Game.Screen.playScreen.setGameEnded(true);
             // Send a last message to the player
-            Game.sendMessage(this, 'Press [Enter] to continue!');
+            Game.sendMessage(this, '%b{#c11}Press [Enter] to continue!');
         }
 
         // Re-render the screen

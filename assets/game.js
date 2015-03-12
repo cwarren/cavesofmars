@@ -147,6 +147,9 @@ var Game =  {
             this._currentScreen.enter();
             this.refresh();
         }
+    },
+    getCurrentScreen: function() {
+        return this._currentScreen;
     }
 }
 

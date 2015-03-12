@@ -101,6 +101,14 @@ Game.TeammateTemplate = {
 }
 
 
+Game.Entity.Stupidity = new Game.Entity({
+    name: 'stupidity',
+    group: 'concept',
+    character: ' ',
+    description: "strategically poor choices, which tactically bad decisions failed to redeem",
+    mixins: [Game.EntityMixins.MeleeAttacker]
+});
+
 ////////////////////////////////////////////////////////////////
 
 // Create our central entity repository

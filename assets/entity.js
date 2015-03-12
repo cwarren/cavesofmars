@@ -155,7 +155,7 @@ Game.Entity.prototype.kill = function(killed_by,message) {
     if (message) {
         Game.sendMessage(this, message);
     } else {
-        Game.sendMessage(this, "You have died!");
+        Game.sendMessage(this, "%c{#000}%b{#c11}You have died!");
     }
 
     // Check if the player died, and if so call their act method to prompt the user.

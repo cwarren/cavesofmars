@@ -51,11 +51,13 @@ additional player skills / attributes available for improvement during leveling 
 TODO NEXT:
 
 1. on surface map, disallow removal of HEM suit (can't hold it, un-wear it, throw it, drop it)
+    - better yet, each turn if the char isn't wearing a hem suit then deal damage and send message
+        + panicky messages from team mates would be cool too, especially nearby ones who also rush to your aid
 
 4. container objects
-    - containers have an access action duration - it can take more (for packs, pouches, etc) or less (for slings, bandoliers, etc) time to take out items so that they can be used (holded, thrown, etc.)
     - items are placed in a container using the p (pack) control key (NOTE: this is a two-stage thing - first the target container must be selected)
     - items in a container are accessed using the P (unPack) control key (NOTE: this is a two-stage thing - first the target container must be selected)
+    - containers have an access action duration - it can take more (for packs, pouches, etc) or less (for slings, bandoliers, etc) time to take out items so that they can be used (holded, thrown, etc.)
     - when placing a container in another container, use bulk of container PLUS bulk of all container contents
 
 8. add stackability to some items
