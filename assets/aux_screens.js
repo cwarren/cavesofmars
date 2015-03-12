@@ -234,6 +234,11 @@ Game.AuxScreen.helpScreen = {
             this._display.drawText(1,y,this._color+this._characterLookups[Game.Bindings.Actions.Inventory.INVENTORY_FLING.unique_id]);
             this._display.drawText(5,y,Game.Bindings.Actions.Inventory.INVENTORY_FLING.word);
 
+            y++;
+            this._display.drawText(1,y,
+            this._color+this._characterLookups[Game.Bindings.Actions.Inventory.INVENTORY_PACK.unique_id]+'%b{#000},'+this._color+this._characterLookups[Game.Bindings.Actions.Inventory.INVENTORY_UNPACK.unique_id]);
+            this._display.drawText(5,y,Game.Bindings.Actions.Inventory.INVENTORY_PACK.word+','+Game.Bindings.Actions.Inventory.INVENTORY_UNPACK.word);
+
             y += 2;
         }
         

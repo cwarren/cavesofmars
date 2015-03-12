@@ -64,15 +64,17 @@ Game.Bindings = {
             MOVE_DESCEND: {id: 101, unique_id: Game.util.generateRandomString(24), word:"descend", descr:"go down one level"}
         },
         Inventory: {
-            INVENTORY_LIST:    {id: 1, unique_id: Game.util.generateRandomString(24), word:"inventory", descr: "see everything that you're carrying"},
-            INVENTORY_GET:     {id: 2, unique_id: Game.util.generateRandomString(24), word:"get",       descr: "get something and add it to your inventory"},
+            INVENTORY_LIST:    {id: 1,  unique_id: Game.util.generateRandomString(24), word:"inventory", descr: "see everything that you're carrying"},
+            INVENTORY_GET:     {id: 2,  unique_id: Game.util.generateRandomString(24), word:"get",       descr: "get something and add it to your inventory"},
             INVENTORY_GET_TO_HANDS: {id: 3, unique_id: Game.util.generateRandomString(24), word:"get to hands", descr: "get something and carry it in your hands"},
-            INVENTORY_DROP:    {id: 4, unique_id: Game.util.generateRandomString(24), word:"drop",      descr: "drop something"},
-            INVENTORY_WEAR:    {id: 5, unique_id: Game.util.generateRandomString(24), word:"wear on body",      descr: "wear something on your body (e.g. armor)"},
-            INVENTORY_HOLD:    {id: 6, unique_id: Game.util.generateRandomString(24), word:"hold in hands",      descr:  "hold/carry something in your hands (weapon, tool, big item, etc.)"},
-            INVENTORY_EXAMINE: {id: 7, unique_id: Game.util.generateRandomString(24), word:"examine",   descr: "get detailed information about something in your inventory"},
-            INVENTORY_EAT:     {id: 8, unique_id: Game.util.generateRandomString(24), word:"eat",       descr: "consume something that has food value"},
-            INVENTORY_FLING:   {id: 9, unique_id: Game.util.generateRandomString(24), word:"fire/fling",descr: "fire something from an appropriate missile weapon, or else throw it"},
+            INVENTORY_DROP:    {id: 4,  unique_id: Game.util.generateRandomString(24), word:"drop",      descr: "drop something"},
+            INVENTORY_WEAR:    {id: 5,  unique_id: Game.util.generateRandomString(24), word:"wear on body",      descr: "wear something on your body (e.g. armor)"},
+            INVENTORY_HOLD:    {id: 6,  unique_id: Game.util.generateRandomString(24), word:"hold in hands",      descr:  "hold/carry something in your hands (weapon, tool, big item, etc.)"},
+            INVENTORY_EXAMINE: {id: 7,  unique_id: Game.util.generateRandomString(24), word:"examine",   descr: "get detailed information about something in your inventory"},
+            INVENTORY_EAT:     {id: 8,  unique_id: Game.util.generateRandomString(24), word:"eat",       descr: "consume something that has food value"},
+            INVENTORY_FLING:   {id: 9,  unique_id: Game.util.generateRandomString(24), word:"fire/fling",descr: "fire something from an appropriate missile weapon, or else throw it"},
+            INVENTORY_PACK:    {id: 10, unique_id: Game.util.generateRandomString(24), word:"pack",      descr: "pack something into a container"},
+            INVENTORY_UNPACK:  {id: 11, unique_id: Game.util.generateRandomString(24), word:"unpack",    descr: "unpack something from a container"},
         },
         DataNav: {
             PAGE_UP:       {id: 1, unique_id: Game.util.generateRandomString(24), word:"page up",         descr: "scroll up by one screens worth"},
@@ -117,6 +119,7 @@ Game.Bindings['BindingSet_Numpad']['isKeydown'][ROT.VK_B] = ['b',Game.Bindings.A
 Game.Bindings['BindingSet_Numpad']['isKeydown'][ROT.VK_X] = ['x',Game.Bindings.Actions.Inventory.INVENTORY_EXAMINE];
 Game.Bindings['BindingSet_Numpad']['isKeydown'][ROT.VK_G] = ['g',Game.Bindings.Actions.Inventory.INVENTORY_GET];
 Game.Bindings['BindingSet_Numpad']['isKeydown'][ROT.VK_F] = ['f',Game.Bindings.Actions.Inventory.INVENTORY_FLING];
+Game.Bindings['BindingSet_Numpad']['isKeydown'][ROT.VK_P] = ['p',Game.Bindings.Actions.Inventory.INVENTORY_PACK];
 
 Game.Bindings['BindingSet_Numpad']['isKeydown'][ROT.VK_OPEN_BRACKET] =  ['[',Game.Bindings.Actions.DataNav.PAGE_UP];
 Game.Bindings['BindingSet_Numpad']['isKeydown'][ROT.VK_CLOSE_BRACKET] = [']',Game.Bindings.Actions.DataNav.PAGE_DOWN];
@@ -130,6 +133,7 @@ Game.Bindings['BindingSet_Numpad']['isKeydown'][ROT.VK_BACK_SLASH] = ['\\',Game.
 Game.Bindings['BindingSet_Numpad']['isKeydown']['isShift'] = {}
 Game.Bindings['BindingSet_Numpad']['isKeydown']['isShift'][ROT.VK_E] = ['E',Game.Bindings.Actions.Inventory.INVENTORY_EAT];
 Game.Bindings['BindingSet_Numpad']['isKeydown']['isShift'][ROT.VK_G] = ['G',Game.Bindings.Actions.Inventory.INVENTORY_GET_TO_HANDS];
+Game.Bindings['BindingSet_Numpad']['isKeydown']['isShift'][ROT.VK_P] = ['P',Game.Bindings.Actions.Inventory.INVENTORY_UNPACK];
 
 Game.Bindings['BindingSet_Numpad']['isKeypress'] = {};
 Game.Bindings['BindingSet_Numpad']['isKeypress']['<'] = ['<',Game.Bindings.Actions.Moves.MOVE_ASCEND];
@@ -157,6 +161,7 @@ Game.Bindings['BindingSet_Laptop']['isKeydown'][ROT.VK_H] = ['h',Game.Bindings.A
 Game.Bindings['BindingSet_Laptop']['isKeydown'][ROT.VK_B] = ['b',Game.Bindings.Actions.Inventory.INVENTORY_WEAR];
 Game.Bindings['BindingSet_Laptop']['isKeydown'][ROT.VK_G] = ['g',Game.Bindings.Actions.Inventory.INVENTORY_GET];
 Game.Bindings['BindingSet_Laptop']['isKeydown'][ROT.VK_F] = ['f',Game.Bindings.Actions.Inventory.INVENTORY_FLING];
+Game.Bindings['BindingSet_Laptop']['isKeydown'][ROT.VK_P] = ['p',Game.Bindings.Actions.Inventory.INVENTORY_PACK];
 
 Game.Bindings['BindingSet_Laptop']['isKeydown'][ROT.VK_OPEN_BRACKET] =  ['[',Game.Bindings.Actions.DataNav.PAGE_UP];
 Game.Bindings['BindingSet_Laptop']['isKeydown'][ROT.VK_CLOSE_BRACKET] = [']',Game.Bindings.Actions.DataNav.PAGE_DOWN];
@@ -173,6 +178,7 @@ Game.Bindings['BindingSet_Laptop']['isKeydown']['isShift'][ROT.VK_D] = ['D',Game
 Game.Bindings['BindingSet_Laptop']['isKeydown']['isShift'][ROT.VK_E] = ['E',Game.Bindings.Actions.Inventory.INVENTORY_EAT];
 Game.Bindings['BindingSet_Laptop']['isKeydown']['isShift'][ROT.VK_X] = ['X',Game.Bindings.Actions.Inventory.INVENTORY_EXAMINE];
 Game.Bindings['BindingSet_Laptop']['isKeydown']['isShift'][ROT.VK_G] = ['G',Game.Bindings.Actions.Inventory.INVENTORY_GET_TO_HANDS];
+Game.Bindings['BindingSet_Laptop']['isKeydown']['isShift'][ROT.VK_P] = ['P',Game.Bindings.Actions.Inventory.INVENTORY_UNPACK];
 
 Game.Bindings['BindingSet_Laptop']['isKeypress'] = {};
 Game.Bindings['BindingSet_Laptop']['isKeypress']['<'] = ['<',Game.Bindings.Actions.Moves.MOVE_ASCEND];

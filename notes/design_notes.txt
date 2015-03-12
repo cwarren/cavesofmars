@@ -39,6 +39,24 @@ powerbars
 analyzer
 
 
+----------------------------
+PROCESS TO ADD NEW SET OF FUNCTIONALITY
+
+1. spec out idea in design notes
+2. in bindings.js, add action(s)
+3. in bindings.js, add bindings for the new action to all the binding sets
+TEST: run game to make sure there are no code errors
+4. in aux_screens.js, add help notes to appropriate section of Game.AuxScreen.helpScreen render
+TEST: run game to make sure the help notes show up correctly
+5. in screens.js, add UI hooks in handleInput of playScreen - put in code to show approp sub screen (though that screen might not exist yet)
+6. in screens.js, add UI hooks in handleInput of any relevant subscreen (e.g. inventory screen) - put in code to show approp sub screen (though that screen might not exist yet)
+7. put in minimal stubs (i.e. little to no functionality - just enough code that things won't crash when run) for the new sub screen(s)
+    NOTE: put a console.log somewhere in there so you can verify that you've hit the target code segment
+TEST: run game to make sure you can get to the new subscreens by using the approp key commands
+
+
+----------------------------
+
 
 NOTE: a density function might be useful; consider even doing away with direct mass and instead deal with bulk and density...?
 
@@ -50,14 +68,25 @@ additional player skills / attributes available for improvement during leveling 
 
 TODO NEXT:
 
-1. on surface map, disallow removal of HEM suit (can't hold it, un-wear it, throw it, drop it)
-    - better yet, each turn if the char isn't wearing a hem suit then deal damage and send message
-        + panicky messages from team mates would be cool too, especially nearby ones who also rush to your aid
-
 4. container objects
+
     - items are placed in a container using the p (pack) control key (NOTE: this is a two-stage thing - first the target container must be selected)
+        - step 1: choose the container (single select) (getItems, filtered for type==container)
+        - step 2: choose what to put in it (multi-select)
+            1. set potential item list to be top-level inventory list (player.getItems()) NOTE: can only pack items that are equipped or in the general inventory!
+            2. same general add rules as for picking up stuff, BUT can't put a container in itself (can add that as a check to the general container add item process)
+                ALSO, lack of fit does NOT drop the item - instead just do nothing with it (i.e. re-add it to the inventory from which it was taken)
+
+    - containers with stuff in them indicate such in the name/description when displayed
+        
     - items in a container are accessed using the P (unPack) control key (NOTE: this is a two-stage thing - first the target container must be selected)
+        - step 1: choose the container (single select) (getItems, filtered for type==container)
+        - step 2: choose what to take out of it (multi-select)
+            1. set potential item list to contents of the container
+            2. each item taken out is then 'g'otten into the general inventory, which automatically drops any that don't fit
+    
     - containers have an access action duration - it can take more (for packs, pouches, etc) or less (for slings, bandoliers, etc) time to take out items so that they can be used (holded, thrown, etc.)
+    
     - when placing a container in another container, use bulk of container PLUS bulk of all container contents
 
 8. add stackability to some items

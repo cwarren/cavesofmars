@@ -290,7 +290,15 @@ Game.Screen.playScreen = {
             return;
 
         } else if (gameAction === Game.Bindings.Actions.Inventory.INVENTORY_FLING) {
-            this.showItemsSubScreen(Game.Screen.fireFlingScreen, this._player.getItems(),'You have nothing to examine.');
+            this.showItemsSubScreen(Game.Screen.fireFlingScreen, this._player.getItems(),'You have nothing to fire/fling.');
+            return;
+
+        } else if (gameAction === Game.Bindings.Actions.Inventory.INVENTORY_PACK) {
+            this.showItemsSubScreen(Game.Screen.packScreen, this._player.getItems(),'You have no containers.');
+            return;
+
+        } else if (gameAction === Game.Bindings.Actions.Inventory.INVENTORY_UNPACK) {
+            this.showItemsSubScreen(Game.Screen.unpackScreen, this._player.getItems(),'You have no containers.');
             return;
 
         } else if (gameAction === Game.Bindings.Actions.Inventory.INVENTORY_GET) {
@@ -752,6 +760,18 @@ Game.Screen.inventoryScreen.handleInput = function(inputType, inputData) {
     } else if (gameAction === Game.Bindings.Actions.Inventory.INVENTORY_EXAMINE) {
         this._parentScreen.showItemsSubScreen(Game.Screen.examineScreen, this._player.getItems(),'You have nothing to examine.');
         return;
+        
+    } else if (gameAction === Game.Bindings.Actions.Inventory.INVENTORY_FLING) {
+        this._parentScreen.showItemsSubScreen(Game.Screen.fireFlingScreen, this._player.getItems(),'You have nothing to fire/fling.');
+        return;
+
+    } else if (gameAction === Game.Bindings.Actions.Inventory.INVENTORY_PACK) {
+        this._parentScreen.showItemsSubScreen(Game.Screen.packScreen, this._player.getItems(),'You have no containers.');
+        return;
+
+    } else if (gameAction === Game.Bindings.Actions.Inventory.INVENTORY_UNPACK) {
+        this._parentScreen.showItemsSubScreen(Game.Screen.unpackScreen, this._player.getItems(),'You have no containers.');
+        return;
     }
     
     //----------------------------
@@ -995,6 +1015,45 @@ Game.Screen.examineScreen = new Game.Screen.ItemListScreen({
 });
 
 Game.Screen.examineScreen.getHelpSections = function() {
+    return ['datanav'];
+};
+
+//-------------------
+
+Game.Screen.packScreen = new Game.Screen.ItemListScreen({
+    caption: 'Pack',
+    canSelect: true,
+    canSelectMultipleItems: false,
+    isAcceptable: function(item) {
+        return item && item.hasMixin('Container');
+    },
+    ok: function(selectedItems) {
+        console.log('item to pack has been selected');
+        return true;
+    }
+});
+
+Game.Screen.eatScreen.packScreen = function() {
+    return ['datanav'];
+};
+
+
+//-------------------
+
+Game.Screen.unpackScreen = new Game.Screen.ItemListScreen({
+    caption: 'Unpack',
+    canSelect: true,
+    canSelectMultipleItems: false,
+    isAcceptable: function(item) {
+        return item && item.hasMixin('Container');
+    },
+    ok: function(selectedItems) {
+        console.log('item to unpack has been selected');
+        return true;
+    }
+});
+
+Game.Screen.eatScreen.unpackScreen = function() {
     return ['datanav'];
 };
 
