@@ -123,7 +123,10 @@ Game.DynamicGlyph.prototype.setName = function(name) {
 };
 
 Game.DynamicGlyph.prototype.getName = function() {
-    return this._name;
+    var namingModifiers = this.raiseEvent('onNaming');
+    var prefixes = Game.util.scanEventResultsFor(namingModifiers,'prefix');
+    var suffixes = Game.util.scanEventResultsFor(namingModifiers,'suffix');
+    return prefixes.join('')+this._name+suffixes.join('');
 };
 
 Game.DynamicGlyph.prototype.setDescription = function(description) {

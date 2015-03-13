@@ -628,7 +628,7 @@ Game.Screen.ItemListScreen.prototype.render = function(display) {
 
             // Render at the correct row and add 1
             var item_symbol = this._displayItems[i].getColorDesignator()+this._displayItems[i].getChar()+Game.Screen.DEFAULT_COLOR_SETTER;
-            display.drawText(0, 1 + row, Game.Screen.DEFAULT_COLOR_SETTER + letter + ' ' + selectionState + ' ' + item_symbol + ' ' +this._displayItems[i].describe() + suffix);
+            display.drawText(0, 1 + row, Game.Screen.DEFAULT_COLOR_SETTER + letter + ' ' + selectionState + ' ' + item_symbol + ' ' +this._displayItems[i].getName() + suffix);
             display.drawText(50, 1 + row, weightNote);
             display.drawText(65, 1 + row, bulkNote);
             row++;

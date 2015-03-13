@@ -541,6 +541,9 @@ Game.ItemMixins.Container = {
     },
 
     listeners: {
+        'onNaming': function() {
+            return [{key: 'suffix', value: ' ['+this.getWeightStatusString()+'  '+this.getBulkStatusString()+']'}];
+        },
         'details': function() {
             return [{key: 'capacity', value: this.getWeightStatusString()+', '+this.getBulkStatusString()},
                     {key: 'access time', value: this.getAccessDuration()/1000+'x normal'}

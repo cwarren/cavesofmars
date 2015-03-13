@@ -70,8 +70,6 @@ TODO NEXT:
 
 4. container objects
 
-    - containers with stuff in them indicate such in the name/description when displayed
-        
     - items in a container are accessed using the P (unPack) control key (NOTE: this is a two-stage thing - first the target container must be selected)
         - step 1: choose the container (single select) (getItems, filtered for type==container)
         - step 2: choose what to take out of it (multi-select)
