@@ -1028,15 +1028,62 @@ Game.Screen.packScreen = new Game.Screen.ItemListScreen({
         return item && item.hasMixin('Container');
     },
     ok: function(selectedItems) {
-        console.log('item to pack has been selected');
+        console.log('container to pack has been selected');
+        Game.Screen.packScreen.selectedContainer = selectedItems[(Object.keys(selectedItems))[0]];
+        this._parentScreen.showItemsSubScreen(Game.Screen.packItemSelectionScreen, this._player.getItems(),'You have nothing to pack.');
+        return;
+    }
+});
+
+Game.Screen.packScreen.getHelpSections = function() {
+    return ['datanav'];
+};
+
+Game.Screen.packScreen.selectedContainer = '';
+
+//-------------------
+
+Game.Screen.packItemSelectionScreen = new Game.Screen.ItemListScreen({
+    caption: function() {
+        return 'Choose items to pack';
+    },
+    canSelect: true,
+    canSelectMultipleItems: true,
+    isAcceptable: function(item) {
+        return item && item != Game.Screen.packScreen.selectedContainer;
+    },
+    ok: function(selectedItems) {
+        var targetContainer = Game.Screen.packScreen.selectedContainer;
+
+        // Pack the selected items
+        console.log('items to pack in container have been selected');
+        console.dir(selectedItems);
+        
+        var indices = Object.keys(selectedItems);
+        var numPacked = 0;
+        
+        for (var i=0; i<indices.length;i++) {
+            var itm = selectedItems[indices[i]];
+            if (targetContainer.canAddItem(itm)) {
+                targetContainer.addItems([itm]);
+                this._player.extractThisItem(itm);
+                numPacked++;
+            }
+        }
+        
+        if (numPacked < indices.length) {
+            Game.sendMessage(this._player,'Not everything fits into %s',[targetContainer.describeThe()]);
+        }
+        
+        console.dir(targetContainer);
+        
         return true;
     }
 });
 
-Game.Screen.eatScreen.packScreen = function() {
+Game.Screen.packItemSelectionScreen.getHelpSections = function() {
     return ['datanav'];
 };
-
 
 //-------------------
 
@@ -1053,7 +1100,26 @@ Game.Screen.unpackScreen = new Game.Screen.ItemListScreen({
     }
 });
 
-Game.Screen.eatScreen.unpackScreen = function() {
+Game.Screen.unpackScreen.getHelpSections = function() {
+    return ['datanav'];
+};
+
+//-------------------
+
+Game.Screen.unpackItemSelectionScreen = new Game.Screen.ItemListScreen({
+    caption: function() {
+        return 'Choose items to unpack';
+    },
+    canSelect: true,
+    canSelectMultipleItems: true,
+    ok: function(selectedItems) {
+        // Pack the selected item
+        console.log('items to unpack from container have been selected');
+        return true;
+    }
+});
+
+Game.Screen.unpackItemSelectionScreen.getHelpSections = function() {
     return ['datanav'];
 };
 

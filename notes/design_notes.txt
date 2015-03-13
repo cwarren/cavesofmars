@@ -53,7 +53,7 @@ TEST: run game to make sure the help notes show up correctly
 7. put in minimal stubs (i.e. little to no functionality - just enough code that things won't crash when run) for the new sub screen(s)
     NOTE: put a console.log somewhere in there so you can verify that you've hit the target code segment
 TEST: run game to make sure you can get to the new subscreens by using the approp key commands
-
+8. implement the new functionality in the new subscreens
 
 ----------------------------
 
@@ -69,13 +69,6 @@ additional player skills / attributes available for improvement during leveling 
 TODO NEXT:
 
 4. container objects
-
-    - items are placed in a container using the p (pack) control key (NOTE: this is a two-stage thing - first the target container must be selected)
-        - step 1: choose the container (single select) (getItems, filtered for type==container)
-        - step 2: choose what to put in it (multi-select)
-            1. set potential item list to be top-level inventory list (player.getItems()) NOTE: can only pack items that are equipped or in the general inventory!
-            2. same general add rules as for picking up stuff, BUT can't put a container in itself (can add that as a check to the general container add item process)
-                ALSO, lack of fit does NOT drop the item - instead just do nothing with it (i.e. re-add it to the inventory from which it was taken)
 
     - containers with stuff in them indicate such in the name/description when displayed
         
