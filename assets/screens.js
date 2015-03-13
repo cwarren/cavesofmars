@@ -1028,7 +1028,7 @@ Game.Screen.packScreen = new Game.Screen.ItemListScreen({
         return item && item.hasMixin('Container');
     },
     ok: function(selectedItems) {
-        console.log('container to pack has been selected');
+        //console.log('container to pack has been selected');
         Game.Screen.packScreen.selectedContainer = selectedItems[(Object.keys(selectedItems))[0]];
         this._parentScreen.showItemsSubScreen(Game.Screen.packItemSelectionScreen, this._player.getItems(),'You have nothing to pack.');
         return;
@@ -1056,8 +1056,8 @@ Game.Screen.packItemSelectionScreen = new Game.Screen.ItemListScreen({
         var targetContainer = Game.Screen.packScreen.selectedContainer;
 
         // Pack the selected items
-        console.log('items to pack in container have been selected');
-        console.dir(selectedItems);
+        //console.log('items to pack in container have been selected');
+        //console.dir(selectedItems);
         
         var indices = Object.keys(selectedItems);
         var numPacked = 0;
@@ -1075,7 +1075,7 @@ Game.Screen.packItemSelectionScreen = new Game.Screen.ItemListScreen({
             Game.sendMessage(this._player,'Not everything fits into %s',[targetContainer.describeThe()]);
         }
         
-        console.dir(targetContainer);
+        //console.dir(targetContainer);
         
         return true;
     }
@@ -1095,14 +1095,18 @@ Game.Screen.unpackScreen = new Game.Screen.ItemListScreen({
         return item && item.hasMixin('Container');
     },
     ok: function(selectedItems) {
-        console.log('item to unpack has been selected');
-        return true;
+        //console.log('item to unpack has been selected');
+        Game.Screen.unpackScreen.selectedContainer = selectedItems[(Object.keys(selectedItems))[0]];
+        this._parentScreen.showItemsSubScreen(Game.Screen.unpackItemSelectionScreen, Game.Screen.unpackScreen.selectedContainer.getItems(),'You have nothing to pack.');
+        return;
     }
 });
 
 Game.Screen.unpackScreen.getHelpSections = function() {
     return ['datanav'];
 };
+
+Game.Screen.unpackScreen.selectedContainer = '';
 
 //-------------------
 
@@ -1113,8 +1117,32 @@ Game.Screen.unpackItemSelectionScreen = new Game.Screen.ItemListScreen({
     canSelect: true,
     canSelectMultipleItems: true,
     ok: function(selectedItems) {
-        // Pack the selected item
-        console.log('items to unpack from container have been selected');
+        var targetContainer = Game.Screen.packScreen.selectedContainer;
+        var pMap = this._player.getMap();
+        var px = this._player.getX();
+        var py = this._player.getY();
+        var pz = this._player.getZ();
+        
+        // unpack the selected items
+        //console.log('items to unpack from container have been selected');
+        var indices = Object.keys(selectedItems);
+        var unpackedItems = targetContainer.extractItemsAt(indices);
+        var numDroppedItems = 0;
+        for (var i=0; i<unpackedItems.length; i++) {
+            var itm = unpackedItems[i];
+            if (! this._player.addItem(itm)) {
+                if (pMap) {
+                    pMap.addItem(px, py, pz, itm);
+                    itm.raiseEvent('onDropped', pMap, px, py, pz);
+                    numDroppedItems++;
+                }
+            }
+        }
+        
+        if (numDroppedItems > 0) {
+            Game.sendMessage(this._player,'You could not carry everything that you took out of %s, so some things were dropped',[targetContainer.describeThe()]);
+        }
+        
         return true;
     }
 });

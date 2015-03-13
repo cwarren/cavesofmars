@@ -70,15 +70,10 @@ TODO NEXT:
 
 4. container objects
 
-    - items in a container are accessed using the P (unPack) control key (NOTE: this is a two-stage thing - first the target container must be selected)
-        - step 1: choose the container (single select) (getItems, filtered for type==container)
-        - step 2: choose what to take out of it (multi-select)
-            1. set potential item list to contents of the container
-            2. each item taken out is then 'g'otten into the general inventory, which automatically drops any that don't fit
-    
+    - when placing a container in another container, use bulk of container PLUS bulk of all container contents
+
     - containers have an access action duration - it can take more (for packs, pouches, etc) or less (for slings, bandoliers, etc) time to take out items so that they can be used (holded, thrown, etc.)
     
-    - when placing a container in another container, use bulk of container PLUS bulk of all container contents
 
 8. add stackability to some items
     - Stackable mixin
@@ -91,6 +86,11 @@ TODO NEXT:
 11.5      need a value metric function for things that can be found/gotten - should have option of spec-ing direct values for items, but the function shoudl also support inspection-based valuation)
 12.    and which uses a more interesting / better wander mechanism (A* towards a given visible destination - choose a new destination on arrival, OR, weight random space selection against backtracking (until caught in a dead end?))
 13.    and drop inventory on death
+
+14. add to container item mixin some utility functions for transferring the things from one container to another
+    - two options for how to handle things that won't fit - a) leave them in the original container, b) drop them on the map
+
+14.5 refactor packing and unpacking to use the above utility functions
 
 15. LOOT (loot tables (re-read blog post); drop rate; etc.)
         oozes sometimes drop loot
