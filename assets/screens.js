@@ -1077,6 +1077,8 @@ Game.Screen.packItemSelectionScreen = new Game.Screen.ItemListScreen({
         
         //console.dir(targetContainer);
         
+        this._player.setLastActionDuration(targetContainer.getAccessDuration());
+        
         return true;
     }
 });
@@ -1143,6 +1145,8 @@ Game.Screen.unpackItemSelectionScreen = new Game.Screen.ItemListScreen({
             Game.sendMessage(this._player,'You could not carry everything that you took out of %s, so some things were dropped',[targetContainer.describeThe()]);
         }
         
+        this._player.setLastActionDuration(targetContainer.getAccessDurationUnpack());
+
         return true;
     }
 });
@@ -1942,6 +1946,7 @@ Game.Screen.storyScreen = {
                 
 //                player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('human corpse'),player.getX(),player.getY(),player.getZ());
                 player.addItem(Game.ItemRepository.create('sack'));
+                player.addItem(Game.ItemRepository.create('shoulder-strap'));
 //                player.addItem(Game.ItemRepository.create('stone shot'));
 //                player.addItem(Game.ItemRepository.create('stone shot'));
 //                player.addItem(Game.ItemRepository.create('iron shot'));

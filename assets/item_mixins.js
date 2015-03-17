@@ -348,7 +348,8 @@ Game.ItemMixins.Container = {
     init: function(template) {
         this._maxCarryWeight = template['maxCarryWeight'] || 10000;
         this._maxCarryBulk = template['maxCarryBulk'] || 10000;
-        this._accessDuration = template['accessDuration'] || 1000;
+        this._accessDurationPack = template['accessDuration'] || 1000;
+        this._accessDurationUnpack = template['accessDurationUnpack'] || this._accessDurationPack;
         
         this._currentCarryWeight = 0;
         this._currentCarryBulk = 0;
@@ -369,12 +370,18 @@ Game.ItemMixins.Container = {
         this._maxCarryBulk = v;
     },
     getAccessDuration: function() {
-        return this._accessDuration;
+        return this._accessDurationPack;
     },
     setAccessDuration: function(v) {
-        this._accessDuration = v;
+        this._accessDurationPack = v;
     },
     
+    getAccessDurationUnpack: function() {
+        return this._accessDurationUnpack;
+    },
+    setAccessDurationUnpack: function(v) {
+        this._accessDurationUnpack = v;
+    },
     
     getCurrentCarriedWeight: function() {
         return this._currentCarryWeight;
@@ -408,6 +415,9 @@ Game.ItemMixins.Container = {
         for (var i=0; i<this._items.length; i++) {
             this._currentCarryWeight += this._items[i].getInvWeight();
             this._currentCarryBulk +=  this._items[i].getInvBulk();
+            if (this._name != 'itemHolder' && this._items[i].hasMixin('Container')) {
+                this._currentCarryBulk +=  this._items[i].getCurrentCarriedBulk();
+            }
         }
     },
     
@@ -545,14 +555,20 @@ Game.ItemMixins.Container = {
             return [{key: 'suffix', value: ' ['+this.getWeightStatusString()+'  '+this.getBulkStatusString()+']'}];
         },
         'details': function() {
+            if (this.getAccessDuration() == this.getAccessDurationUnpack()) {
+                return [{key: 'capacity', value: this.getWeightStatusString()+', '+this.getBulkStatusString()},
+                        {key: 'access time', value: this.getAccessDuration()/1000+'x normal'}
+                        ];
+            }
             return [{key: 'capacity', value: this.getWeightStatusString()+', '+this.getBulkStatusString()},
-                    {key: 'access time', value: this.getAccessDuration()/1000+'x normal'}
+                    {key: 'access time', value: this.getAccessDuration()/1000+'x normal in, '+this.getAccessDurationUnpack()/1000+'x normal out'}
                     ];
         },
         'calcDetails': function() {
             return [{key: 'maxCarryWeight', value: this.getMaxCarryWeight()},
                     {key: 'maxCarryBulk', value: this.getMaxCarryBulk()},
-                    {key: 'accessDuration', value: this.getAccessDuration()}
+                    {key: 'accessDuration', value: this.getAccessDuration()},
+                    {key: 'accessDurationUnpack', value: this.getAccessDurationUnpack()}
                     ];
         }
     }

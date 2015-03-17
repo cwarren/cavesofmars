@@ -999,6 +999,7 @@ Game.EntityMixins.InventoryHolder = {
     },
     dropItems: function(indices) {
         var numEquipped = 0;
+    //    var numDropped = 0;
         // handle special case of equipped items
         if (this.hasMixin('Equipper')) {
             var theEquipped = this.getEquippedItems();
@@ -1007,7 +1008,14 @@ Game.EntityMixins.InventoryHolder = {
                 // cycle through indices passed in, and if the idx is < numEquipped, handle the equipment drop, else decrease the idx appropriately
                 for (var i=0; i<indices.length; i++) {
                     if (indices[i] < numEquipped) {
+                        if (theEquipped[indices[i]] == this.getHolding() && indices.length == 1) {
+                            this.setLastActionDuration(50); // dropping something that's held in hands is FAST
+                        }
                         this.dropEquippedByItem(theEquipped[indices[i]]);
+    //                    numDropped++;
+                        // now that the equipped item is dropped, don't forget to REMOVE THAT INDEX FROM THE TO-DROP LIST!!!
+                        indices.splice(i,1);
+                        i--; // and decrement i so we don't skip an item in the next pass through the loop
                     } else {
                         indices[i] -= numEquipped;
                     }
@@ -1015,6 +1023,7 @@ Game.EntityMixins.InventoryHolder = {
             }
         }
     
+        
         var droppedItems = this._itemHolder.extractItemsAt(indices);       
         if (this._map) {
             for (var i=0; i<droppedItems.length; i++) {
@@ -2244,6 +2253,7 @@ Game.EntityMixins.PlayerActor = {
     finishAction: function() {
         this.raiseEvent('onActed');
         //this.doTurnHunger();
+        //console.log('action takes: '+this.getLastActionDuration());
         this.getMap().getScheduler().setDuration(this.getLastActionDuration());
         this.setLastActionDuration(this.getDefaultActionDuration());
         this.getMap().getEngine().unlock();

@@ -380,3 +380,22 @@ Game.ItemRepository.define('sack', {
 }, {
     disableRandomCreation: true
 });
+
+
+Game.ItemRepository.define('shoulder-strap', {
+    name: 'shoulder-strap',
+    group: 'container',
+    character: '?',
+    invWeight: 250,
+    invBulk: 650,
+    foreground: '#ba7',
+    description: "a padded strap to carry a single, quickly accessible item",
+    maxCarryWeight: 9000,
+    maxCarryBulk: 6000,
+    maxCarryQuantity: 1,
+    accessDuration: 6500, // how long it takes to put something in this container
+    accessDurationUnpack: 50, // how long it takes to get something out
+    mixins: [Game.ItemMixins.Container]
+}, {
+    disableRandomCreation: true
+});

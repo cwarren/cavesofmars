@@ -70,14 +70,11 @@ TODO NEXT:
 
 4. container objects
 
-    - when placing a container in another container, use bulk of container PLUS bulk of all container contents
-
-    - containers have an access action duration - it can take more (for packs, pouches, etc) or less (for slings, bandoliers, etc) time to take out items so that they can be used (holded, thrown, etc.)
-    
+    - add an optional/alternative quantity limit for containers; quantity is an additional constraint before weight and bulk are checked
 
 8. add stackability to some items
-    - Stackable mixin
-        - store a function for isStackable (function defined in the item template)
+    - Stackable mixin? inherent to items? Latter is easier to handle (no checking for mixins)
+        - perhaps store a function for isStackable (function defined in the item template)
     - OR, contemplate a soft-stack model, where adjacent items of the same type are shown as a single with a count while remaining independent under the hood
         - ... but probably not this; issues w/ space efficiency and general implementation w.r.t. inventory UI
 
@@ -95,7 +92,7 @@ TODO NEXT:
 15. LOOT (loot tables (re-read blog post); drop rate; etc.)
         oozes sometimes drop loot
         give small martians some starting loot
-
+        
 17. figure out where geodic nuts and jelly balls come from (oozes, perhaps? introduce several kinds of ooze, and when they are adjacent they have a chance to spawn a jelly ball or a geodic nut (depending on other circumstances?))
     - when an ooze en
 
@@ -148,6 +145,9 @@ TODO NEXT:
 25. useable items (potions, pods, etc.)
 
 30. cooking - requires certain equipment and conditions; reduces bulk by factor of X, weight by X/2, increases food density by at least 1/X
+
+35. allow some containers to add contents directly to action item lists
+    NOTE: this will likely require a general re-structuring of the item list screen stuff
 
 42.5 consider a spore-y mass repository w/ different kinds of spore-y masses that grow on different things (even consider making this prodecurally generated - can dynamically set targets, exclusions, rates, etc.)
 42.75 consider docile fungi occasionally spawning nearby spore-y masses that share the same traits
