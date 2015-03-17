@@ -390,11 +390,30 @@ Game.ItemRepository.define('shoulder-strap', {
     invBulk: 650,
     foreground: '#ba7',
     description: "a padded strap to carry a single, quickly accessible item",
-    maxCarryWeight: 9000,
-    maxCarryBulk: 6000,
+    maxCarryWeight: 90000,
+    maxCarryBulk: 120000,
     maxCarryQuantity: 1,
     accessDuration: 6500, // how long it takes to put something in this container
     accessDurationUnpack: 50, // how long it takes to get something out
+    mixins: [Game.ItemMixins.Container]
+}, {
+    disableRandomCreation: true
+});
+
+Game.ItemRepository.define('bandolier', {
+    name: 'bandolier',
+    group: 'container',
+    character: '?',
+    invWeight: 350,
+    invBulk: 650,
+    foreground: '#ba4',
+    description: "a padded strap covered with small pockets and loops",
+    maxCarryWeight: 2400,
+    maxCarryBulk: 2400,
+    maxCarryQuantity: 24,
+    accessDuration: 600, // how long it takes to put something in this container
+    accessDurationUnpack: 1, // how long it takes to get something out
+    carryTypes: ['shot'],
     mixins: [Game.ItemMixins.Container]
 }, {
     disableRandomCreation: true

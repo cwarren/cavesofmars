@@ -1947,10 +1947,11 @@ Game.Screen.storyScreen = {
 //                player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('human corpse'),player.getX(),player.getY(),player.getZ());
                 player.addItem(Game.ItemRepository.create('sack'));
                 player.addItem(Game.ItemRepository.create('shoulder-strap'));
-//                player.addItem(Game.ItemRepository.create('stone shot'));
-//                player.addItem(Game.ItemRepository.create('stone shot'));
-//                player.addItem(Game.ItemRepository.create('iron shot'));
-//                player.addItem(Game.ItemRepository.create('iron shot'));
+                player.addItem(Game.ItemRepository.create('bandolier'));
+                player.addItem(Game.ItemRepository.create('stone shot'));
+                player.addItem(Game.ItemRepository.create('stone shot'));
+                player.addItem(Game.ItemRepository.create('iron shot'));
+                player.addItem(Game.ItemRepository.create('iron shot'));
 
 //                for (var i=0;i<45;i++) {
 //                    player.addItem(Game.ItemRepository.createRandom());

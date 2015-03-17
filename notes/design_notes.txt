@@ -68,31 +68,33 @@ additional player skills / attributes available for improvement during leveling 
 
 TODO NEXT:
 
-4. container objects
+1. add new entity: small martian
+1.3.    which can pick up and equip items it finds (5 inven slots?)
+1.7     need a value metric function for things that can be found/gotten - should have option of spec-ing direct values for items, but the function shoudl also support inspection-based valuation)
 
-    - add an optional/alternative quantity limit for containers; quantity is an additional constraint before weight and bulk are checked
+4. martian needs a more interesting / better wander mechanism (A* towards a given visible destination - choose a new destination on arrival, OR, weight random space selection against backtracking (until caught in a dead end?))
 
-8. add stackability to some items
+15. LOOT (loot tables (re-read blog post); drop rate; etc.)
+        oozes sometimes drop loot
+        give small martians some starting loot
+        
+5. martian drops inventory on death
+
+10. add stackability to some items
     - Stackable mixin? inherent to items? Latter is easier to handle (no checking for mixins)
         - perhaps store a function for isStackable (function defined in the item template)
     - OR, contemplate a soft-stack model, where adjacent items of the same type are shown as a single with a count while remaining independent under the hood
         - ... but probably not this; issues w/ space efficiency and general implementation w.r.t. inventory UI
 
-10. add new entity: small martian
-11.    which can pick up and equip items it finds (5 inven slots)
-11.5      need a value metric function for things that can be found/gotten - should have option of spec-ing direct values for items, but the function shoudl also support inspection-based valuation)
-12.    and which uses a more interesting / better wander mechanism (A* towards a given visible destination - choose a new destination on arrival, OR, weight random space selection against backtracking (until caught in a dead end?))
-13.    and drop inventory on death
+    NOTE: how to handle stability in containers that have qty limits? need to add a getItemCount method to container mixin - it loops through _items and adds the qty for each
+    NOTE: color-highlight the counts when showing an item list? there's getting to be a LOT of info on that screen....; figure out where to put the counts on that screen, and how to handl display of bulk / wt
+
 
 14. add to container item mixin some utility functions for transferring the things from one container to another
     - two options for how to handle things that won't fit - a) leave them in the original container, b) drop them on the map
 
 14.5 refactor packing and unpacking to use the above utility functions
 
-15. LOOT (loot tables (re-read blog post); drop rate; etc.)
-        oozes sometimes drop loot
-        give small martians some starting loot
-        
 17. figure out where geodic nuts and jelly balls come from (oozes, perhaps? introduce several kinds of ooze, and when they are adjacent they have a chance to spawn a jelly ball or a geodic nut (depending on other circumstances?))
     - when an ooze en
 
@@ -138,13 +140,21 @@ TODO NEXT:
         - loose walls (rubble tiles)
         - tight walls (cracked stone tiles)
         - containers
-        - security things (e.g. creature deterrent - prevents spawning on/around a given area, creatures tend to wander away from it
-        
-    
 
 25. useable items (potions, pods, etc.)
 
 30. cooking - requires certain equipment and conditions; reduces bulk by factor of X, weight by X/2, increases food density by at least 1/X
+    NOTE: this is essentially crafting
+    
+33. figure out how to mark tiles as non-spawnable
+33.5 add mechanism to allow player to do such marking
+    via crafting, allow creation of:
+        - doors (open, close, lock, break, etc.)
+        - security things (e.g. creature deterrent - prevents spawning on/around a given area, creatures tend to wander away from it
+   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+   NOTE: this step allows the player to build a home base!!!  At this point it in many ways transforms into a sandbox game! Embrace this!!!
+   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 
 35. allow some containers to add contents directly to action item lists
     NOTE: this will likely require a general re-structuring of the item list screen stuff
