@@ -477,7 +477,12 @@ Game.ItemMixins.Container = {
         return false;
     },
     canAddItem_bulk: function(itm) {
-        return (this._maxCarryBulk == -1) || (itm.getInvBulk() + this._currentCarryBulk <= this._maxCarryBulk);
+        if (this._maxCarryBulk == -1) { return true; }
+        var checkBulk = itm.getInvBulk() + this._currentCarryBulk;
+        if (itm.hasMixin('Container')) {
+            checkBulk += itm.getCurrentCarriedBulk();
+        }
+        return  checkBulk <= this._maxCarryBulk;
     },    
     canAddItem_weight: function(itm) {
         return (this._maxCarryWeight == -1) || (itm.getInvWeight() + this._currentCarryWeight <= this._maxCarryWeight);

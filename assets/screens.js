@@ -1938,7 +1938,7 @@ Game.Screen.storyScreen = {
                 //player.addItem(h);
                 player.wear(h);
                 
-                var itemTesting = true;
+                var itemTesting = false;
                 /////////////////////////////
                 /// CODE FOR ITEM TESTING!!!!
                 if (itemTesting) {
@@ -1972,7 +1972,7 @@ Game.Screen.storyScreen = {
                 /// CODE FOR ITEM TESTING!!!!
                 /////////////////////////////
 
-                var entityTesting = false;
+                var entityTesting = true;
                 /////////////////////////////
                 /// CODE FOR ITEM TESTING!!!!
                 if (entityTesting) {
@@ -1985,10 +1985,9 @@ Game.Screen.storyScreen = {
 //                player.addItem(Game.ItemRepository.create('iron shot'));
 //                player.addItem(Game.ItemRepository.create('iron shot'));
 
-                for (var i=0;i<15;i++) {
-                    player.getMap().addEntityAtRandomPosition(Game.EntityRepository.create('rock lizard'),0);
-
-                }
+//                for (var i=0;i<15;i++) {
+//                    player.getMap().addEntityAtRandomPosition(Game.EntityRepository.create('martian'),0);
+//                }
                 
 //                for (var i=0;i<6;i++) {
 //                    player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('human corpse'),player.getX(),player.getY(),player.getZ());

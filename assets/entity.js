@@ -298,6 +298,7 @@ Game.Entity.prototype.tryMove = function(x, y, z, map) {
         } else {
             Game.sendMessage(this, "You ascend to level %d!", [z + 1]);
             this.setPosition(x, y, z);
+            this.raiseEvent('onMovedTo',{'x':x, 'y':y, 'z':z});
             this.setLastActionDuration(this.getMoveDuration()*moveDurationMultiplier);
             this.alertOnSlowness(moveDurationMultiplier);
             return true;
@@ -315,6 +316,7 @@ Game.Entity.prototype.tryMove = function(x, y, z, map) {
             return false;
         } else {
             this.setPosition(x, y, z);
+            this.raiseEvent('onMovedTo',{'x':x, 'y':y, 'z':z});
             Game.sendMessage(this, "You descend to level %d!", [z + 1]);
             this.setLastActionDuration(this.getMoveDuration()*moveDurationMultiplier);
             this.alertOnSlowness(moveDurationMultiplier);
@@ -345,6 +347,7 @@ Game.Entity.prototype.tryMove = function(x, y, z, map) {
     if (tile.isWalkable()) {        
         // Update the entity's position
         this.setPosition(x, y, z);
+        this.raiseEvent('onMovedTo',{'x':x, 'y':y, 'z':z});
         
         // Notify the entity that there are items at this position
         var items = this.getMap().getItemsAt(x, y, z);

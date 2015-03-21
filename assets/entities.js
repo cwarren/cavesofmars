@@ -97,7 +97,7 @@ Game.TeammateTemplate = {
     'too much static on this channel - switch to the next'
     ],
     babbleFrequency: .07,
-    mixins: [Game.EntityMixins.PeacefulRoamingBehaviorController, Game.EntityMixins.Allier, Game.EntityMixins.RadioUser, Game.EntityMixins.Babbler]
+    mixins: [Game.EntityMixins.PeacefulRoamingBehaviorController, Game.EntityMixins.Allier, Game.EntityMixins.RadioUser, Game.EntityMixins.Babbler, Game.EntityMixins.RandomMoveChooser]
 }
 
 
@@ -207,6 +207,7 @@ Game.EntityRepository.define('fungus zombie', {
     defenseValue: 3,
     maxHp: 18,
     sightRadius: 3,
+    bumpsThings: true,
     corpseName: 'spore-y mass',
     corpseFoodValue: 1,
     suicideSpawnEntityName: 'spreading fungus',
@@ -215,7 +216,7 @@ Game.EntityRepository.define('fungus zombie', {
     allies: ['fungus'],
     mixins: [Game.EntityMixins.AggressiveRoamingBehaviorController, Game.EntityMixins.MeleeAttacker, Game.EntityMixins.Destructible, Game.EntityMixins.CorpseDropper, Game.EntityMixins.Allier, 
              Game.EntityMixins.ExperienceGainer, Game.EntityMixins.RandomStatGainer, Game.EntityMixins.Seer, Game.EntityMixins.SuicideSpawner, Game.EntityMixins.AutoDegrader, Game.EntityMixins.Suicider,
-             Game.EntityMixins.IsFungusZombie]
+             Game.EntityMixins.IsFungusZombie, Game.EntityMixins.RandomMoveChooser]
 });
 
 Game.EntityRepository.define('bat', {
@@ -226,7 +227,7 @@ Game.EntityRepository.define('bat', {
     maxHp: 5,
     corpseFoodValue: 35,
     moveDuration: 500,
-    mixins: [Game.EntityMixins.PeacefulRoamingBehaviorController, Game.EntityMixins.Destructible,Game.EntityMixins.CorpseDropper]
+    mixins: [Game.EntityMixins.PeacefulRoamingBehaviorController, Game.EntityMixins.Destructible,Game.EntityMixins.CorpseDropper, Game.EntityMixins.RandomMoveChooser]
 });
 
 Game.EntityRepository.define('golden lizard', {
@@ -237,11 +238,12 @@ Game.EntityRepository.define('golden lizard', {
     maxHp: 7,
     attackValue: 4,
     defenseValue: 1,
+    bumpsThings: true,
     corpseFoodValue: 75,
     baseBehavior: Game.EntityBehaviors.AggressiveWanderBehavior,
     behaviors: [Game.EntityBehaviors.AggressiveWanderBehavior],
     mixins: [Game.EntityMixins.AggressiveRoamingBehaviorController, Game.EntityMixins.MeleeAttacker, Game.EntityMixins.Destructible, Game.EntityMixins.CorpseDropper, Game.EntityMixins.Retaliator,
-             Game.EntityMixins.ExperienceGainer, Game.EntityMixins.RandomStatGainer]
+             Game.EntityMixins.ExperienceGainer, Game.EntityMixins.RandomStatGainer, Game.EntityMixins.RandomMoveChooser]
 });
 
 Game.EntityRepository.define('rock lizard', {
@@ -252,11 +254,12 @@ Game.EntityRepository.define('rock lizard', {
     maxHp: 4,
     attackValue: 2,
     defenseValue: 5,
+    bumpsThings: true,
     digRate: 20,
     corpseFoodValue: 45,
     defaultActionDuration: 1350,
     mixins: [Game.EntityMixins.AggressiveRoamingBehaviorController, Game.EntityMixins.MeleeAttacker, Game.EntityMixins.Destructible, Game.EntityMixins.Digger, Game.EntityMixins.CorpseDropper,
-             Game.EntityMixins.ExperienceGainer, Game.EntityMixins.RandomStatGainer]
+             Game.EntityMixins.ExperienceGainer, Game.EntityMixins.RandomStatGainer, Game.EntityMixins.RandomMoveChooser]
 });
 
 Game.EntityRepository.define('whip-spine', {
@@ -266,11 +269,12 @@ Game.EntityRepository.define('whip-spine', {
     foreground: 'green',
     maxHp: 9,
     attackValue: 3,
+    bumpsThings: true,
     corpseFoodValue: 30,
     moveDuration: 350,
     meleeDuration: 3800,
     mixins: [Game.EntityMixins.AggressiveRoamingBehaviorController, Game.EntityMixins.MeleeAttacker, Game.EntityMixins.Destructible, Game.EntityMixins.Seer, Game.EntityMixins.CorpseDropper,
-             Game.EntityMixins.Retaliator, Game.EntityMixins.ExperienceGainer, Game.EntityMixins.RandomStatGainer]
+             Game.EntityMixins.Retaliator, Game.EntityMixins.ExperienceGainer, Game.EntityMixins.RandomStatGainer, Game.EntityMixins.RandomMoveChooser]
 });
 
 
@@ -282,11 +286,12 @@ Game.EntityRepository.define('ooze', {
     maxHp: 10,
     attackValue: 5,
     sightRadius: 2,
+    bumpsThings: true,
     allies: ['giant zombie symbiote','ooze'],
     baseBehavior: Game.EntityBehaviors.AggressiveWanderBehavior,
     behaviors: [Game.EntityBehaviors.AggressiveWanderBehavior],
     mixins: [Game.EntityMixins.AggressiveRoamingBehaviorController, Game.EntityMixins.MeleeAttacker, Game.EntityMixins.Destructible, Game.EntityMixins.Seer,
-             Game.EntityMixins.ExperienceGainer, Game.EntityMixins.RandomStatGainer, Game.EntityMixins.Allier]
+             Game.EntityMixins.ExperienceGainer, Game.EntityMixins.RandomStatGainer, Game.EntityMixins.Allier, Game.EntityMixins.RandomMoveChooser]
 });
 
 Game.EntityRepository.define('giant zombie symbiote', {
@@ -299,13 +304,52 @@ Game.EntityRepository.define('giant zombie symbiote', {
     defenseValue: 16,
     level: 5,
     sightRadius: 4,
+    bumpsThings: true,
     moveDuration: 1250,
     meleeDuration: 900,
     allies: ['ooze'],
     baseBehavior: Game.EntityBehaviors.AggressiveWanderBehavior,
     behaviors: [Game.EntityBehaviors.AggressiveWanderBehavior],
     mixins: [Game.EntityMixins.GiantZombieActor, Game.EntityMixins.MeleeAttacker, Game.EntityMixins.Destructible, Game.EntityMixins.CorpseDropper, Game.EntityMixins.Seer, 
-             Game.EntityMixins.ExperienceGainer, Game.EntityMixins.RandomStatGainer, Game.EntityMixins.Allier]
+             Game.EntityMixins.ExperienceGainer, Game.EntityMixins.RandomStatGainer, Game.EntityMixins.Allier, Game.EntityMixins.RandomMoveChooser]
 }, {
     disableRandomCreation: true
 });
+/*
+Game.EntityRepository.define('busy-bug', {
+    name: 'busy-bug',
+    character: 'x',
+    description: "It looks, and acts, like a disturbingly large cross between a spider and a sea urchin.",
+    foreground: '#937',
+    maxHp: 3,
+    attackValue: 4,
+    defenseValue: 1,
+    sightRadius: 2,
+    bumpsThings: true,
+    allies: ['busy-bug'],
+    baseBehavior: Game.EntityBehaviors.DangerousWanderBehavior,
+    behaviors: [Game.EntityBehaviors.DangerousWanderBehavior],
+    mixins: [Game.EntityMixins.AggressiveRoamingBehaviorController, Game.EntityMixins.MeleeAttacker, Game.EntityMixins.Destructible, Game.EntityMixins.Seer,
+             Game.EntityMixins.ExperienceGainer, Game.EntityMixins.RandomStatGainer, Game.EntityMixins.Allier, Game.EntityMixins.ExplorationMoveChooser]
+});
+
+
+
+Game.EntityRepository.define('martian', {
+    name: 'martian',
+    character: 'm',
+    description: "Sort of lizard-like, sort of bug-like, and very strange over all. It has six limbs, the middle set of which are more delicate and have finger-like fine manipulators at their ends. The head-analog has faceted, insectoid eyes, and its torso has two rows of... ears? What you at first took to be some marsupial-like pouch is, on closer look, actually a pack slung under its main body! Intelligent, tool-using life!",
+    foreground: '#da9',
+    maxHp: 18,
+    attackValue: 3,
+    defenseValue: 3,
+    sightRadius: 7,
+    corpseFoodValue: 135,
+    moveDuration: 1100,
+    meleeDuration: 950,
+    baseBehavior: Game.EntityBehaviors.AggressiveWanderBehavior,
+    behaviors: [Game.EntityBehaviors.AggressiveWanderBehavior],
+    mixins: [Game.EntityMixins.MartianBehaviorController, Game.EntityMixins.MeleeAttacker, Game.EntityMixins.Destructible, Game.EntityMixins.Seer, Game.EntityMixins.CorpseDropper, Game.EntityMixins.Retaliator,
+             Game.EntityMixins.ExperienceGainer, Game.EntityMixins.RandomStatGainer, Game.EntityMixins.ExplorationMoveChooser]
+});
+*/

@@ -68,11 +68,20 @@ additional player skills / attributes available for improvement during leveling 
 
 TODO NEXT:
 
-1. add new entity: small martian
-1.3.    which can pick up and equip items it finds (5 inven slots?)
-1.7     need a value metric function for things that can be found/gotten - should have option of spec-ing direct values for items, but the function shoudl also support inspection-based valuation)
+1. add a busy-bug creature that's an exploration-based mover
+
+2. BUG partially eaten food descriptions no longer showing up for examine and inven list
+
+3. add new entity: small martian (colored @? m? a (references @)? p? other char?)
+3.1     design & build framework for a more volitional AI
+3.3.    which can pick up and equip items it finds (5 inven slots? 5 L? 10kg?)
+3.7     need a value metric function for things that can be found/gotten - should have option of spec-ing direct values for items, but the function should also support inspection-based valuation)
+
 
 4. martian needs a more interesting / better wander mechanism (A* towards a given visible destination - choose a new destination on arrival, OR, weight random space selection against backtracking (until caught in a dead end?))
+    - spot and head-to interesting items
+    
+8. create a flee behavior and add it to appropriate controllers?
 
 15. LOOT (loot tables (re-read blog post); drop rate; etc.)
         oozes sometimes drop loot

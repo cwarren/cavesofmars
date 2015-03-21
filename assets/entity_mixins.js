@@ -112,7 +112,11 @@ Game.EntityMixins.Seer = {
                 }
             });
         return found;
-    }    
+    },
+    canSeeCoord_delta: function(dx,dy) {
+        return this.canSeeCoord(this._x+dx,this._y+dy);
+    }
+    
 }
 
 // This signifies our entity posseses a field of vision of a given radius.
@@ -1711,6 +1715,66 @@ Game.EntityMixins.PlayerStatGainer = {
 };
 
 ////////////////////////////////////////////////////////////////
+// MOVEMENT AND TARGET CHOOSERS
+
+
+Game.EntityMixins.RandomMoveChooser = {
+    name: 'RandomMoveChooser',
+    groupName: 'MoveChooser',
+    init: function(template) {
+        this._maxMoveAttempts = template['maxMoveAttempts'] || 8;
+        this._bumpsThings = template['bumpsThings'] || false;
+    },
+    getMoveCoord: function() {
+        var neighbors = Game.util.coordsNeighboring(this.getX(),this.getY());
+        var moveTarget = neighbors.random();
+        if (this._bumpsThings) {
+            return moveTarget;
+        }
+        var map = this.getMap();
+        //console.dir(map);
+        var attemptLimiter = this._maxMoveAttempts;
+        while (attemptLimiter > 0 && ! map.isWalkable(moveTarget.x, moveTarget.y, this.getZ())) {
+            moveTarget = neighbors.random();
+            attemptLimiter--;
+        }
+        if (attemptLimiter > 0) {
+            return moveTarget;
+        }
+        
+        return {x: this.getX(), y: this.getY()};
+    },
+    listeners: {
+    }
+};
+
+
+Game.EntityMixins.ExplorationMoveChooser = {
+    name: 'ExplorationMoveChooser',
+    groupName: 'MoveChooser',
+    init: function(template) {
+        this._priorPath = [];
+        this._targetPath = [];
+        this._target = {x:0,y:0};
+    },
+    getMoveCoord: function() {
+    },
+    getTarget: function() {
+        return this._target;
+    },
+    setTarget: function(v) {
+        this._target = v;
+    },
+    calculateTargetPath: function() {
+    },
+    listeners: {
+        onMovedTo: function(movedTo) {
+        }
+    }
+};
+
+
+////////////////////////////////////////////////////////////////
 // BEHAVIORS
 
 Game.EntityBehaviors = {};
@@ -1720,6 +1784,11 @@ Game.EntityBehaviors.PeacefulWanderBehavior = {
     name: 'PeacefulWanderBehavior',
     groupName: 'Behavior',
     doBehavior: function(actor) {
+        if (actor.hasMixin('MoveChooser')) {
+            var moveTarget = actor.getMoveCoord();
+            actor.tryMove(moveTarget.x, moveTarget.y, actor.getZ());
+        }
+/*
         var neighbors = Game.util.coordsNeighboring(actor.getX(),actor.getY());
         var moveTarget = neighbors.random();
         var map = actor.getMap();
@@ -1732,7 +1801,7 @@ Game.EntityBehaviors.PeacefulWanderBehavior = {
         if (attemptLimiter > 0) {
             actor.tryMove(moveTarget.x, moveTarget.y, actor.getZ());
         }
-        
+*/        
         return this;
     }
     
@@ -1751,10 +1820,17 @@ Game.EntityBehaviors.DangerousWanderBehavior = {
             }
         }
 */
+/*        
         var neighbors = Game.util.coordsNeighboring(actor.getX(),actor.getY());
         var moveTarget = neighbors.random();
         actor.tryMove(moveTarget.x, moveTarget.y, actor.getZ());
+*/
         
+        if (actor.hasMixin('MoveChooser')) {
+            var moveTarget = actor.getMoveCoord();
+            actor.tryMove(moveTarget.x, moveTarget.y, actor.getZ());
+        }
+
         return this;
     }
     
@@ -1770,11 +1846,17 @@ Game.EntityBehaviors.AggressiveWanderBehavior = {
         if (attackRes) {
             return attackRes;
         }
-        
+
+/*        
         var neighbors = Game.util.coordsNeighboring(actor.getX(),actor.getY());
         var moveTarget = neighbors.random();
         actor.tryMove(moveTarget.x, moveTarget.y, actor.getZ());
-        
+*/        
+        if (actor.hasMixin('MoveChooser')) {
+            var moveTarget = actor.getMoveCoord();
+            actor.tryMove(moveTarget.x, moveTarget.y, actor.getZ());
+        }
+
         return this;
     }
     
@@ -1872,6 +1954,65 @@ Game.EntityBehaviors.MeleeHunterBehavior = {
     
 };
 
+/*
+
+Game.EntityBehaviors.SafePathMovementBehavior = {
+    name: 'SafePathMovementBehavior',
+    groupName: 'Behavior',
+    doBehavior: function(actor) {
+        // if current location is explorationTarget, then return false
+        // if next step in path is dangerous, return false
+        // move to the next step in the path (destructive to path data - unshift)
+        // return this
+    }
+}
+
+Game.EntityBehaviors.ExplorerBehavior = {
+    name: 'ExplorerBehavior',
+    groupName: 'Behavior',
+    doBehavior: function(actor) {
+        // if current location is explorationTarget, then chooseExplorationTarget
+        // if  next step in the exploration path contains or is adjacent to a non-allied entity that has MeleeAttackerBehavior, then
+            // if adjacent safe space exists
+                // move to it
+                // return this
+        // move to next step in the exploration path
+        // return this
+    },
+    chooseExplorationTarget: function(actor) {
+        // pick an interesting space within sensing range and set it to explorationTarget
+        if (actor.isA('Seer')) {
+            var r = actor.getSightRadius();
+            var dx = Game.util.getRandomInteger(r*-1,r);
+            var dy = Game.util.getRandomInteger(r*-1,r);
+            var tryCount = 0;
+            while (! actor.canSeeCoord_delta(dx,dy) && tryCount < 25) {
+                dx = Game.util.getRandomInteger(r*-1,r);
+                dy = Game.util.getRandomInteger(r*-1,r);
+                tryCount++;
+            }
+            
+            if (tryCount >= 25) { return Game.EntityBehaviors.DangerousWanderBehavior; }
+            this._explorationTarget.x
+        }
+        
+        // set up the exploration path (avoid tiles containing or adjacent to non-allied entities that have MeleeAttackerBehavior)
+        // set explorationPathStep to 0
+        this._explorationPathStep = 0;
+        
+    }
+}
+
+Game.EntityBehaviors.FleeingBehavior = {
+}
+
+Game.EntityBehaviors.CollectorBehavior = {
+}
+
+Game.EntityBehaviors.EquipperBehavior = {
+}
+*/
+
 
 ////////////////////////////////////////////////////////////////
 // ACTORS & BEHAVIOR CONTROLLERS
@@ -1933,6 +2074,67 @@ Game.EntityMixins.AggressiveRoamingBehaviorController = {
         }
     }
 }
+
+/*
+Game.EntityMixins.TargetedMovementBehaviorController = {
+    name: 'TargetedMovementBehaviorController',
+    groupName: 'Actor',
+    init: function(template) {
+        this._behaviors = template['behaviors'] || [Game.EntityBehaviors.ExplorerBehavior];
+        this._baseBehavior = template['baseBehavior'] || Game.EntityBehaviors.ExplorerBehavior;
+        this._currentBehavior = this._baseBehavior;
+        this._behaviorMode = 'exploratory'; // [exploratory|fleeing|recovering|hunting|hostile]
+    },
+    act: function() {
+        //console.dir(this);
+        if (! this.handleOngoingAction()) {
+
+            if (this._behaviorMode == 'exploratory') {
+            
+                if (! this._currentBehavior) {
+                    this._currentBehavior = this._baseBehavior;
+                }
+
+                // check for conditions that change _currentBehavior
+//                if (this.hasMixin('Seer') && this.canSee(this.getMap().getPlayer())) {        
+//                    this._currentBehavior = Game.EntityBehaviors.MeleeHunterBehavior;
+//                }
+
+                this._currentBehavior = this._currentBehavior.doBehavior(this);
+                if (! this._currentBehavior) {
+                    this.act();
+                }
+            }
+            else if (this._behaviorMode == 'fleeing') {
+            }
+            else if (this._behaviorMode == 'recovering') {
+            }
+            else if (this._behaviorMode == 'hunting') {
+            }
+            else if (this._behaviorMode == 'hostile') {
+            }
+            else {
+                this._behaviorMode = 'exploratory';
+                this._currentBehavior = this._baseBehavior;
+                this.act();
+                return;
+            }
+            
+
+            this._currentBehavior = this._currentBehavior.doBehavior(this);
+            if (! this._currentBehavior) {
+                this.act();
+            }
+
+            this.getMap().getScheduler().setDuration(this.getLastActionDuration());
+            this.setLastActionDuration(this.getDefaultActionDuration());
+
+            this.raiseEvent('onActed');
+        }
+    }
+}
+*/
+
 
 Game.EntityMixins.GiantZombieActor = Game.util.extendedObj(Game.EntityMixins.AggressiveRoamingBehaviorController, {
     init: function(template) {
