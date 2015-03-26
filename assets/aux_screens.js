@@ -264,8 +264,13 @@ Game.AuxScreen.helpScreen = {
 
             this._display.drawText(1,y,this._color+this._characterLookups[Game.Bindings.Actions.Targeting.CLEAR_OLD_TARGET.unique_id]);
             this._display.drawText(5,y,Game.Bindings.Actions.Targeting.CLEAR_OLD_TARGET.word);
+            y++;
+
+            this._display.drawText(1,y,this._color+'[Enter]');
+            this._display.drawText(10,y,'do it');
 
             y += 2;
+
         }
 
         if (commandSets.indexOf('meta') > -1) {

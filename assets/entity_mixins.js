@@ -1404,6 +1404,26 @@ Game.EntityMixins.CorpseDropper = {
     }
 };
 
+Game.EntityMixins.LootDropperSimple = {
+    name: 'LootDropperSimple',
+    group: 'LootDropper',
+    init: function(template) {
+        this._lootDropChecks = template['lootDropChecks'] || [1];
+        this._lootDropOptions = template['lootDropOptions'] || [];
+    },
+    listeners: {
+        onDeath: function(attacker) {
+            for (var i=0; i<this._lootDropChecks.length; i++) {
+                if (ROT.RNG.getUniform() <= this._lootDropChecks[i]) {
+                    var lootName = this._lootDropOptions.random();
+                    if (Game.ItemRepository.has(lootName)) {
+                        this._map.addItem(this.getX(), this.getY(), this.getZ(), Game.ItemRepository.create(lootName));
+                    }
+                }
+            }
+        }
+    }
+};
 
 Game.EntityMixins.SuicideSpawner = {
     name: 'SuicideSpawner',
@@ -1875,7 +1895,10 @@ Game.EntityBehaviors.MeleeAttackerBehavior = {
         if (actor.hasMixin('Retaliator')) {
             var retaliationTarget = actor.getRetaliationTarget();
             if (retaliationTarget) {
-                if (Game.util.coordsAreAdjacent(retaliationTarget.getX(),retaliationTarget.getY(),actor.getX(),actor.getY())) {
+                if (Game.util.coordsAreAdjacent(retaliationTarget.getX(),retaliationTarget.getY(),actor.getX(),actor.getY())
+                    && (retaliationTarget.getZ()==actor.getZ()) 
+                   )
+                {
                     actor.attack(retaliationTarget);
                     return this;
                 }

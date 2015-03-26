@@ -1972,7 +1972,7 @@ Game.Screen.storyScreen = {
                 /// CODE FOR ITEM TESTING!!!!
                 /////////////////////////////
 
-                var entityTesting = true;
+                var entityTesting = false;
                 /////////////////////////////
                 /// CODE FOR ITEM TESTING!!!!
                 if (entityTesting) {

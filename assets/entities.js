@@ -12,6 +12,8 @@ Game.PlayerTemplate = {
     inventorySlots: 42,
     statPointsPerLevel: 2,
     messageArchiveLimit: 50,
+    weightCapacity: 52000,
+    bulkCapacity: 12000,
 //    fullness: 1000,
     allies: ['teammate'],
     mixins: [Game.EntityMixins.PlayerActor, Game.EntityMixins.MeleeAttacker, Game.EntityMixins.RangedAttacker, Game.EntityMixins.MessageRecipient, 
@@ -288,10 +290,12 @@ Game.EntityRepository.define('ooze', {
     sightRadius: 2,
     bumpsThings: true,
     allies: ['giant zombie symbiote','ooze'],
+    lootDropChecks: [.2,.2,.2],
+    lootDropOptions: ['geodic nut','geodic nut','jelly ball','jelly ball','jelly ball','jelly ball','jelly ball'],
     baseBehavior: Game.EntityBehaviors.AggressiveWanderBehavior,
     behaviors: [Game.EntityBehaviors.AggressiveWanderBehavior],
     mixins: [Game.EntityMixins.AggressiveRoamingBehaviorController, Game.EntityMixins.MeleeAttacker, Game.EntityMixins.Destructible, Game.EntityMixins.Seer,
-             Game.EntityMixins.ExperienceGainer, Game.EntityMixins.RandomStatGainer, Game.EntityMixins.Allier, Game.EntityMixins.RandomMoveChooser]
+             Game.EntityMixins.ExperienceGainer, Game.EntityMixins.RandomStatGainer, Game.EntityMixins.Allier, Game.EntityMixins.RandomMoveChooser, Game.EntityMixins.LootDropperSimple]
 });
 
 Game.EntityRepository.define('giant zombie symbiote', {

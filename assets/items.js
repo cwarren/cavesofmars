@@ -377,9 +377,11 @@ Game.ItemRepository.define('sack', {
     maxCarryBulk: 12000,
     accessDuration: 3500, // how long it takes to get something out of or put something in this container
     mixins: [Game.ItemMixins.Container]
-}, {
-    disableRandomCreation: true
-});
+}
+//,{
+//    disableRandomCreation: true
+//}
+);
 
 
 Game.ItemRepository.define('shoulder-strap', {
@@ -396,9 +398,11 @@ Game.ItemRepository.define('shoulder-strap', {
     accessDuration: 6500, // how long it takes to put something in this container
     accessDurationUnpack: 50, // how long it takes to get something out
     mixins: [Game.ItemMixins.Container]
-}, {
-    disableRandomCreation: true
-});
+}
+//, {
+//    disableRandomCreation: true
+//}
+);
 
 Game.ItemRepository.define('bandolier', {
     name: 'bandolier',
