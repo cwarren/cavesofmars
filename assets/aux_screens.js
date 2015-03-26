@@ -43,8 +43,6 @@ Game.AuxScreen.avatarScreen = {
         return this._colors;
     },
     render: function() {
-        //this._display.drawText(2,2,'avatar screen');
-        // HP - TODO: color by HP fraction
         if (this._player.getHp() <= 0) {
             this._display.drawText(0,1,'%c{black}%b{red}!! D E A D !!');
         } else {
@@ -58,7 +56,6 @@ Game.AuxScreen.avatarScreen = {
         // ranged atk
         this._display.drawText(0,4,this._colors+vsprintf('Melee Atk: %d', [this._player.getAttackValue()]));
         this._display.drawText(0,5,this._colors+vsprintf('Range Atk: %d', [this._player.getRangedAttackValue()]));
-//        this._display.drawText(Math.floor(this._width/2),3,vsprintf('Ranged Atk: %d', [this._player.getRangedAttackValue()]));
         
         // defense
         this._display.drawText(0,7,this._colors+vsprintf('Defense: %d', [this._player.getDefenseValue()]));

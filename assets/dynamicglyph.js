@@ -26,6 +26,8 @@ Game.DynamicGlyph = function(properties) {
     // Setup the object's mixins
     var mixins = properties['mixins'] || [];
     for (var i = 0; i < mixins.length; i++) {
+        this.includeMixin(mixins[i]);
+/*    
         // Copy over all properties from each mixin as long
         // as it's not the name, init, or listeners property. We
         // also make sure not to override a property that
@@ -53,7 +55,8 @@ Game.DynamicGlyph = function(properties) {
                 // Add the listener.
                 this._listeners[key].push(mixins[i].listeners[key]);
             }
-        }        
+        }
+*/
     }
     
     for (var i = 0; i < mixins.length; i++) {
@@ -66,6 +69,39 @@ Game.DynamicGlyph = function(properties) {
 };
 // Make dynamic glyphs inherit all the functionality from glyphs
 Game.DynamicGlyph.extend(Game.Glyph);
+
+Game.DynamicGlyph.prototype.includeMixin = function(mi) {
+        // Copy over all properties from each mixin as long
+        // as it's not the name, init, or listeners property. We
+        // also make sure not to override a property that
+        // already exists on the entity.
+        for (var key in mi) {
+            if (key != 'init' && key != 'name' && key != 'listeners' && !this.hasOwnProperty(key)) {
+                this[key] = mi[key];
+            }
+        }
+        // Add the name of this mixin to our attached mixins
+        this._attachedMixins[mi.name] = true;
+        // If a group name is present, add it
+        if (mi.groupName) {
+            this._attachedMixinGroups[mi.groupName] = true;
+        }
+        
+        // Add all of our listeners
+        if (mi.listeners) {
+            for (var key in mi.listeners) {
+                // If we don't already have a key for this event in our listeners
+                // array, add it.
+                if (!this._listeners[key]) {
+                    this._listeners[key] = [];
+                }
+                // Add the listener.
+                this._listeners[key].push(mi.listeners[key]);
+            }
+        }  
+}
+
+
 
 Game.DynamicGlyph.prototype.hasMixin = function(obj_or_name) {
     // Allow passing the mixin itself or the name / group name as a string

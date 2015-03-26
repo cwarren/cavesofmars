@@ -68,6 +68,16 @@ additional player skills / attributes available for improvement during leveling 
 
 TODO NEXT:
 
+0.5 BUG: very strange behavior with containers
+    a sack, with stuff
+    a shoulderstrap with BIG thing
+    attempting to unpack the sack instead unpacks the shoulder strap
+    mass status (current & compared to limits) not working - fails to add mass for item in shoulder strap, fails to re-calc appropriate when that item is dropped
+    after mucking around with that for a bit, can't unpack the sack at all!
+        after packing something else in it, can unpack it as normal
+    NOTE: looks like maybe an issue with tracking which container the player is trying to act upon?
+    
+
 1. add a busy-bug creature that's an exploration-based mover
     - develop a model for exploration-based AI
 

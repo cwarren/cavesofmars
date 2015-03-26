@@ -1119,7 +1119,7 @@ Game.Screen.unpackItemSelectionScreen = new Game.Screen.ItemListScreen({
     canSelect: true,
     canSelectMultipleItems: true,
     ok: function(selectedItems) {
-        var targetContainer = Game.Screen.packScreen.selectedContainer;
+        var targetContainer = Game.Screen.unpackScreen.selectedContainer;
         var pMap = this._player.getMap();
         var px = this._player.getX();
         var py = this._player.getY();
@@ -1764,103 +1764,7 @@ Game.Screen.helpScreenGeneral = {
     }
 };
 
-/*
-// CSW TODO - put key bindings in a separate file to that they can be referenced here
-// Define our help screen
-Game.Screen.helpScreenNumpad = {
-    render: function(display) {
-        var text =   'CAVES of MARS';
-        var border = '-------------';
-        var y = 0;
-        display.drawText(Game.getScreenWidth() / 2 - text.length / 2, y++, text);
-        display.drawText(Game.getScreenWidth() / 2 - text.length / 2, y++, border);
-        y += 1;
-        display.drawText(1, y++, 'NUMPAD CONTROLS: Use the number pad for movement, run into something to hit it');
-        y += 2;
-        display.drawText(1, y++, '[l] (lowercase L) to look around you');
-        display.drawText(1, y++, '[g] to pick up something');
-        display.drawText(1, y++, '[d] to drop something');
-        display.drawText(1, y++, '[x] to examine carried items');
-        display.drawText(1, y++, '[E] to eat something');
-        display.drawText(1, y++, '[f] to fire/fling something');
-        display.drawText(1, y++, '[w] to holdInHands something');
-        display.drawText(1, y++, '[W] to wear something');
-        display.drawText(1, y++, '[<],[>] up a level and down a level respectively');
-        display.drawText(1, y++, '[?] to show this help screen');
-        display.drawText(1, y++, '[\\] to switch to laptop key bindings');
-        y = Game.getScreenHeight()-1;
-        text = '%c{yellow}--- press space key to continue ---';
-        display.drawText(Game.getScreenWidth() / 2 - text.length / 2, y++, text);
-    },
-    setParentScreen: function(screen) {
-        this._parentScreen = screen;
-    },
-    handleInput: function(inputType, inputData) {
-        if (inputData.keyCode === ROT.VK_SPACE) {
-            if (Game.getGameStage()=='starting') {
-                // NOTE: this brief timeout gives time for the input to clear (so the next screen isn't skipped over)
-                setTimeout(function(){
-                    Game.Screen.playScreen.setSubScreen(Game.Screen.storyScreen);
-                },40);
-            } else {
-                Game.Screen.playScreen.setSubScreen(null);
-            }
-        }
-        
-    },
-    getHelpSections: function() {
-        return ['datanav'];
-    }
-};
 
-// Define our help screen
-Game.Screen.helpScreenLaptop = {
-    render: function(display) {
-        var text =   'CAVES of MARS';
-        var border = '-------------';
-        var y = 0;
-        display.drawText(Game.getScreenWidth() / 2 - text.length / 2, y++, text);
-        display.drawText(Game.getScreenWidth() / 2 - text.length / 2, y++, border);
-        y += 1;
-        display.drawText(1, y++, 'LAPTOP CONTROLS: Use the qwe,asd,zxc for movement, run into something to hit it');
-        y += 2;
-        display.drawText(1, y++, '[l] (lowercase L) to look around you');
-        display.drawText(1, y++, '[g] to pick up something');
-        display.drawText(1, y++, '[D] to drop something');
-        display.drawText(1, y++, '[X] to examine carried items');
-        display.drawText(1, y++, '[E] to eat something');
-        display.drawText(1, y++, '[f] to fire/fling something');
-        display.drawText(1, y++, '[h] to holdInHands something');
-        display.drawText(1, y++, '[H] to wear something');
-        display.drawText(1, y++, '[<],[>] up a level and down a level respectively');
-        display.drawText(1, y++, '[?] to show this help screen');
-        display.drawText(1, y++, '[\\] to switch to numpad key bindings');
-        y = Game.getScreenHeight()-1;
-        text = '%c{yellow}--- press space key to continue ---';
-        display.drawText(Game.getScreenWidth() / 2 - text.length / 2, y++, text);
-    },
-    setParentScreen: function(screen) {
-        this._parentScreen = screen;
-    },
-    handleInput: function(inputType, inputData) {
-        if (inputData.keyCode === ROT.VK_SPACE) {
-            if (Game.getGameStage()=='starting') {
-                // NOTE: this brief timeout gives time for the input to clear (so the next screen isn't skipped over)
-                setTimeout(function(){
-                    Game.Screen.playScreen.setSubScreen(Game.Screen.storyScreen);
-                },40);
-            } else {
-                Game.Screen.playScreen.setSubScreen(null);
-            }
-        }
-        
-    },
-    getHelpSections: function() {
-        return ['datanav'];
-    }    
-};
-
-*/
 ////////////////////////////////////////////////////////////
 
 Game.Screen.storyScreen = {
@@ -1878,8 +1782,6 @@ Game.Screen.storyScreen = {
         var text = 'CAVES of MARS';
         var border = '-------------';
         var y = 0;
-//        display.drawText(Game.getScreenWidth() / 2 - text.length / 2, y++, text);
-//        display.drawText(Game.getScreenWidth() / 2 - text.length / 2, y++, border);
         y += 3;
         display.drawText(1, y++, this.texts['was_'+Game.getGameStage()]);
         y = Game.getScreenHeight()-1;
@@ -1947,23 +1849,26 @@ Game.Screen.storyScreen = {
 //                player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('human corpse'),player.getX(),player.getY(),player.getZ());
                 player.addItem(Game.ItemRepository.create('sack'));
                 player.addItem(Game.ItemRepository.create('shoulder-strap'));
+                player.addItem(Game.ItemRepository.create('shoulder-strap'));
                 player.addItem(Game.ItemRepository.create('bandolier'));
                 player.addItem(Game.ItemRepository.create('stone shot'));
                 player.addItem(Game.ItemRepository.create('stone shot'));
                 player.addItem(Game.ItemRepository.create('iron shot'));
                 player.addItem(Game.ItemRepository.create('iron shot'));
 
-//                for (var i=0;i<45;i++) {
-//                    player.addItem(Game.ItemRepository.createRandom());
-//                }
+                for (var i=0;i<6;i++) {
+                    player.addItem(Game.ItemRepository.createRandom());
+                    player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('lodestone'),player.getX(),player.getY(),player.getZ());
+                }
                 
-//                for (var i=0;i<6;i++) {
+                for (var i=0;i<24;i++) {
+                    player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.createRandom(),player.getX(),player.getY(),player.getZ());
 //                    player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('human corpse'),player.getX(),player.getY(),player.getZ());
 //                    player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('geodic nut'),player.getX(),player.getY(),player.getZ());
 //                    player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('geodic nut'),player.getX(),player.getY(),player.getZ());
 //                    player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('spore-y mass'),player.getX(),player.getY(),player.getZ());
 //                    player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('lodestone'),player.getX(),player.getY(),player.getZ());
-//                }
+                }
 /*
                   player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('plated leather armor'),player.getX(),player.getY(),player.getZ());
 
