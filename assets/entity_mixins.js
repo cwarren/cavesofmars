@@ -113,6 +113,21 @@ Game.EntityMixins.Seer = {
             });
         return found;
     },
+    getVisibleCells: function() {
+        var visibleCells = {'byDistance':{}};
+        for (var i=0;i<=r;i++) {
+            visibleCells['byDistance'][r] = {};
+        }
+        this.getMap().getFov(this.getZ()).compute(
+            this.getX(), this.getY(), 
+            this.getSightRadius(), 
+            function(x, y, radius, visibility) {
+                visibleCells[x+','+y] = 1;
+                visibleCells['byDistance'][radius][x+','+y] = 1;
+            }
+        );
+        return visibleCells;                
+    },
     canSeeCoord_delta: function(dx,dy) {
         return this.canSeeCoord(this._x+dx,this._y+dy);
     }

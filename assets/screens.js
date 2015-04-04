@@ -1879,7 +1879,7 @@ Game.Screen.storyScreen = {
 
                 var entityTesting = false;
                 /////////////////////////////
-                /// CODE FOR ITEM TESTING!!!!
+                /// CODE FOR ENTITY TESTING!!!!
                 if (entityTesting) {
                     console.log('entity testing code is active');
                 
@@ -1890,8 +1890,14 @@ Game.Screen.storyScreen = {
 //                player.addItem(Game.ItemRepository.create('iron shot'));
 //                player.addItem(Game.ItemRepository.create('iron shot'));
 
-//                for (var i=0;i<15;i++) {
-//                    player.getMap().addEntityAtRandomPosition(Game.EntityRepository.create('martian'),0);
+//                for (var i=0;i<1;i++) {
+                    var bb = Game.EntityRepository.create('angry-bug');
+                    bb.setPosition(player.getX()+2,player.getY()+2,0);
+                    player.getMap().addEntity(bb);
+                    Game.BB = bb;
+//                    player.getMap().addEntityAtRandomPosition(bb,0);
+                    
+                    //console.dir(Game.ALL_THINGS[bb.getKey()]);
 //                }
                 
 //                for (var i=0;i<6;i++) {
@@ -1904,7 +1910,7 @@ Game.Screen.storyScreen = {
 
                 */
                 }
-                /// CODE FOR ITEM TESTING!!!!
+                /// CODE FOR ENTITY TESTING!!!!
                 /////////////////////////////
 
 

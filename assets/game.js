@@ -16,7 +16,7 @@ var Game =  {
     init: function() {
         // Any necessary initialization will go here.
         this._randomSeed = 5 + Math.floor(Math.random()*100000);
-        //this._randomSeed = 29506;
+        //this._randomSeed = 97273;
         console.log(this._randomSeed);
         
         ROT.RNG.setSeed(this._randomSeed);

@@ -319,26 +319,41 @@ Game.EntityRepository.define('giant zombie symbiote', {
 }, {
     disableRandomCreation: true
 });
-/*
 Game.EntityRepository.define('busy-bug', {
     name: 'busy-bug',
     character: 'x',
     description: "It looks, and acts, like a disturbingly large cross between a spider and a sea urchin.",
     foreground: '#937',
-    maxHp: 3,
-    attackValue: 4,
-    defenseValue: 1,
-    sightRadius: 2,
-    bumpsThings: true,
-    allies: ['busy-bug'],
-    baseBehavior: Game.EntityBehaviors.DangerousWanderBehavior,
-    behaviors: [Game.EntityBehaviors.DangerousWanderBehavior],
-    mixins: [Game.EntityMixins.AggressiveRoamingBehaviorController, Game.EntityMixins.MeleeAttacker, Game.EntityMixins.Destructible, Game.EntityMixins.Seer,
-             Game.EntityMixins.ExperienceGainer, Game.EntityMixins.RandomStatGainer, Game.EntityMixins.Allier, Game.EntityMixins.ExplorationMoveChooser]
+    maxHp: 5,
+    corpseFoodValue: 15,
+    moveDuration: 900,
+    mixins: [Game.EntityMixins.PeacefulRoamingBehaviorController, Game.EntityMixins.Destructible,Game.EntityMixins.CorpseDropper, Game.EntityMixins.ExplorationMoveChooser]
+}, {
+    disableRandomCreation: false
 });
 
 
 
+Game.EntityRepository.define('angry-bug', {
+    name: 'angry-bug',
+    character: 'x',
+    description: "It looks, and acts, like a disturbingly large cross between a spider and a sea urchin.",
+    foreground: '#c56',
+    maxHp: 3,
+    attackValue: 4,
+    defenseValue: 1,
+    sightRadius: 1,
+    corpseFoodValue: 15,
+    bumpsThings: true,
+    allies: ['busy-bug','angry-bug'],
+    baseBehavior: Game.EntityBehaviors.DangerousWanderBehavior,
+    behaviors: [Game.EntityBehaviors.DangerousWanderBehavior],
+    mixins: [Game.EntityMixins.AggressiveRoamingBehaviorController, Game.EntityMixins.MeleeAttacker, Game.EntityMixins.Destructible, Game.EntityMixins.Seer,
+             Game.EntityMixins.ExperienceGainer, Game.EntityMixins.RandomStatGainer, Game.EntityMixins.Allier, Game.EntityMixins.CorpseDropper, Game.EntityMixins.ExplorationMoveChooser]
+}, {
+    disableRandomCreation: false
+});
+/*
 Game.EntityRepository.define('martian', {
     name: 'martian',
     character: 'm',

@@ -288,6 +288,11 @@ Game.Map.prototype.addEntity = function(entity) {
 };
 
 Game.Map.prototype.nuke = function(dynamicGlyph) {
+    //if (dynamicGlyph.getName() == 'busy-bug') {
+    //    console.log("nuking "+dynamicGlyph.getKey());
+    //    console.trace();
+    //}
+    
     delete Game.ALL_THINGS[dynamicGlyph.getKey()];
 
     // If the entity is an actor, remove them from the scheduler

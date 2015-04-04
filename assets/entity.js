@@ -280,6 +280,10 @@ Game.Entity.prototype.getSlownessStage = function(actionDurationMultiplier) {
 }
 
 Game.Entity.prototype.tryMove = function(x, y, z, map) {
+    if (x == this.getX() && y == this.getY() && z == this.getZ()) {
+        return true;
+    }
+    
     var map = this.getMap();
 
     // Must use starting z

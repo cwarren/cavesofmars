@@ -1,4 +1,149 @@
 ////////////////////////////////////////////////////////////////
+// SUB-SYSTEMS ARCHITECTURE (EXPERIMENTAL)
+
+/*
+This is a different approach to AI than the one that uses behaviors and controllers.
+
+The sub-systems approach attempts to build complex behaviors out of simple ones. It uses a tree-like structure and control of the actor is delegated up, down, and possibly across the tree.
+
+
+*/
+
+/*
+
+Game.EntityMixins.AI = {};
+
+Game.EntityMixins.AI.Movement = {};
+
+Game.EntityMixins.AI.Movement.LocalMapper = {   // uses any senses to build a set of known cells
+    name: 'LocalMapper',
+    groupName: 'AI.Movement',
+    init: function(template) {
+        this._numMovesToMap = template['numMovesToMap'] || 8;
+        this._reachableMap = {};
+        this._reachableCells = [];        
+    },
+    getNumMovesToMap: function() {
+        return this._numMovesToMap;
+    },
+    setNumMovesToMap: function(v) {
+        this._numMovesToMap = v;
+    },
+    setUpReachables: function() {
+        this._reachableMap = {};
+        this._reachableCells = []; 
+        
+        var map = this.getMap();
+        var z = this.getZ();
+
+        for (ix = this.getX()-this._numMovesToMap; ix<=this.getX()+this._numMovesToMap;ix++) {
+            for (iy = this.getY()-this._numMovesToMap; iy<=this.getY()+this._numMovesToMap;iy++) {
+                this._reachableMap[ix+','+iy] = 10000;
+            }
+        }
+        
+        this._reachableMap[this.getX()+','+this.getY()] = 0;
+
+        var queuedCells = [{'x':this.getX(),'y':this.getY()}];        
+        while (queuedCells.length > 0) {
+            var curCell = queuedCells.shift();
+            var cxcy = curCell.x+','+curCell.y;
+            //if (this._reachableMap.hasOwnProperty(cxcy)) {
+                var baseReach = this._reachableMap[cxcy];
+                neighbors = Game.util.coordsNeighboring(curCell.x,curCell.y);
+                for (i=0;i<9;i++) {
+                    var nx = neighbors[i].x;
+                    var ny = neighbors[i].y;
+                    var nxny = nx+','+ny;
+                    if (this._reachableMap.hasOwnProperty(nxny)) {
+                        if (map.getTile(nx, ny, z).isWalkable()) {
+                            if (this._reachableMap[nxny] > baseReach+1) {
+                                if (this._reachableMap[nxny] == 10000) {
+                                    queuedCells.push(neighbors[i]);
+                                }
+                                this._reachableMap[nxny] = baseReach + 1;
+                            }
+                        }
+                    }
+                }
+            //}
+        }
+        
+        var rKeys = Object.keys(this._reachableMap);
+        for (var i=0; i<rKeys.length; i++) {
+            if (this._reachableMap[rKeys[i]] < 10000) {
+                this._reachableCells.push(rKeys[i]); 
+            }
+        }        
+    },
+    listeners: {
+    }
+};
+
+Game.EntityMixins.AI.Movement.DestinationChooser_Wander = { // picks a target cell from among the known cells
+    name: 'DestinationChooser_Wander',
+    groupName: 'AI.Movement',
+    init: function(template) {
+    },
+    abc: function() {
+    },
+    listeners: {
+    }
+};
+
+Game.EntityMixins.AI.Movement.PathMapper_Djikstra = { // builds a djikstra map out from the target cell (out to sight radius of actor)
+    name: 'PathMapper_Djikstra',
+    groupName: 'AI.Movement',
+    init: function(template) {
+    },
+    abc: function() {
+    },
+    listeners: {
+    }
+};
+
+Game.EntityMixins.AI.Movement.PathChooser_Simple = { // picks next step as cheapest adjacent one
+    name: 'PathChooser_Simple',
+    groupName: 'AI.Movement',
+    init: function(template) {
+    },
+    abc: function() {
+    },
+    listeners: {
+    }
+};
+
+Game.EntityMixins.AI.Movement.PathChooser_Smart = { // calcs the path costs to the desination, accounting for avoiding dangerous cells
+    name: 'PathChooser_Smart',
+    groupName: 'AI.Movement',
+    init: function(template) {
+    },
+    abc: function() {
+    },
+    listeners: {
+    }
+};
+
+Game.EntityMixins.AI.Movement.DangerChecker = { // used by PathChooser_Smart (and possibly others) to determine if a given cell counts as 'dangerous' 
+    name: 'DangerChecker',
+    groupName: 'AI.Movement',
+    init: function(template) {
+    },
+    abc: function() {
+    },
+    listeners: {
+    }
+};
+
+*/
+
+//Game.EntityMixins.AI.DestinationChooser_Wander = {};
+
+////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////
 // BEHAVIORS
 
 Game.EntityBehaviors = {};
@@ -240,23 +385,97 @@ Game.EntityMixins.ExplorationMoveChooser = {
     name: 'ExplorationMoveChooser',
     groupName: 'MoveChooser',
     init: function(template) {
-        this._priorPath = [];
-        this._targetPath = [];
-        this._target = {x:0,y:0};
+        this._maxMoveAttempts = template['maxMoveAttempts'] || 8;
+        this._bumpsThings = template['bumpsThings'] || false;
+        this._favoredDirs = [];
+        //  012
+        //  7 3
+        //  654
+        this._movementDirectionOffsets = [
+            {'dx':-1,'dy':-1},
+            {'dx':0,'dy':-1},
+            {'dx':1,'dy':-1},
+            {'dx':1,'dy':0},
+            {'dx':1,'dy':1},
+            {'dx':0,'dy':1},
+            {'dx':-1,'dy':1},
+            {'dx':-1,'dy':0}
+        ];
+        this.selectFavoredDirs(-1);
+        this._exploreCounter = 0;
+    },
+    selectFavoredDirs: function(notThisDir) {
+        //console.log('selecting new favored dir other than '+notThisDir);
+        this._favoredDirs = [];
+        var base = Game.util.getRandomInteger(0,7);
+        while (base == notThisDir) {
+            base = Game.util.getRandomInteger(0,7);
+        }
+        this._favoredDirs.push(base);
+        this._favoredDirs.push(base);
+        this._favoredDirs.push(base);
+        this._favoredDirs.push(base);
+        this._favoredDirs.push(base);
+        this._favoredDirs.push(base);
+
+        this._favoredDirs.push((base+1+8)%8);
+        this._favoredDirs.push((base+1+8)%8);
+
+        this._favoredDirs.push((base-1+8)%8);
+        this._favoredDirs.push((base-1+8)%8);
+
+        this._favoredDirs.push((base+2+8)%8);
+
+        this._favoredDirs.push((base-2+8)%8);
+/*  */
+        this._exploreCounter = 0;
+        //console.dir(this);
+    },
+    getPotentialMove: function() {
+        var moveDir = this._favoredDirs.random();
+        //console.log('moveDir: '+moveDir);
+        return {'x':this.getX()+this._movementDirectionOffsets[moveDir].dx,'y':this.getY()+this._movementDirectionOffsets[moveDir].dy};
     },
     getMoveCoord: function() {
-    },
-    getTarget: function() {
-        return this._target;
-    },
-    setTarget: function(v) {
-        this._target = v;
-    },
-    calculateTargetPath: function() {
-    },
-    listeners: {
-        onMovedTo: function(movedTo) {
+        // get a target
+        // if can dig and hit, just try to go there
+        // if can only hit, pick new targets until tile is walkable
+        // if can't hit and can't dig, pick new targets until tile is walkable and empty of other entities        
+
+        var moveTarget = this.getPotentialMove();
+        var map = this.getMap();
+        var attemptLimiter = this._maxMoveAttempts;
+        if (this._bumpsThings) {
+            if (! this.hasMixin('Digger')) {
+                //console.log('bumping no digger');
+                while (attemptLimiter > 0 && ! map.getTile(moveTarget.x, moveTarget.y, this.getZ()).isWalkable()) {
+                    moveTarget = this.getPotentialMove();
+                    attemptLimiter--;
+                }        
+            }
+        } else {
+            //console.log('no bumping');
+            while (attemptLimiter > 0 && ! map.isWalkable(moveTarget.x, moveTarget.y, this.getZ())) {
+                moveTarget = this.getPotentialMove();
+                attemptLimiter--;
+            }
         }
+        
+        if (attemptLimiter > 0) {
+            this._exploreCounter++;
+            if (this._exploreCounter > 20) {
+                //console.log('changing explore direction');
+                this.selectFavoredDirs(this._favoredDirs[0]);
+            }
+            //console.log('trying move target: '+moveTarget.x+','+moveTarget.y);
+            return moveTarget;
+        }
+        
+        //console.log('overshot attempt limiter');
+
+        this.selectFavoredDirs(this._favoredDirs[0]);
+        return {x: this.getX(), y: this.getY()};
+    /*    */
     }
 };
 
