@@ -32,6 +32,9 @@ Game.ItemMixins.Edible = {
             return descrLead + Game.Item.prototype.describe.call(this);
         }
     },
+    getName: function() {
+        return this.describe();
+    },
     getFoodValue: function() {
         return Math.trunc(this._foodDensity * this._invBulk / 1000);
     },

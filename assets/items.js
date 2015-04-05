@@ -52,6 +52,20 @@ Game.ItemRepository.define('geodic nut', {
     mixins: [Game.ItemMixins.Edible,Game.ItemMixins.Ammo]
 });
 
+Game.ItemRepository.define('powerbar', {
+    name: 'powerbar',
+    group: 'food',
+    character: Game.ItemRepository.Symbol['food'],
+    invWeight: 200,
+    invBulk: 100,
+    foreground: '#58c',
+    foodValue: 460,
+    description: "Visually appealing, a delight to the taste buds, and containing multiple meals worth of sustenance. Well..... one out of three aint bad...",
+    mixins: [Game.ItemMixins.Edible]
+}, {
+    disableRandomCreation: true
+});
+
 Game.ItemRepository.define('corpse', {
     name: 'corpse',
     group: 'corpse',

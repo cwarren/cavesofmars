@@ -1926,6 +1926,9 @@ Game.Screen.storyScreen = {
                     for (var i=0;i<adjCoords.length;i++) {
                         if (map.getTile(adjCoords[i].x, adjCoords[i].y, 0) == Game.Tile.floorTile) {
                             map.addItem(adjCoords[i].x, adjCoords[i].y,0,Game.ItemRepository.create('rock'));
+                            if (ROT.RNG.getUniform() < .35) {
+                                map.addItem(adjCoords[i].x, adjCoords[i].y,0,Game.ItemRepository.create('powerbar'));
+                            }
                         }
 
                         var adjCoords2 = Game.util.coordsNeighboring(adjCoords[i].x, adjCoords[i].y);
@@ -1935,8 +1938,13 @@ Game.Screen.storyScreen = {
                             if ((ROT.RNG.getUniform() < .5) && (addX!=px) && (addY!=py) && (map.getTile(addX, addY, 0) == Game.Tile.floorTile)) {
                                 map.addItem(addX, addY,0,Game.ItemRepository.create('rock'));
                             }
+                            if (ROT.RNG.getUniform() < .05) {
+                                map.addItem(adjCoords[i].x, adjCoords[i].y,0,Game.ItemRepository.create('powerbar'));
+                            }
                         }
                     }
+                    
+                    
                 }
                 /*
                 // falling from that height *HURTS*
