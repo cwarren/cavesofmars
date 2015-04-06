@@ -86,12 +86,11 @@ TODO NEXT:
 8. create a flee behavior and add it to appropriate controllers?
 
 15. LOOT (loot tables (re-read blog post); drop rate; etc.)
-        oozes sometimes drop loot
         give small martians some starting loot
         
 5. martian drops inventory on death
 
-10. add stackability to some items
+10. add stackability to some items?
     - Stackable mixin? inherent to items? Latter is easier to handle (no checking for mixins)
         - perhaps store a function for isStackable (function defined in the item template)
     - OR, contemplate a soft-stack model, where adjacent items of the same type are shown as a single with a count while remaining independent under the hood
@@ -106,10 +105,8 @@ TODO NEXT:
 
 14.5 refactor packing and unpacking to use the above utility functions
 
-17. figure out where geodic nuts and jelly balls come from (oozes, perhaps? introduce several kinds of ooze, and when they are adjacent they have a chance to spawn a jelly ball or a geodic nut (depending on other circumstances?))
-    - when an ooze en
+18. mobs respond to ranged attacks by moving towards the source IF the source is in visual range and the mob is a melee attacker, away otherwise
 
-18. mobs respond to ranged attacks by moving towards the source IF the source is in visual range
 
 19. item mixin for materialsSource: max sourced, min sourced, _materialsRemaining (random from min to max), possible materials loot table
     - figure out how this works with eating!
@@ -157,7 +154,7 @@ TODO NEXT:
 30. cooking - requires certain equipment and conditions; reduces bulk by factor of X, weight by X/2, increases food density by at least 1/X
     NOTE: this is essentially crafting
     
-33. figure out how to mark tiles as non-spawnable
+33. figure out how to mark tiles as non-spawnable and/or creature averting
 33.5 add mechanism to allow player to do such marking
     via crafting, allow creation of:
         - doors (open, close, lock, break, etc.)
