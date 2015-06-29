@@ -130,6 +130,7 @@ var Game =  {
     setControlScheme: function(newScheme) {
         this._controlScheme = newScheme;
         Game.AuxScreen.helpScreen.setForBinding(this._controlScheme);
+        //this._aux_screen_help.render();
     },
     
     switchScreen: function(screen) {

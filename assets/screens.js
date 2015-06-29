@@ -341,6 +341,7 @@ Game.Screen.playScreen = {
             } else {
                 Game.setControlScheme(Game.Bindings.BindingSet_Numpad);
             }
+            Game.AuxScreen.helpScreen.refresh(this.getHelpSections());
             return;
 
         } else if (gameAction === Game.Bindings.Actions.Meta.HELP) {

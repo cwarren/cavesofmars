@@ -18,6 +18,30 @@ Game.Map.Cave = function() {
     // Add the player
 //    this.addEntityAtRandomPosition(player, 0);
 
+
+    for (var z = 0; z < this._depth; z++) {
+        // 15 entities per floor
+        for (var i = Game.util.getRandomInteger(-3,3); i < 15; i++) {
+            var entity = Game.RandomEntitiesByLevel[z].getOne();
+            this.addEntityAtRandomPosition(entity, z);
+
+            // Level up the entity based on the floor
+            if (entity.hasMixin('ExperienceGainer')) {
+                for (var level = Game.util.getRandomInteger(-1,1); level < z; level++) {
+                    entity.giveExperience(entity.getNextLevelExperience() -
+                        entity.getExperience());
+                }
+            }
+        }
+
+        // 15 random items per floor
+        for (var i = Game.util.getRandomInteger(-3,3); i < 15; i++) {
+            // Add a random entity
+            this.addItemAtRandomPosition(Game.RandomInitialItemsByLevel[z].getOne(),z);
+        }
+    }    
+
+/*
     // Add random entities and items to each floor.
     for (var z = 0; z < this._depth; z++) {
         // 15 entities per floor
@@ -122,6 +146,8 @@ Game.Map.Cave = function() {
             this.addItemAtRandomPosition(Game.ItemRepository.create(templatesDeep.random()),d);
         }
     }
+    
+*/
 
 /*
 

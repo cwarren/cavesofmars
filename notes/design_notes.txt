@@ -68,27 +68,33 @@ additional player skills / attributes available for improvement during leveling 
 
 TODO NEXT:
 
-3. split repository functionality into two separate objects: one object handles factory resposibility for creation, other handles randomizing
-    NOTE: actually, can just leave the current repository as is, but create a new randomTable object that uses a repository
-3.5. add more randomizing options: non-flat distribution, randomized tables, etc.
+0. for random tables, think about an associated things system (e.g. if this thing is chosen, then a chance to choose these others as well)
 
-4. re-balance distribution of initial items
+
+1. fill in random tables for entities and items
+1.1. entities by level DONE
+1.2 items by level (loot-ish)
+1.3 initial item distrib (by level) DONE
+
+
+3. revisit entity renewal and progression processes
+3.1. think perhaps about how to deal with entities actually using stairs
+3.2. with the per-level spawning stuff can't just re-add things at the top and have them filter down
+    ??? consider actual specific, marked spawn points (i.e. holes too small for the player but large enough for creature to pass through) ???
+    !!! what's the in-story justification for adding new creatures ?
 
 5. add new entity: small martian (colored @? m? a (references @)? p? other char?)
 5.1     design & build framework for a more volitional AI
 5.3.    which can pick up and equip items it finds (5 inven slots? 5 L? 10kg?)
 5.7     need a value metric function for things that can be found/gotten - should have option of spec-ing direct values for items, but the function should also support inspection-based valuation)
+5.8.    give small martians some starting loot
+5.9. martian drops inventory on death
 
 
-6. martian needs a more interesting / better wander mechanism (A* towards a given visible destination - choose a new destination on arrival, OR, weight random space selection against backtracking (until caught in a dead end?))
-    - spot and head-to interesting items
+6. martian needs to be able to spot and head to interesting items
     
 8. create a flee behavior and add it to appropriate controllers?
 
-15. LOOT (loot tables (re-read blog post); drop rate; etc.)
-        give small martians some starting loot
-        
-5. martian drops inventory on death
 
 10. add stackability to some items?
     - Stackable mixin? inherent to items? Latter is easier to handle (no checking for mixins)
