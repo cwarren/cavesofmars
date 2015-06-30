@@ -439,13 +439,26 @@ Game.EntityMixins.NonRecuperatingDestructible = {
             }
 
             var player = this.getMap().getPlayer();
-            if (player.getZ() == 0) {
-                return;
-            }
             var newZ = Game.util.getRandomInteger(0,player.getZ()-1);
+            if (player.getZ() == 0) {
+                newZ = Game.util.getRandomInteger(2,4);
+            }
+
+            var entity = Game.RandomEntitiesByLevel[newZ].getOne();
+            this.getMap().addEntityAtRandomPosition(entity, newZ);
+
+            // Level up the entity based on the floor
+            if (entity.hasMixin('ExperienceGainer')) {
+                for (var level = Game.util.getRandomInteger(-1,1); level < newZ; level++) {
+                    entity.giveExperience(entity.getNextLevelExperience() -
+                        entity.getExperience());
+                }
+            }
             
-            var entity = Game.EntityRepository.createRandom();
-            this.getMap().addEntityAtRandomPosition(entity,newZ);
+            console.log("death! new entity placed on "+newZ);
+            console.dir(entity);
+//            var entity = Game.EntityRepository.createRandom();
+//            this.getMap().addEntityAtRandomPosition(entity,newZ);
         }
     }
 }

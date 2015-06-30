@@ -139,11 +139,22 @@ Game.ItemRepository.define('lodestone', {
     character: Game.ItemRepository.Symbol['mineral'],
     invWeight: 20500,
     invBulk: 1150,
-    description: "a good sized chunk of stone - you could throw it at something, but it's large enough that it'd be a bit awkward doing so.",
+    description: "a good sized chunk of surprisingly heavy stone.",
     foreground: 'blue'
 }, {
     disableRandomCreation: true
 });
+
+Game.ItemRepository.define('iron nugget', {
+    name: 'iron nugget',
+    group: 'mineral',
+    character: Game.ItemRepository.Symbol['mineral'],
+    invWeight: 4785,
+    invBulk: 975,
+    foreground: '#ca9',
+    description: "A large mass of iron, with various obvious impurities. Not much use... in it's current state."
+});
+
 
 // ----------------------------------------------
 
@@ -157,8 +168,8 @@ Game.ItemRepository.define('stone shot', {
     invBulk: 16,
     foreground: '#bbb',
     description: "A small-ish, rounded piece of dense stone. Perhaps intentionally shaped?",
-    rangedAttackDamageBonus: 1,
-    reuseChance: .3,
+    rangedAttackDamageBonus: 2,
+    reuseChance: .35,
     mixins: [Game.ItemMixins.Ammo]
 });
 
@@ -170,8 +181,8 @@ Game.ItemRepository.define('iron shot', {
     invBulk: 10,
     foreground: '#dcb',
     description: "A large pellet of iron - slightly rusted, but aerodynamically sound",
-    rangedAttackDamageBonus: 4,
-    reuseChance: .6,
+    rangedAttackDamageBonus: 6,
+    reuseChance: .55,
     mixins: [Game.ItemMixins.Ammo]
 });
 
@@ -195,6 +206,20 @@ Game.ItemRepository.define('sling', {
     mixins: [Game.ItemMixins.Shooter]
 });
 
+Game.ItemRepository.define('sling staff', {
+    name: 'sling staff',
+    group: 'shooter',
+    character: Game.ItemRepository.Symbol['shooter'],
+    invWeight: 950,
+    invBulk: 6500,
+    foreground: 'yellow',
+    description: "A staff-like device with a with a large pocket attached to one end by a length of strong cord. Too awkward for small shot, but effective with larger ammo.",
+    rangedAttackDamageAdder: 5,
+    rangedAttackDamageMultipler: 1.25,
+    allowedAmmo: ['rock'],
+    isWeapon: true,
+    mixins: [Game.ItemMixins.Shooter]
+});
 
 // ----------------------------------------------
 
@@ -254,7 +279,7 @@ Game.ItemRepository.define('stone sword', {
     invWeight: 1700,
     invBulk: 3500,
     foreground: 'white',
-    attackValue: 9,
+    attackValue: 8,
     isWeapon: true,
     description: "A long piece of something like wood has been embedded with carefully shaped and fit pieces of dark glass. Primitive, but very effective.",
     mixins: []
@@ -306,11 +331,25 @@ Game.ItemRepository.define('HEM suit, damaged', {
     character: Game.ItemRepository.Symbol['wearable'],
     invWeight: 16850,
     invBulk: 11700,
-    foreground: 'grey',
+    foreground: 'white',
     defenseValue: 1,
     wearable: true,
     isArmor: true,
     description: "The HEM (Hostile Environment Mitigation) suit is the standard outfit for those working on the surface. It would offer significant protection from scrapes and falls in addition to temperature controls, air supply, comm unit, etc. Sadly, this one has been very badly damaged and so provides only minimal protection. All the complicated systems have also been destroyed."
+}, {
+    disableRandomCreation: true
+});
+
+Game.ItemRepository.define('HEM suit, patched', {
+    name: 'HEM suit, patched',
+    character: Game.ItemRepository.Symbol['wearable'],
+    invWeight: 17925,
+    invBulk: 11900,
+    foreground: 'white',
+    defenseValue: 3,
+    wearable: true,
+    isArmor: true,
+    description: "The HEM (Hostile Environment Mitigation) suit is the standard outfit for those working on the surface. It would offer significant protection from scrapes and falls in addition to temperature controls, air supply, comm unit, etc. This one has been very badly damaged and then had some make-shift repairs done to it. It provides some basic protection, but all the complicated systems are still broken."
 }, {
     disableRandomCreation: true
 });
@@ -354,6 +393,38 @@ Game.ItemRepository.define('HEM suit', {
     wearable: true,
     isArmor: true,
     description: "The HEM (Hostile Environment Mitigation) suit is the standard outfit for those working on the surface. It offers significant protection from scrapes and falls in addition to temperature controls, air supply, comm unit, etc.",
+    mixins: [Game.ItemMixins.DigTool]
+}, {
+    disableRandomCreation: true
+});
+
+Game.ItemRepository.define('HEM-A suit, damaged', {
+    name: 'HEM-A suit, damaged',
+    character: Game.ItemRepository.Symbol['wearable'],
+    invWeight: 22400,
+    invBulk: 18000,
+    foreground: '#8ad',
+    defenseValue: 5,
+    digAdder: .5,
+    wearable: true,
+    isArmor: true,
+    description: "The HEM-A (Hostile Environment Mitigation - Armored) suit is the heavy duty version of the standard HEM suit, designed for work in particularly hazardous environments. It has additional padding, plus Cera-tek composite plates embedded to help protect especially vulnerable areas. It also has the standard temperature controls, air supply, comm unit, etc. Sadly, this one has been very badly damaged and so provides much less protection than it otherwise would, and all the complicated systems have also been destroyed.",
+    mixins: [Game.ItemMixins.DigTool]
+}, {
+    disableRandomCreation: true
+});
+
+Game.ItemRepository.define('HEM-A suit, patched', {
+    name: 'HEM-A suit, damaged',
+    character: Game.ItemRepository.Symbol['wearable'],
+    invWeight: 25400,
+    invBulk: 19000,
+    foreground: '#8ad',
+    defenseValue: 8,
+    digAdder: 1,
+    wearable: true,
+    isArmor: true,
+    description: "The HEM-A (Hostile Environment Mitigation - Armored) suit is the heavy duty version of the standard HEM suit, designed for work in particularly hazardous environments. It has additional padding, plus Cera-tek composite plates embedded to help protect especially vulnerable areas. It also has the standard temperature controls, air supply, comm unit, etc. This one has been very badly damaged and then partially patched up to give a bit more protection, though all the complicated systems have also been destroyed.",
     mixins: [Game.ItemMixins.DigTool]
 }, {
     disableRandomCreation: true
@@ -434,5 +505,41 @@ Game.ItemRepository.define('bandolier', {
     carryTypes: ['shot'],
     mixins: [Game.ItemMixins.Container]
 }, {
+    disableRandomCreation: true
+});
+
+
+Game.ItemRepository.define('knapsack', {
+    name: 'knapsack',
+    group: 'container',
+    character: '?',
+    invWeight: 1650,
+    invBulk: 600,
+    foreground: '#cb6',
+    description: "a heavy-duty container with some structure to it, and shoulder and hip straps to make carrying it (and its contents) MUCH easier. However, getting things into and out of it quite slow.",
+    maxCarryWeight: 32000,
+    maxCarryBulk: 20000,
+    accessDuration: 8500, // how long it takes to get something out of or put something in this container
+    mixins: [Game.ItemMixins.Container]
+} ,{
+    disableRandomCreation: true
+});
+
+Game.ItemRepository.define('belt-sheath', {
+    name: 'belt-sheath',
+    group: 'container',
+    character: '?',
+    invWeight: 450,
+    invBulk: 380,
+    foreground: '#983',
+    description: "an adjustable looped belt system for easily carrying and rapidly accessing a blade of most any size",
+    maxCarryWeight: 3200,
+    maxCarryBulk: 8000,
+    maxCarryQuantity: 1,
+    accessDuration: 300, // how long it takes to get something out of or put something in this container
+    accessDurationUnpack: 100, // how long it takes to get something out
+    carryTypes: ['blade'],
+    mixins: [Game.ItemMixins.Container]
+} ,{
     disableRandomCreation: true
 });

@@ -68,20 +68,18 @@ additional player skills / attributes available for improvement during leveling 
 
 TODO NEXT:
 
+!! DEGUG. initial powerbar placement was in stone! fix this.... (seed 75969)
+
+!! DEGUG. some issue with inven weight not being correctly handled when items unpacked from a container....?
+
+
 0. for random tables, think about an associated things system (e.g. if this thing is chosen, then a chance to choose these others as well)
 
 
 1. fill in random tables for entities and items
-1.1. entities by level DONE
 1.2 items by level (loot-ish)
-1.3 initial item distrib (by level) DONE
 
 
-3. revisit entity renewal and progression processes
-3.1. think perhaps about how to deal with entities actually using stairs
-3.2. with the per-level spawning stuff can't just re-add things at the top and have them filter down
-    ??? consider actual specific, marked spawn points (i.e. holes too small for the player but large enough for creature to pass through) ???
-    !!! what's the in-story justification for adding new creatures ?
 
 5. add new entity: small martian (colored @? m? a (references @)? p? other char?)
 5.1     design & build framework for a more volitional AI
@@ -118,10 +116,10 @@ TODO NEXT:
     - figure out how this works with eating!
 
 
-20. crafting system!
-        two basic operations - break down (consume?) (create raw materials from something), and construct (build something from raw materials and/or other things)
-    base:
-        - material
+20. !!!!!!!!!!!!! design crafting system!
+    two basic operations - break down (consume?) (create raw materials from something), and construct (build something from raw materials and/or other things)
+    base materials & possible sources:
+        - surface
             + leather (generally, creature parts)
             + suit scraps
             + dried mycelium (particular fungus, particular techniques?)
@@ -154,6 +152,22 @@ TODO NEXT:
         - loose walls (rubble tiles)
         - tight walls (cracked stone tiles)
         - containers
+        - tools of various sorts
+        - structures
+            + traps
+        - medicine?
+        - chemicals
+    tools:
+        - metal working tools
+            + metal working energy source
+        - hand tools (working with materials other than metals)
+        - earth-work tools (anything with a dig value)
+        - chemistry tools / cooking tools
+        - material processing/acquiring tools
+    TODO:
+        ! create a crafting tree
+        ! create a crafting recipe set
+        
 
 25. useable items (potions, pods, etc.)
 
