@@ -230,12 +230,30 @@ Game.ItemRepository.define('JAT tool, damaged', {
     invWeight: 1650,
     invBulk: 4100,
     foreground: 'gray',
-    attackValue: 2,
-    digAdder: 3,
+    attackValue: 1,
+    digAdder: 1,
     digMultiplier: .75,
     isWeapon: true,
     isTool: true,
     description: "The JAT (Jack-of-All-Trades) tool is the standard-issue tool for work on Mars. While not as good as a specialized tool, it's at least moderately effective as a shovel, prybar, pick, axe, and walking stick for navigating rough terrain. Unfortunately this one has been badly damaged, but you could still probably hit something with it if you had to.",
+    mixins: [Game.ItemMixins.DigTool]
+}, {
+    disableRandomCreation: true
+});
+
+// Weapons
+Game.ItemRepository.define('JAT tool, patched', {
+    name: 'JAT tool, patched',
+    character: Game.ItemRepository.Symbol['polearm'],
+    invWeight: 1650,
+    invBulk: 4100,
+    foreground: 'gray',
+    attackValue: 2,
+    digAdder: 3,
+    digMultiplier: 1,
+    isWeapon: true,
+    isTool: true,
+    description: "The JAT (Jack-of-All-Trades) tool is the standard-issue tool for work on Mars. While not as good as a specialized tool, it's at least moderately effective as a shovel, prybar, pick, axe, and walking stick for navigating rough terrain. This one was badly damaged, but subsequently somewhat repaired in a makeshift kind of way.",
     mixins: [Game.ItemMixins.DigTool]
 }, {
     disableRandomCreation: true
@@ -415,7 +433,7 @@ Game.ItemRepository.define('HEM-A suit, damaged', {
 });
 
 Game.ItemRepository.define('HEM-A suit, patched', {
-    name: 'HEM-A suit, damaged',
+    name: 'HEM-A suit, patched',
     character: Game.ItemRepository.Symbol['wearable'],
     invWeight: 25400,
     invBulk: 19000,

@@ -79,7 +79,9 @@ TODO NEXT:
 1. fill in random tables for entities and items
 1.2 items by level (loot-ish)
 
+2. add an html input box so tablets can do key-entry
 
+3. make container access an ongoing action (so it can be interrupted part way through (otherwise a previously-out-of-sight entity can kill while the player is e.g. putting something in a sack))
 
 5. add new entity: small martian (colored @? m? a (references @)? p? other char?)
 5.1     design & build framework for a more volitional AI
@@ -118,6 +120,9 @@ TODO NEXT:
 
 20. !!!!!!!!!!!!! design crafting system!
     two basic operations - break down (consume?) (create raw materials from something), and construct (build something from raw materials and/or other things)
+    TODO:
+        ! create a crafting tree
+        ! create a crafting recipe set
     base materials & possible sources:
         - surface
             + leather (generally, creature parts)
@@ -154,6 +159,7 @@ TODO NEXT:
         - containers
         - tools of various sorts
         - structures
+            + forge, cooking hearth, & other installation tools / structures
             + traps
         - medicine?
         - chemicals
@@ -162,11 +168,10 @@ TODO NEXT:
             + metal working energy source
         - hand tools (working with materials other than metals)
         - earth-work tools (anything with a dig value)
+            + things especially for digging
         - chemistry tools / cooking tools
+            + chemistry/cooking energy source
         - material processing/acquiring tools
-    TODO:
-        ! create a crafting tree
-        ! create a crafting recipe set
         
 
 25. useable items (potions, pods, etc.)

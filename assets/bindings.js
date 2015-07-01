@@ -75,13 +75,19 @@ Game.Bindings = {
             INVENTORY_FLING:   {id: 9,  unique_id: Game.util.generateRandomString(24), word:"fire/fling",descr: "fire something from an appropriate missile weapon, or else throw it"},
             INVENTORY_PACK:    {id: 10, unique_id: Game.util.generateRandomString(24), word:"pack",      descr: "pack something into a container"},
             INVENTORY_UNPACK:  {id: 11, unique_id: Game.util.generateRandomString(24), word:"unpack",    descr: "unpack something from a container"},
+            INVENTORY_USE:     {id: 12, unique_id: Game.util.generateRandomString(24), word:"use",       descr: "make use of something that's carried"},
+            INVENTORY_CRAFT:   {id: 13, unique_id: Game.util.generateRandomString(24), word:"craft",     descr: "make something(s) into/out of some other thing(s), possibly using tools and/or structures"}
         },
         DataNav: {
             PAGE_UP:       {id: 1, unique_id: Game.util.generateRandomString(24), word:"page up",         descr: "scroll up by one screens worth"},
             PAGE_DOWN:     {id: 2, unique_id: Game.util.generateRandomString(24), word:"page down",       descr: "scroll down by one screens worth"}
         },
+        World: {
+            LOOK:          {id: 1, unique_id: Game.util.generateRandomString(24), word:"look around",  descr: "get information about some visible space, item, or creature"},
+            BUILD:         {id: 2, unique_id: Game.util.generateRandomString(24), word:"build",        descr: "make something on an open space"},
+            ACTIVATE:      {id: 3, unique_id: Game.util.generateRandomString(24), word:"activate",     descr: "make use of something in the world"}
+        },
         Targeting: {
-            LOOK:             {id: 1, unique_id: Game.util.generateRandomString(24), word:"look around",  descr: "get information about some visible space, item, or creature"},
             USE_OLD_TARGET:   {id: 2, unique_id: Game.util.generateRandomString(24), word:"re-target",  descr: "set the target to the previous target used"},
             CLEAR_OLD_TARGET: {id: 3, unique_id: Game.util.generateRandomString(24), word:"no target", descr: "remove any old targeting, setting the cursor to the player location"}
         },
@@ -120,11 +126,13 @@ Game.Bindings['BindingSet_Numpad']['isKeydown'][ROT.VK_X] = ['x',Game.Bindings.A
 Game.Bindings['BindingSet_Numpad']['isKeydown'][ROT.VK_G] = ['g',Game.Bindings.Actions.Inventory.INVENTORY_GET];
 Game.Bindings['BindingSet_Numpad']['isKeydown'][ROT.VK_F] = ['f',Game.Bindings.Actions.Inventory.INVENTORY_FLING];
 Game.Bindings['BindingSet_Numpad']['isKeydown'][ROT.VK_P] = ['p',Game.Bindings.Actions.Inventory.INVENTORY_PACK];
+Game.Bindings['BindingSet_Numpad']['isKeydown'][ROT.VK_U] = ['u',Game.Bindings.Actions.Inventory.INVENTORY_USE];
 
 Game.Bindings['BindingSet_Numpad']['isKeydown'][ROT.VK_OPEN_BRACKET] =  ['[',Game.Bindings.Actions.DataNav.PAGE_UP];
 Game.Bindings['BindingSet_Numpad']['isKeydown'][ROT.VK_CLOSE_BRACKET] = [']',Game.Bindings.Actions.DataNav.PAGE_DOWN];
 
-Game.Bindings['BindingSet_Numpad']['isKeydown'][ROT.VK_L] = ['l',Game.Bindings.Actions.Targeting.LOOK];
+Game.Bindings['BindingSet_Numpad']['isKeydown'][ROT.VK_L] = ['l',Game.Bindings.Actions.World.LOOK];
+
 Game.Bindings['BindingSet_Numpad']['isKeydown'][ROT.VK_T] = ['t',Game.Bindings.Actions.Targeting.USE_OLD_TARGET];
 Game.Bindings['BindingSet_Numpad']['isKeydown'][ROT.VK_SPACE] = ["' '",Game.Bindings.Actions.Targeting.CLEAR_OLD_TARGET];
 
@@ -134,6 +142,9 @@ Game.Bindings['BindingSet_Numpad']['isKeydown']['isShift'] = {}
 Game.Bindings['BindingSet_Numpad']['isKeydown']['isShift'][ROT.VK_E] = ['E',Game.Bindings.Actions.Inventory.INVENTORY_EAT];
 Game.Bindings['BindingSet_Numpad']['isKeydown']['isShift'][ROT.VK_G] = ['G',Game.Bindings.Actions.Inventory.INVENTORY_GET_TO_HANDS];
 Game.Bindings['BindingSet_Numpad']['isKeydown']['isShift'][ROT.VK_P] = ['P',Game.Bindings.Actions.Inventory.INVENTORY_UNPACK];
+Game.Bindings['BindingSet_Numpad']['isKeydown']['isShift'][ROT.VK_C] = ['C',Game.Bindings.Actions.Inventory.INVENTORY_CRAFT];
+Game.Bindings['BindingSet_Numpad']['isKeydown']['isShift'][ROT.VK_B] = ['B',Game.Bindings.Actions.World.BUILD];
+Game.Bindings['BindingSet_Numpad']['isKeydown']['isShift'][ROT.VK_A] = ['A',Game.Bindings.Actions.World.ACTIVATE];
 
 Game.Bindings['BindingSet_Numpad']['isKeypress'] = {};
 Game.Bindings['BindingSet_Numpad']['isKeypress']['<'] = ['<',Game.Bindings.Actions.Moves.MOVE_ASCEND];
@@ -162,11 +173,12 @@ Game.Bindings['BindingSet_Laptop']['isKeydown'][ROT.VK_B] = ['b',Game.Bindings.A
 Game.Bindings['BindingSet_Laptop']['isKeydown'][ROT.VK_G] = ['g',Game.Bindings.Actions.Inventory.INVENTORY_GET];
 Game.Bindings['BindingSet_Laptop']['isKeydown'][ROT.VK_F] = ['f',Game.Bindings.Actions.Inventory.INVENTORY_FLING];
 Game.Bindings['BindingSet_Laptop']['isKeydown'][ROT.VK_P] = ['p',Game.Bindings.Actions.Inventory.INVENTORY_PACK];
+Game.Bindings['BindingSet_Laptop']['isKeydown'][ROT.VK_U] = ['u',Game.Bindings.Actions.Inventory.INVENTORY_USE];
 
 Game.Bindings['BindingSet_Laptop']['isKeydown'][ROT.VK_OPEN_BRACKET] =  ['[',Game.Bindings.Actions.DataNav.PAGE_UP];
 Game.Bindings['BindingSet_Laptop']['isKeydown'][ROT.VK_CLOSE_BRACKET] = [']',Game.Bindings.Actions.DataNav.PAGE_DOWN];
 
-Game.Bindings['BindingSet_Laptop']['isKeydown'][ROT.VK_L] = ['l',Game.Bindings.Actions.Targeting.LOOK];
+Game.Bindings['BindingSet_Laptop']['isKeydown'][ROT.VK_L] = ['l',Game.Bindings.Actions.World.LOOK];
 Game.Bindings['BindingSet_Laptop']['isKeydown'][ROT.VK_T] = ['t',Game.Bindings.Actions.Targeting.USE_OLD_TARGET];
 Game.Bindings['BindingSet_Laptop']['isKeydown'][ROT.VK_SPACE] = ["' '",Game.Bindings.Actions.Targeting.CLEAR_OLD_TARGET];
 
@@ -179,6 +191,9 @@ Game.Bindings['BindingSet_Laptop']['isKeydown']['isShift'][ROT.VK_E] = ['E',Game
 Game.Bindings['BindingSet_Laptop']['isKeydown']['isShift'][ROT.VK_X] = ['X',Game.Bindings.Actions.Inventory.INVENTORY_EXAMINE];
 Game.Bindings['BindingSet_Laptop']['isKeydown']['isShift'][ROT.VK_G] = ['G',Game.Bindings.Actions.Inventory.INVENTORY_GET_TO_HANDS];
 Game.Bindings['BindingSet_Laptop']['isKeydown']['isShift'][ROT.VK_P] = ['P',Game.Bindings.Actions.Inventory.INVENTORY_UNPACK];
+Game.Bindings['BindingSet_Laptop']['isKeydown']['isShift'][ROT.VK_C] = ['C',Game.Bindings.Actions.Inventory.INVENTORY_CRAFT];
+Game.Bindings['BindingSet_Laptop']['isKeydown']['isShift'][ROT.VK_B] = ['B',Game.Bindings.Actions.World.BUILD];
+Game.Bindings['BindingSet_Laptop']['isKeydown']['isShift'][ROT.VK_A] = ['A',Game.Bindings.Actions.World.ACTIVATE];
 
 Game.Bindings['BindingSet_Laptop']['isKeypress'] = {};
 Game.Bindings['BindingSet_Laptop']['isKeypress']['<'] = ['<',Game.Bindings.Actions.Moves.MOVE_ASCEND];

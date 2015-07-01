@@ -1,0 +1,70 @@
+Game.ItemRepository = new Game.Repository('items', Game.Item);
+
+Game.ItemRepository.Symbol = {
+'blade': String.fromCharCode(124), // 124 |
+'polearm': String.fromCharCode(47), // 47 /
+'wearable': String.fromCharCode(197), // 197 ringed A
+'jewelry': String.fromCharCode(61), // 61 =
+'potion': String.fromCharCode(33), // 33 !
+'scroll': String.fromCharCode(167), // Section sign
+'shooter': String.fromCharCode(162), // 162 cent sign 
+'ammo': String.fromCharCode(171), // 171 Left double angle quotes
+'food': String.fromCharCode(176), // 176 degree sign
+'tool': String.fromCharCode(172), // 172 logical not
+'mineral': String.fromCharCode(164) // 164 currency symbol 
+};
+
+
+//////////////////////////////////////////////
+
+
+name: 'jelly ball',
+name: 'geodic nut',
+name: 'corpse',
+
+name: 'spore-y mass',
+
+
+
+name: 'rock',
+name: 'lodestone',
+name: 'iron nugget',
+
+name: 'stone shot',
+name: 'iron shot',
+
+name: 'sling',
+name: 'sling staff',
+
+name: 'JAT tool, damaged',
+name: 'JAT tool, patched',
+name: 'JAT tool',
+
+name: 'shard blade',
+name: 'stone sword',
+
+name: 'staff',
+name: 'shod staff',
+
+name: 'HEM suit, damaged',
+name: 'HEM suit, patched',
+
+name: 'leather armor',
+name: 'plated leather armor',
+
+name: 'HEM suit',
+
+name: 'HEM-A suit, damaged',
+name: 'HEM-A suit, patched',
+
+name: 'HEM-A suit',
+
+name: 'sack',
+
+name: 'shoulder-strap',
+
+name: 'bandolier',
+
+name: 'knapsack',
+
+name: 'belt-sheath',
