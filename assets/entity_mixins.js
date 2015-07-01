@@ -455,8 +455,8 @@ Game.EntityMixins.NonRecuperatingDestructible = {
                 }
             }
             
-            console.log("death! new entity placed on "+newZ);
-            console.dir(entity);
+            //console.log("death! new entity placed on "+newZ);
+            //console.dir(entity);
 //            var entity = Game.EntityRepository.createRandom();
 //            this.getMap().addEntityAtRandomPosition(entity,newZ);
         }

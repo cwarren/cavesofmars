@@ -1,4 +1,19 @@
-Game.ItemRepository = new Game.Repository('items', Game.Item);
+TODO: 
+    - create additional items based on tools section below
+    - add notes on attributes/uses for existing items
+    - add notes on crafting for existing items
+    - make up more / new items
+        + minerals
+        + combat
+        + utility
+        + useable
+        + meta
+
+
+//////////////////////////////////////////////
+//////////////////////////////////////////////
+//////////////////////////////////////////////
+
 
 Game.ItemRepository.Symbol = {
 'blade': String.fromCharCode(124), // 124 |
@@ -16,6 +31,8 @@ Game.ItemRepository.Symbol = {
 
 
 //////////////////////////////////////////////
+//////////////////////////////////////////////
+//////////////////////////////////////////////
 
 
 name: 'jelly ball',
@@ -23,8 +40,6 @@ name: 'geodic nut',
 name: 'corpse',
 
 name: 'spore-y mass',
-
-
 
 name: 'rock',
 name: 'lodestone',
@@ -68,3 +83,64 @@ name: 'bandolier',
 name: 'knapsack',
 
 name: 'belt-sheath',
+
+    
+//////////////////////////////////////////////
+//////////////////////////////////////////////
+//////////////////////////////////////////////
+
+
+20. !!!!!!!!!!!!! design crafting system!
+    two basic operations - break down (consume?) (create raw materials from something), and construct (build something from raw materials and/or other things)
+    TODO:
+        ! create a crafting tree
+        ! create a crafting recipe set
+    base materials & possible sources:
+        - surface
+            + leather (generally, creature parts)
+            + suit scraps
+            + dried mycelium (particular fungus, particular techniques?)
+        - cord
+            + sinew (generally, creature parts)
+            + suit scraps
+        - sticks, small
+            + dried mycelium (particular fungus, particular techniques?)
+            + bone (generally, creature parts)
+            + JAT scraps
+        - sticks, large
+            + bone (generally, creature parts)
+            + JAT scraps
+        - rocks
+        - adhesive
+            + fungus stuff (particular fungus, particular techniques?)
+            + creature-based
+        - edges
+            + stone shards (from worked stone)
+            + suit scraps
+            + teeth (generally, creature parts)
+        - hard material
+            + suit scraps
+            + scutes (generally, creature parts)
+            + worked stone (from rocks)
+            + dried mycelium (particular fungus, particular techniques?)
+    created:
+        - various weapons & armor
+        - ammo
+        - loose walls (rubble tiles)
+        - tight walls (cracked stone tiles)
+        - containers
+        - tools of various sorts
+        - structures
+            + forge, cooking hearth, & other installation tools / structures
+            + traps
+        - medicine?
+        - chemicals
+    tools:
+        - metal working tools
+            + metal working energy source
+        - hand tools (working with materials other than metals)
+        - earth-work tools (anything with a dig value)
+            + things especially for digging
+        - chemistry tools / cooking tools
+            + chemistry/cooking energy source
+        - material processing/acquiring tools

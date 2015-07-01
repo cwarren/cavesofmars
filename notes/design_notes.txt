@@ -68,10 +68,7 @@ additional player skills / attributes available for improvement during leveling 
 
 TODO NEXT:
 
-!! DEGUG. initial powerbar placement was in stone! fix this.... (seed 75969)
-
 !! DEGUG. some issue with inven weight not being correctly handled when items unpacked from a container....?
-
 
 0. for random tables, think about an associated things system (e.g. if this thing is chosen, then a chance to choose these others as well)
 

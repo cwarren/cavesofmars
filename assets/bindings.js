@@ -66,7 +66,7 @@ Game.Bindings = {
         Inventory: {
             INVENTORY_LIST:    {id: 1,  unique_id: Game.util.generateRandomString(24), word:"inventory", descr: "see everything that you're carrying"},
             INVENTORY_GET:     {id: 2,  unique_id: Game.util.generateRandomString(24), word:"get",       descr: "get something and add it to your inventory"},
-            INVENTORY_GET_TO_HANDS: {id: 3, unique_id: Game.util.generateRandomString(24), word:"get to hands", descr: "get something and carry it in your hands"},
+            INVENTORY_GET_TO_HANDS: {id: 3, unique_id: Game.util.generateRandomString(24), word:"in hands", descr: "get something and carry it in your hands"},
             INVENTORY_DROP:    {id: 4,  unique_id: Game.util.generateRandomString(24), word:"drop",      descr: "drop something"},
             INVENTORY_WEAR:    {id: 5,  unique_id: Game.util.generateRandomString(24), word:"wear on body",      descr: "wear something on your body (e.g. armor)"},
             INVENTORY_HOLD:    {id: 6,  unique_id: Game.util.generateRandomString(24), word:"hold in hands",      descr:  "hold/carry something in your hands (weapon, tool, big item, etc.)"},
@@ -88,8 +88,8 @@ Game.Bindings = {
             ACTIVATE:      {id: 3, unique_id: Game.util.generateRandomString(24), word:"activate",     descr: "make use of something in the world"}
         },
         Targeting: {
-            USE_OLD_TARGET:   {id: 2, unique_id: Game.util.generateRandomString(24), word:"re-target",  descr: "set the target to the previous target used"},
-            CLEAR_OLD_TARGET: {id: 3, unique_id: Game.util.generateRandomString(24), word:"no target", descr: "remove any old targeting, setting the cursor to the player location"}
+            USE_OLD_TARGET:   {id: 1, unique_id: Game.util.generateRandomString(24), word:"re-target",  descr: "set the target to the previous target used"},
+            CLEAR_OLD_TARGET: {id: 2, unique_id: Game.util.generateRandomString(24), word:"no target",  descr: "remove any old targeting, setting the cursor to the player location"}
         },
         Meta: {
             SWITCH_KEYBINDING: {id: 1, unique_id: Game.util.generateRandomString(24), word:"swap controls", descr: "swap between numpad-oriented and laptop-oriented controls"},

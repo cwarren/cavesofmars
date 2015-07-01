@@ -261,6 +261,9 @@ Game.Screen.playScreen = {
 
         var tookAction = false;        
         var gameAction = Game.Bindings.getAction(inputType, inputData, Game.getControlScheme());
+        if (gameAction == undefined) {
+            return;
+        }
 
         //----------------------------
         // inventory actions
@@ -326,7 +329,7 @@ Game.Screen.playScreen = {
 
         //----------------------------
         // world actions
-        } else if (gameAction === Game.Bindings.Actions.Targeting.LOOK) {
+        } else if (gameAction === Game.Bindings.Actions.World.LOOK) {
             var offsets = this.getScreenOffsets();
             Game.Screen.lookScreen.setup(this._player,this._player.getX(), this._player.getY(),offsets.x, offsets.y);
             this.setSubScreen(Game.Screen.lookScreen);
@@ -479,7 +482,7 @@ Game.Screen.ItemListScreen = function(template) {
 };
 
 Game.Screen.ItemListScreen.prototype.getHelpSections = function() {
-    return ['inventory','datanav'];
+    return ['inventory','inventory_full','datanav'];
 };
 
 Game.Screen.ItemListScreen.prototype.setParentScreen = function(screen) {
@@ -791,7 +794,7 @@ Game.Screen.inventoryScreen.handleInput = function(inputType, inputData) {
 }
 
 Game.Screen.inventoryScreen.getHelpSections = function() {
-    return ['inventory','datanav'];
+    return ['inventory','inventory_advanced','datanav'];
 };
 
 
@@ -1936,12 +1939,19 @@ Game.Screen.storyScreen = {
                         for (var j=0;j<adjCoords2.length;j++) {
                             var addX = adjCoords2[j].x;
                             var addY = adjCoords2[j].y;
+                            
                             if ((ROT.RNG.getUniform() < .5) && (addX!=px) && (addY!=py) && (map.getTile(addX, addY, 0) == Game.Tile.floorTile)) {
-                                map.addItem(addX, addY,0,Game.ItemRepository.create('rock'));
+                                map.addItem(addX, addY, 0,Game.ItemRepository.create('rock'));
                             }
+
                             if (ROT.RNG.getUniform() < .05) {
-                                map.addItem(adjCoords[i].x, adjCoords[i].y,0,Game.ItemRepository.create('powerbar'));
+                                if (map.getTile(addX, addY, 0) == Game.Tile.floorTile) {
+                                    map.addItem(addX, addY, 0,Game.ItemRepository.create('powerbar'));
+                                } else {
+                                    map.addItem(px, py, 0,Game.ItemRepository.create('powerbar'));
+                                }
                             }
+                            
                         }
                     }
                     
