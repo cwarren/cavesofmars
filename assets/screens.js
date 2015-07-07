@@ -327,12 +327,31 @@ Game.Screen.playScreen = {
             this.showItemsSubScreen(Game.Screen.pickupToHandsScreen, items,'There is nothing here to pick up.');
             return;
 
+        } else if (gameAction === Game.Bindings.Actions.Inventory.INVENTORY_CRAFT) {
+            Game.sendMessage(this._player, "action INVENTORY_CRAFT not yet implemented"); Game.refresh();
+            return;
+        } else if (gameAction === Game.Bindings.Actions.Inventory.INVENTORY_USE) {
+            Game.sendMessage(this._player, "action INVENTORY_USE not yet implemented"); Game.refresh();
+            return;
+
         //----------------------------
         // world actions
         } else if (gameAction === Game.Bindings.Actions.World.LOOK) {
             var offsets = this.getScreenOffsets();
             Game.Screen.lookScreen.setup(this._player,this._player.getX(), this._player.getY(),offsets.x, offsets.y);
             this.setSubScreen(Game.Screen.lookScreen);
+            return;
+        } else if (gameAction === Game.Bindings.Actions.World.BUILD) {
+            var offsets = this.getScreenOffsets();
+//            Game.Screen.lookScreen.setup(this._player,this._player.getX(), this._player.getY(),offsets.x, offsets.y);
+//            this.setSubScreen(Game.Screen.lookScreen);
+            Game.sendMessage(this._player, "action BUILD not yet implemented"); Game.refresh();
+            return;
+        } else if (gameAction === Game.Bindings.Actions.World.ACTIVATE) {
+            var offsets = this.getScreenOffsets();
+//            Game.Screen.lookScreen.setup(this._player,this._player.getX(), this._player.getY(),offsets.x, offsets.y);
+//            this.setSubScreen(Game.Screen.lookScreen);
+            Game.sendMessage(this._player, "action ACTIVATE not yet implemented"); Game.refresh();
             return;
 
 
@@ -985,7 +1004,9 @@ Game.Screen.fireFlingScreen.setAmmo = function(item) {
 Game.Screen.fireFlingScreen.getAmmo = function() {
     return this._ammo;
 }
-
+Game.Screen.fireFlingScreen.clearAmmo = function() {
+    return this._ammo = undefined;
+}
 //-------------------
 
 Game.Screen.examineScreen = new Game.Screen.ItemListScreen({
@@ -1412,6 +1433,13 @@ Game.Screen.TargetBasedScreen.prototype.handleInput = function(inputType, inputD
         tookAction = this.clearLastTarget();
         Game.sendMessage(this._player,'cleared prior target');
     } else if (inputData.keyCode === ROT.VK_ESCAPE) {
+
+        var ammo = Game.Screen.fireFlingScreen.getAmmo();
+        if (ammo) {
+            Game.Screen.fireFlingScreen.clearAmmo();
+            Game.Screen.playScreen._player.addItem(ammo);
+        }
+
         this._player.clearMessages();
         Game.AuxScreen.infoScreen.setCurrentShortInfo('');
         Game.AuxScreen.infoScreen.setCurrentDetailInfo('');
@@ -1715,6 +1743,8 @@ Game.Screen.rangedTargetScreen = new Game.Screen.TargetBasedScreen({
         if (! hasLanded) {
             ammo.raiseEvent('onLanded',map,potentialPosition.x,potentialPosition.y,z);
         }
+
+        Game.Screen.fireFlingScreen.clearAmmo();
 
         return true;
     }

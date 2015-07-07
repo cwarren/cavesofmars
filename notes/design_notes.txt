@@ -68,12 +68,15 @@ additional player skills / attributes available for improvement during leveling 
 
 TODO NEXT:
 
-!! DEGUG. some issue with inven weight not being correctly handled when items unpacked from a container....?
+!! DEGUG: some issue with inven weight not being correctly handled when items unpacked from a container....?
 
-0. set up input handing for new key bindings (build, activate, use, craft)
-   - just display a message that it's not yet supported; just make sure the input handling is in place / working (actual implemention falls to later todo items)
+!! fixed DEBUG: bandolier missing after aborted throw!
+    - repeatable for any item!
+    
 
 .5. for random tables, think about an associated things system (e.g. if this thing is chosen, then a chance to choose these others as well)
+    - random tables hsould returns an array of chosen things
+        + refactor existing first to return single-elt arrays and use cases to handle the returned arrays
 
 
 1. fill in random tables for entities and items
