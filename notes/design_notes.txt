@@ -70,7 +70,10 @@ TODO NEXT:
 
 !! DEGUG. some issue with inven weight not being correctly handled when items unpacked from a container....?
 
-0. for random tables, think about an associated things system (e.g. if this thing is chosen, then a chance to choose these others as well)
+0. set up input handing for new key bindings (build, activate, use, craft)
+   - just display a message that it's not yet supported; just make sure the input handling is in place / working (actual implemention falls to later todo items)
+
+.5. for random tables, think about an associated things system (e.g. if this thing is chosen, then a chance to choose these others as well)
 
 
 1. fill in random tables for entities and items
@@ -195,3 +198,180 @@ TODO NEXT:
 
 
 70. design/implement alternate path to victory(ish) - post death, if killed at least one ooze and at least one fungus, or if killed by fungus, option to revive and play as a fungal zombie - food consumption increases dramatically, allied with fungus, no further equipping, but still can level/improve
+
+
+-------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------
+
+
+ITEM STUFF
+
+weapons
+    melee
+        knife
+        short sword
+        long sword
+        mace
+        flail
+        staff
+        shod staff
+    ranged
+        throwing spikes
+        sling
+        staff sling
+        blowgun
+        bow
+        air gun
+        plasma gun
+        taser
+armor
+    light leather
+    heavy leather
+    plated leather
+    kevlar-carbon suit
+    HEM, damaged
+    HEM, patched
+    HEM
+    HEM-A, damaged
+    HEM-A, patched
+    HEM-A
+"potions"
+    - heal hp
+    - fix bad state (blind, confused, ill, poison, etc.)
+    - feed
+    - boost
+        - combat
+        - awareness
+        - speed (base)
+    - offense (thrown)
+        - stink
+        - smoke cloud
+        - damage/poison
+        - damage/burn (chemical)
+knowledge
+    - maps
+    - notes
+    - plans
+    - crafting recipes
+    - locations of specific fixed special terrain features (e.g. pool, lava, sand fall, etc.)
+    - info about mobs
+        - general ('l'ook) info
+        - improved processing
+        - combat/interaction boni
+        - capable of establishing alliance (w/ individuals)
+resource gatherers
+    - pick (digging out minerals)
+    - seive (sorting minerals from sand & rubble)
+    - harvest tool (fungus et al)
+    - hunting knife (processing corpses, crude)
+    - dissecting kit (processing corpses, fine)
+    - shears (surfaces, cordage)
+    - flasks (liquids)
+    - hammer (mineral processing)
+    - saw (sticks, hard materials)
+crafting gates
+    - glassware (chemistry)
+    - hand tools (construction)
+    - ceramics (metal work, chemistry)
+    - magnets
+    - sterile/clean table
+    - protected space
+        - lab space
+        - work space
+food
+    - base nutrition
+    - beneficial side effect (indicates refinement possibilities)
+    - harmful side effect (indicates refinement possibilities (good and bad - poison->medicine))
+
+
+resources
+    * see section above (todo item) *
+
+
+mineral
+    stones
+        - pumice
+        - sandstone
+        - shale
+        - conglomerate
+        - scoria
+        - silica
+        - andesite
+        - basalt
+        - kimberlite
+        - chert
+        - gneiss
+        - travertine
+    crystals
+        - obsidian
+        - opal
+        - quartz
+        - diamond
+        - dolomite
+        - cinnabar
+        - chrysoberyl
+        - garnet
+        - stibnite
+        - topaz
+        - tourmaline
+        - 
+    metals
+        - iron
+        - copper
+        - silver
+        - gold
+        - bismuth
+        - lead
+        - nickel
+        - tin
+
+
+
+chemical
+- murky water
+    - salt
+    - arsenic
+    - sulfur
+    - iron
+    - copper
+    - calcium
+    - magnesium
+    - cadmium
+    - flouride
+    - mercury
+    - zinc
+- fungus pieces
+    - various organics
+- creature pieces
+    - various organics
+- processed minerals
+    - powdered
+    - dissolved
+    - oxidized
+    - heated
+
+
+
+STRUCTURES
+- forge (w/ heat source)
+- cooking hearth (w/ heat source)
+- lab table
+- glass furnace
+- kiln
+- door
+- trap
+    - dead drop
+    - pit
+    - snare
+    - spring strike
+    - energy/explosion
+- desk
+- wall
+- obelisk / pillar
+- flagstone flooring (prevents creature spawning)
+- still
+- paper shot
+
+
+
