@@ -70,9 +70,6 @@ TODO NEXT:
 
 !! DEGUG: some issue with inven weight not being correctly handled when items unpacked from a container....?
 
-!! fixed DEBUG: bandolier missing after aborted throw!
-    - repeatable for any item!
-    
 
 .5. for random tables, think about an associated things system (e.g. if this thing is chosen, then a chance to choose these others as well)
     - random tables hsould returns an array of chosen things
@@ -126,7 +123,7 @@ TODO NEXT:
     TODO:
         ! create a crafting tree
         ! create a crafting recipe set
-    base materials & possible sources:
+    crafting resources - base materials & possible sources:
         - surface
             + leather (generally, creature parts)
             + suit scraps

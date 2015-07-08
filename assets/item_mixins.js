@@ -637,3 +637,28 @@ Game.ItemMixins.Container = {
     }
 };
 
+
+
+Game.ItemMixins.CraftingResource = {
+    name: 'CraftingResource',
+    init: function(template) {
+//        if (template['foodDensity']) {
+//            this._foodDensity = template['foodDensity'];  // food value per unit of bulk of this item
+//        } else if (template['foodValue']) {
+//            this._foodDensity = Math.floor(template['foodValue']/(this._invBulk/1000)) + 1; // foodDensity may be set based on a given foodValue for the item (close, but not exact)
+//        } else {
+//            this._foodDensity = 10; // default is 10 turns per unit of bulk
+//        }
+    },
+    listeners: {
+        'details': function() {
+            var det = [];
+            return det;
+        },
+        'calcDetails': function() {
+            var det = [];
+//            det.push({key: 'foodDensity', value: this._foodDensity});
+            return det;
+        }
+    }
+};

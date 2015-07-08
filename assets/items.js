@@ -11,7 +11,9 @@ Game.ItemRepository.Symbol = {
 'ammo': String.fromCharCode(171), // 171 Left double angle quotes
 'food': String.fromCharCode(176), // 176 degree sign
 'tool': String.fromCharCode(172), // 172 logical not
-'mineral': String.fromCharCode(164) // 164 currency symbol 
+'mineral': String.fromCharCode(164), // 164 currency symbol 
+'crafting resource': String.fromCharCode(230), // 230 tiny linked ae
+'container': '?'
 };
 
 
@@ -181,11 +183,23 @@ Game.ItemRepository.define('iron shot', {
     invBulk: 10,
     foreground: '#dcb',
     description: "A large pellet of iron - slightly rusted, but aerodynamically sound",
-    rangedAttackDamageBonus: 6,
+    rangedAttackDamageBonus: 5,
     reuseChance: .55,
     mixins: [Game.ItemMixins.Ammo]
 });
 
+Game.ItemRepository.define('lead shot', {
+    name: 'lead shot',
+    group: 'shot',
+    character: Game.ItemRepository.Symbol['ammo'],
+    invWeight: 115,
+    invBulk: 10,
+    foreground: '#ccd',
+    description: "A rounded slug of lead",
+    rangedAttackDamageBonus: 8,
+    reuseChance: .25,
+    mixins: [Game.ItemMixins.Ammo]
+});
 
 // ----------------------------------------------
 
@@ -471,7 +485,7 @@ Game.ItemRepository.define('HEM-A suit', {
 Game.ItemRepository.define('sack', {
     name: 'sack',
     group: 'container',
-    character: '?',
+    character: Game.ItemRepository.Symbol['container'],
     invWeight: 650,
     invBulk: 3200,
     foreground: '#a84',
@@ -490,7 +504,7 @@ Game.ItemRepository.define('sack', {
 Game.ItemRepository.define('shoulder-strap', {
     name: 'shoulder-strap',
     group: 'container',
-    character: '?',
+    character: Game.ItemRepository.Symbol['container'],
     invWeight: 250,
     invBulk: 650,
     foreground: '#ba7',
@@ -510,7 +524,7 @@ Game.ItemRepository.define('shoulder-strap', {
 Game.ItemRepository.define('bandolier', {
     name: 'bandolier',
     group: 'container',
-    character: '?',
+    character: Game.ItemRepository.Symbol['container'],
     invWeight: 350,
     invBulk: 650,
     foreground: '#ba4',
@@ -530,7 +544,7 @@ Game.ItemRepository.define('bandolier', {
 Game.ItemRepository.define('knapsack', {
     name: 'knapsack',
     group: 'container',
-    character: '?',
+    character: Game.ItemRepository.Symbol['container'],
     invWeight: 1650,
     invBulk: 600,
     foreground: '#cb6',
@@ -546,7 +560,7 @@ Game.ItemRepository.define('knapsack', {
 Game.ItemRepository.define('belt-sheath', {
     name: 'belt-sheath',
     group: 'container',
-    character: '?',
+    character: Game.ItemRepository.Symbol['container'],
     invWeight: 450,
     invBulk: 380,
     foreground: '#983',
@@ -559,5 +573,24 @@ Game.ItemRepository.define('belt-sheath', {
     carryTypes: ['blade'],
     mixins: [Game.ItemMixins.Container]
 } ,{
+    disableRandomCreation: true
+});
+
+// ----------------------------------------------
+
+// Crafting Resources
+
+
+Game.ItemRepository.define('leather piece', {
+    name: 'leather piece',
+    group: 'material',
+    supergroup: 'crafting resource',
+    character: Game.ItemRepository.Symbol['crafting resource'],
+    description: "",
+    foreground: '#cb6',
+    invWeight: 625,
+    invBulk: 300,
+    mixins: [Game.ItemMixins.CraftingResource]
+}, {
     disableRandomCreation: true
 });
