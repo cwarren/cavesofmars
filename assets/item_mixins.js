@@ -642,6 +642,9 @@ Game.ItemMixins.Container = {
 Game.ItemMixins.CraftingResource = {
     name: 'CraftingResource',
     init: function(template) {
+        this._craftingGroup = template['craftingGroup'] || 'miscellaneous scraps';
+        this._craftingQuality = template['craftingQuality'] || 1;
+
 //        if (template['foodDensity']) {
 //            this._foodDensity = template['foodDensity'];  // food value per unit of bulk of this item
 //        } else if (template['foodValue']) {
