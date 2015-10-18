@@ -19,7 +19,7 @@ Game.PlayerTemplate = {
     mixins: [Game.EntityMixins.PlayerActor, Game.EntityMixins.MeleeAttacker, Game.EntityMixins.RangedAttacker, Game.EntityMixins.MessageRecipient, 
              Game.EntityMixins.FoodConsumer, Game.EntityMixins.InventoryHolder, Game.EntityMixins.Seer, Game.EntityMixins.Digger,
              Game.EntityMixins.Equipper, Game.EntityMixins.ExperienceGainer, Game.EntityMixins.PlayerStatGainer, Game.EntityMixins.Allier,
-             Game.EntityMixins.RadioUser, Game.EntityMixins.Destructible]
+             Game.EntityMixins.RadioUser, Game.EntityMixins.Destructible, Game.EntityMixins.CraftingRecipeHolder]
 }
 
 

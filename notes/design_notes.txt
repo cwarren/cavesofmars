@@ -100,7 +100,9 @@ TODO NEXT:
         + clear out spore-y masses where the player is not
         + clear out corpses where the player is not
     - chance of quiescent funcus spawn decreases with greater number of them
-   idelaly would have some kind of profiling tool to figure out where the slow-down is happening
+   ideally would have some kind of profiling tool to figure out where the slow-down is happening
+
+.25 when nothing is in hands, the char summary on the left should indicate that
 
 .5. for random tables, think about an associated things system (e.g. if this thing is chosen, then a chance to choose these others as well)
     - random tables hsould returns an array of chosen things

@@ -913,7 +913,9 @@ Game.EntityMixins.InventoryHolder = {
         return eqs.concat(this._itemHolder.extractAllItems());
     },
     forceAddItem: function(item) {
-        return this._itemHolder.forceAddItems([item]);
+        var ret = this._itemHolder.forceAddItems([item]);
+        this._CleanInventory();
+        return ret;
     },
     addItem: function(item) {
         if (! this.canAddItem(item)) {
@@ -1695,6 +1697,60 @@ Game.EntityMixins.PlayerStatGainer = {
             // Setup the gain stat screen and show it.
             Game.Screen.gainStatScreen.setup(this);
             Game.Screen.playScreen.setSubScreen(Game.Screen.gainStatScreen);
+        }
+    }
+};
+
+
+Game.EntityMixins.CraftingRecipeHolder = {
+    name: 'CraftingRecipeHolder',
+    init: function(template) {
+        // Set up an empty inventory.
+        this._craftingRecipeHolder = new Game.Item({
+            name: 'craftingRecipeHolder',
+            group: 'container',
+            character: '?',
+            foreground: '#fff',
+            description: "internal item container used to implement CraftingRecipeHolder entity mixin",
+            maxCarryWeight: -1,
+            maxCarryBulk: -1,
+            accessDuration: 1, // how long it takes to get something out of or put something in this container
+            mixins: [Game.ItemMixins.Container]
+        });        
+        this._craftingRecipeHolder.setInvWeight(0);
+        this._craftingRecipeHolder.setInvBulk(0);
+    },
+
+    getCraftingRecipes: function() {
+        return this._craftingRecipeHolder.getItems();
+    },
+    getCraftingRecipe: function(i) {
+        return (this._craftingRecipeHolder.getItemsAt([i]))[0];
+    },
+    clearCraftingRecipes: function() {
+        return this._craftingRecipeHolder.extractAllItems();
+    },
+    learnCraftingRecipe: function(recipe) {
+        return this._craftingRecipeHolder.forceAddItems([recipe]);
+    },
+    learnCraftingRecipes: function(recipeAry) {
+        return this._craftingRecipeHolder.forceAddItems(recipeAry);
+    },
+    forgetCraftingRecipe: function(i) {
+        return this._craftingRecipeHolder.extractItemsAt([i]);
+    },
+    
+    
+    extractThisCraftingRecipe: function(recipe) {
+        return (this._craftingRecipeHolder.extractItems([recipe]))[0];
+    },
+    getIndexOfCraftingRecipe: function(recipe) {
+        return (this._craftingRecipeHolder.getIndicesOf([recipe]))[0];
+    },
+
+    listeners: {
+        destroyKnownCraftingRecipe: function(recipe) {
+            return (this._craftingRecipeHolder.extractItems([recipe]))[0];
         }
     }
 };

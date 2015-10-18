@@ -165,6 +165,10 @@ Game.DynamicGlyph.prototype.getName = function() {
     return prefixes.join('')+this._name+suffixes.join('');
 };
 
+Game.DynamicGlyph.prototype.getNameSimple = function() {
+    return this._name;
+};
+
 Game.DynamicGlyph.prototype.setDescription = function(description) {
     this._description = description;
 };
@@ -217,3 +221,7 @@ Game.DynamicGlyph.prototype.describeThe = function(capitalize) {
     var prefix = capitalize ? 'The' : 'the';
     return prefix + ' ' + this.describe();
 };
+
+//Game.DynamicGlyph.getNamesFromArray = function (dgArray) {
+//    return dgArray.map(function(dg){return dg.getName()});
+//}

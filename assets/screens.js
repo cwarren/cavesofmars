@@ -1124,7 +1124,7 @@ Game.Screen.unpackScreen = new Game.Screen.ItemListScreen({
     ok: function(selectedItems) {
         //console.log('item to unpack has been selected');
         Game.Screen.unpackScreen.selectedContainer = selectedItems[(Object.keys(selectedItems))[0]];
-        this._parentScreen.showItemsSubScreen(Game.Screen.unpackItemSelectionScreen, Game.Screen.unpackScreen.selectedContainer.getItems(),'You have nothing to pack.');
+        this._parentScreen.showItemsSubScreen(Game.Screen.unpackItemSelectionScreen, Game.Screen.unpackScreen.selectedContainer.getItems(),'You have nothing to unpack.');
         return;
     }
 });
@@ -1180,6 +1180,29 @@ Game.Screen.unpackItemSelectionScreen.getHelpSections = function() {
     return ['datanav'];
 };
 
+//-------------------
+
+Game.Screen.craftStep1Screen = new Game.Screen.ItemListScreen({
+    caption: function() {
+        return 'Choose items for crafting';
+    },
+    canSelect: true,
+    canSelectMultipleItems: true,
+    ok: function(selectedItems) {
+
+        console.log('TODO: implement crafting step 2');
+        
+        // get list of recipes that are elegible given the selected items
+        // this._parentScreen.showItemsSubScreen(Game.Screen.craftStep2Screen, viableRecipes,'No recipes using those items.');
+        
+
+        return true;
+    }
+});
+
+Game.Screen.craftStep1Screen.getHelpSections = function() {
+    return ['datanav'];
+};
 
 ////////////////////////////////////////////////////////////
 

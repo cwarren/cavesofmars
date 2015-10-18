@@ -502,7 +502,6 @@ Game.ItemMixins.Container = {
         while (itmAry.length > 0) {
             this._items.push(itmAry.shift());
         }
-        this._CleanInventory();
         return true;
     },
     addItems: function(itmAry) {
@@ -652,6 +651,89 @@ Game.ItemMixins.CraftingResource = {
 //        } else {
 //            this._foodDensity = 10; // default is 10 turns per unit of bulk
 //        }
+    },
+    getCraftingGroup: function() {
+        return this._craftingGroup;
+    },
+    listeners: {
+        'details': function() {
+            var det = [];
+            return det;
+        },
+        'calcDetails': function() {
+            var det = [];
+//            det.push({key: 'foodDensity', value: this._foodDensity});
+            return det;
+        }
+    }
+};
+
+/*
+Game.ItemMixins.Craftable = {
+    name: 'ComposeCraftable',
+    init: function(template) {
+        this._canCraftCompose = template['canCraftCompose'] || false;
+        this._canCraftDecompose = template['canCraftDecompose'] || false;
+    
+//        this._structureRequirementNamesCompose = template['structureRequirementNamesCompose'] || [];
+//        this._toolRequirementNamesCompose = template['toolRequirementNamesCompose'] || [];
+
+//        this._structureRequirementNamesDecompose = template['structureRequirementNamesDecompose'] || this._structureRequirementNamesCompose;
+//        this._toolRequirementNamesDecompose = template['toolRequirementNamesDecompose'] || this._toolRequirementNamesCompose;
+        
+        this._craftingComponentNames = template['craftingComponentNames'] || [];
+    },
+    canCraftCompose: function(structuresArray,itemsArrayTools,itemsArrayResources) {
+            var itemGroups = itemsArrayResources.map(function(resc){return resc.getCraftingGroup()});
+            var itemNames = itemsArrayResources.map(function(resc){return resc.getNameSimple()});
+            
+            Game.util.A1isSupersetOfA2(Game.DynamicGlyph.getNamesFromArray(itemsArrayResources),this._craftingComponentNames);
+    },
+    canCraftDecompose: function(structuresArray,itemsArrayTools) {
+        return
+            Game.util.A1isSupersetOfA2(Game.DynamicGlyph.getNamesFromArray(structuresArray),this._structureRequirementNamesDecompose) &&
+            Game.util.A1isSupersetOfA2(Game.DynamicGlyph.getNamesFromArray(itemsArrayTools),this._toolRequirementNamesDecompose);
+    },
+    listeners: {
+        'details': function() {
+            var det = [];
+//            var det = [{key: 'food', value: this.getFoodValue()}];
+            return det;
+        },
+        'calcDetails': function() {
+            var det = [];
+//            var det = [{key: 'foodValue', value: this._foodValue}];
+//            det.push({key: 'foodDensity', value: this._foodDensity});
+            return det;
+        }
+    }
+};
+*/
+
+Game.ItemMixins.CraftingRecipe = {
+    name: 'CraftingRecipe',
+    init: function(template) {
+    
+        template = template || {};
+        this._recipeType = template['recipeType'] || 'compose'; // compose, decompose, build
+        
+        // ingredients are items in inventory that are used up when the recipe is activated
+        this._ingredients = template['ingredients'] || [];  // a hash of names as keys with values of counts, names prefixed with G: indicate a crafting group rather than a specific item, a ~ suffix indicates a minumum quality requirement
+
+        // structures are world elements that must be in the current or adjacent space to activate this recipe
+        this._structureRequirements = template['structureRequirements'] || []; // a hash of names as keys with values of counts, names prefixed with G: indicate a crafting group rather than a specific item, a ~ suffix indicates a minumum quality requirement
+
+        // resources are items in inventory that are NOT used up when the recipe is activated (e.g. tools)
+        this._resourceRequirements = template['resourceRequirements'] || []; // a hash of names as keys with values of counts, names prefixed with G: indicate a crafting group rather than a specific item, a ~ suffix indicates a minumum quality requirement
+        
+        this._craftingDuration = template['craftingDuration'] || 10000;
+        
+        this._successChance = template['successChance'] || 1;  // 0-1
+        this._successCountTable = template['successCountTable'] || [1]; // random pick from the array gives count for number of outcomes
+    
+        // NOTE: a recipe has either and outcomeObject OR ELSE and outcomeRandomTable, not both
+        this._outcomeObject = template['outcomeObject'] || ''; // a single thing that is created on a success
+        this._outcomeRandomTable = template['outcomeRandomTable'] || ''; // a randomTable with the possible outcomes of a success
     },
     listeners: {
         'details': function() {

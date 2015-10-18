@@ -30,6 +30,8 @@ var Game =  {
         //this._player.addItem(j);
         this._player.holdInHands(j);        
 
+        // at least in this stage of development the player knows all available recipes - later work may introduce the idea of starting with a small set and having to learn more
+        this._player.learnCraftingRecipes(Game.RecipeRepository.createSet('ALL'));
         
         this._display_main    = new ROT.Display({width: this._screenWidth, height: this._screenHeight, spacing: Game.SPACING});
         

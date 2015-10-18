@@ -15,6 +15,14 @@ TODO:
 //////////////////////////////////////////////
 
 
+
+
+
+//////////////////////////////////////////////
+//////////////////////////////////////////////
+//////////////////////////////////////////////
+
+
 Game.ItemRepository.Symbol = {
 'blade': String.fromCharCode(124), // 124 |
 'polearm': String.fromCharCode(47), // 47 /
@@ -89,6 +97,7 @@ name: 'belt-sheath',
 //////////////////////////////////////////////
 //////////////////////////////////////////////
 
+material edge pole stick plate cord
 
 20. !!!!!!!!!!!!! design crafting system!
     two basic operations - break down (consume?) (create raw materials from something), and construct (build something from raw materials and/or other things)
@@ -96,14 +105,14 @@ name: 'belt-sheath',
         ! create a crafting tree
         ! create a crafting recipe set
     base materials & possible sources:
-        - surface
+x        - surface
             + leather (generally, creature parts)
             + suit scraps
             + dried mycelium (particular fungus, particular techniques?)
-        - cord
+x        - cord
             + sinew (generally, creature parts)
             + suit scraps
-        - sticks, small
+x        - sticks, small
             + dried mycelium (particular fungus, particular techniques?)
             + bone (generally, creature parts)
             + JAT scraps
@@ -114,12 +123,12 @@ name: 'belt-sheath',
         - adhesive
             + fungus stuff (particular fungus, particular techniques?)
             + creature-based
-        - edges
+x        - edges
             + stone shards (from worked stone)
             + suit scraps
             + teeth (generally, creature parts)
             + JAT scraps
-        - hard material
+x        - hard material
             + suit scraps
             + scutes (generally, creature parts)
             + dried mycelium (particular fungus, particular techniques?)

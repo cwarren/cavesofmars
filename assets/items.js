@@ -132,7 +132,9 @@ Game.ItemRepository.define('rock', {
     attackValue: 1,
     rangedAttackDamageBonus: 2,
     isWeapon: true,
-    mixins: [Game.ItemMixins.Ammo]
+    craftingGroup: 'structure',
+    craftingQuality: '1',
+    mixins: [Game.ItemMixins.Ammo, Game.ItemMixins.CraftingResource]
 });
 
 Game.ItemRepository.define('lodestone', {
@@ -673,21 +675,6 @@ Game.ItemRepository.define('bucky-mail sheet', {
 
 // ------------
 
-Game.ItemRepository.define('stone shard', {
-    name: 'stone shard',
-    group: 'crafting resource',
-    character: Game.ItemRepository.Symbol['crafting resource'],
-    description: "",
-    foreground: '#b99',
-    invWeight: 195,
-    invBulk: 140,
-    craftingGroup: 'edge',
-    craftingQuality: '1',
-    mixins: [Game.ItemMixins.CraftingResource]
-}, {
-    disableRandomCreation: true
-});
-
 Game.ItemRepository.define('jaw piece', {
     name: 'jaw piece',
     group: 'crafting resource',
@@ -697,11 +684,28 @@ Game.ItemRepository.define('jaw piece', {
     invWeight: 225,
     invBulk: 170,
     craftingGroup: 'edge',
+    craftingQuality: '1',
+    mixins: [Game.ItemMixins.CraftingResource]
+}, {
+    disableRandomCreation: true
+});
+
+Game.ItemRepository.define('stone shard', {
+    name: 'stone shard',
+    group: 'crafting resource',
+    character: Game.ItemRepository.Symbol['crafting resource'],
+    description: "",
+    foreground: '#b99',
+    invWeight: 195,
+    invBulk: 140,
+    craftingGroup: 'edge',
     craftingQuality: '2',
     mixins: [Game.ItemMixins.CraftingResource]
 }, {
     disableRandomCreation: true
 });
+
+
 
 Game.ItemRepository.define('obsidian shard', {
     name: 'obsidian shard',
@@ -961,6 +965,101 @@ Game.ItemRepository.define('metallo-ceramic plate', {
     invBulk: 730,
     craftingGroup: 'plate',
     craftingQuality: '7',
+    mixins: [Game.ItemMixins.CraftingResource]
+}, {
+    disableRandomCreation: true
+});
+
+// ------------
+
+Game.ItemRepository.define('mycelial fiber', {
+    name: 'mycelial fiber',
+    group: 'crafting resource',
+    character: Game.ItemRepository.Symbol['crafting resource'],
+    description: "",
+    foreground: '#b99',
+    invWeight: 45,
+    invBulk: 60,
+    craftingGroup: 'cord',
+    craftingQuality: '1',
+    mixins: [Game.ItemMixins.CraftingResource]
+}, {
+    disableRandomCreation: true
+});
+
+Game.ItemRepository.define('leather strip', {
+    name: 'leather strip',
+    group: 'crafting resource',
+    character: Game.ItemRepository.Symbol['crafting resource'],
+    description: "",
+    foreground: '#b99',
+    invWeight: 50,
+    invBulk: 105,
+    craftingGroup: 'cord',
+    craftingQuality: '2',
+    mixins: [Game.ItemMixins.CraftingResource]
+}, {
+    disableRandomCreation: true
+});
+
+Game.ItemRepository.define('cured mycelial fiber', {
+    name: 'cured mycelial fiber',
+    group: 'crafting resource',
+    character: Game.ItemRepository.Symbol['crafting resource'],
+    description: "",
+    foreground: '#b99',
+    invWeight: 30,
+    invBulk: 40,
+    craftingGroup: 'cord',
+    craftingQuality: '3',
+    mixins: [Game.ItemMixins.CraftingResource]
+}, {
+    disableRandomCreation: true
+});
+
+Game.ItemRepository.define('sinew', {
+    name: 'sinew',
+    group: 'crafting resource',
+    character: Game.ItemRepository.Symbol['crafting resource'],
+    description: "",
+    foreground: '#b99',
+    invWeight: 50,
+    invBulk: 105,
+    craftingGroup: 'cord',
+    craftingQuality: '4',
+    mixins: [Game.ItemMixins.CraftingResource]
+}, {
+    disableRandomCreation: true
+});
+
+Game.ItemRepository.define('kevlar-carbon thread', {
+    name: 'kevlar-carbon thread',
+    group: 'crafting resource',
+    character: Game.ItemRepository.Symbol['crafting resource'],
+    description: "",
+    foreground: '#b99',
+    invWeight: 10,
+    invBulk: 25,
+    craftingGroup: 'cord',
+    craftingQuality: '6',
+    mixins: [Game.ItemMixins.CraftingResource]
+}, {
+    disableRandomCreation: true
+});
+
+// ------------
+
+
+Game.ItemRepository.define('worked stone', {
+    name: 'worked stone',
+    group: 'crafting resource',
+    character: Game.ItemRepository.Symbol['crafting resource'],
+    description: "",
+    foreground: '#b99',
+    invWeight: 10,
+    invBulk: 25,
+    craftingGroup: 'structure',
+    craftingQuality: '3',
     mixins: [Game.ItemMixins.CraftingResource]
 }, {
     disableRandomCreation: true
