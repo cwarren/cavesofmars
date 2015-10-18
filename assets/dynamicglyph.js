@@ -224,4 +224,4 @@ Game.DynamicGlyph.prototype.describeThe = function(capitalize) {
 
 //Game.DynamicGlyph.getNamesFromArray = function (dgArray) {
 //    return dgArray.map(function(dg){return dg.getName()});
-//}
+//}

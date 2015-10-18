@@ -638,8 +638,8 @@ Game.ItemMixins.Container = {
 
 
 
-Game.ItemMixins.CraftingResource = {
-    name: 'CraftingResource',
+Game.ItemMixins.CraftingIngredient = {
+    name: 'CraftingIngredient',
     init: function(template) {
         this._craftingGroup = template['craftingGroup'] || 'miscellaneous scraps';
         this._craftingQuality = template['craftingQuality'] || 1;
@@ -718,13 +718,13 @@ Game.ItemMixins.CraftingRecipe = {
         this._recipeType = template['recipeType'] || 'compose'; // compose, decompose, build
         
         // ingredients are items in inventory that are used up when the recipe is activated
-        this._ingredients = template['ingredients'] || [];  // a hash of names as keys with values of counts, names prefixed with G: indicate a crafting group rather than a specific item, a ~ suffix indicates a minumum quality requirement
+        this._craftingIngredients = template['craftingIngredients'] || [];  // a hash of names as keys with values of counts, names prefixed with G: indicate a crafting group rather than a specific item, a ~ suffix indicates a minumum quality requirement
 
         // structures are world elements that must be in the current or adjacent space to activate this recipe
-        this._structureRequirements = template['structureRequirements'] || []; // a hash of names as keys with values of counts, names prefixed with G: indicate a crafting group rather than a specific item, a ~ suffix indicates a minumum quality requirement
+        this._craftingStructureRequirements = template['craftingStructureRequirements'] || []; // a hash of names as keys with values of counts, names prefixed with G: indicate a crafting group rather than a specific item, a ~ suffix indicates a minumum quality requirement
 
-        // resources are items in inventory that are NOT used up when the recipe is activated (e.g. tools)
-        this._resourceRequirements = template['resourceRequirements'] || []; // a hash of names as keys with values of counts, names prefixed with G: indicate a crafting group rather than a specific item, a ~ suffix indicates a minumum quality requirement
+        // tools are items in inventory that are NOT used up when the recipe is activated
+        this._craftingTools = template['craftingTools'] || []; // a hash of names as keys with values of counts, names prefixed with G: indicate a crafting group rather than a specific item, a ~ suffix indicates a minumum quality requirement
         
         this._craftingDuration = template['craftingDuration'] || 10000;
         
@@ -746,4 +746,4 @@ Game.ItemMixins.CraftingRecipe = {
             return det;
         }
     }
-};
+};
