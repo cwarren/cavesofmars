@@ -328,7 +328,8 @@ Game.Screen.playScreen = {
             return;
 
         } else if (gameAction === Game.Bindings.Actions.Inventory.INVENTORY_CRAFT) {
-            Game.sendMessage(this._player, "action INVENTORY_CRAFT not yet implemented"); Game.refresh();
+            this.showItemsSubScreen(Game.Screen.craftStep1Screen, this._player.getItems(),'You have nothing to craft.');
+//            Game.sendMessage(this._player, "action INVENTORY_CRAFT not yet implemented"); Game.refresh();
             return;
         } else if (gameAction === Game.Bindings.Actions.Inventory.INVENTORY_USE) {
             Game.sendMessage(this._player, "action INVENTORY_USE not yet implemented"); Game.refresh();
@@ -1188,11 +1189,49 @@ Game.Screen.craftStep1Screen = new Game.Screen.ItemListScreen({
     },
     canSelect: true,
     canSelectMultipleItems: true,
+    _selectedIngredients: {},
+    _availableTools: {},
+    _availableStructures: {},
     ok: function(selectedItems) {
 
-        console.log('TODO: implement crafting step 2');
+        //console.dir(selectedItems);
+        //console.dir(this._player.getItems());
+        //console.log('selectedItems[1] == '+selectedItems[1]);
+        //return true;
+        
+        this._selectedIngredients = selectedItems;
+        
+        var allItems = this._player.getItems();
+        this._availableTools = {};
+        for (var i=0;i<allItems.length;i++) {
+            if (selectedItems[i] === undefined && allItems[i].hasMixin('CraftingTool')) {
+                this._availableTools[i] = allItems[i];
+            }
+        }
+
+        this._availableStructures = {};
+
+        //console.dir(this._selectedIngredients);
+        //console.dir(this._availableTools);
+        //console.dir(this._availableStructures);
+        //return true;
         
         // get list of recipes that are elegible given the selected items
+        var allKnownRecipes = this._player.getCraftingRecipes();
+        var viableRecipes = [];
+        for (var i=0; i<allKnownRecipes.length;i++) {
+            if (allKnownRecipes[i].canBeUsedWith(this._selectedIngredients,this._availableTools,this._availableStructures)) {
+                viableRecipes.push(allKnownRecipes[i]);
+            }
+        }
+        
+        console.log('VIABLE RECIPES:');
+        console.dir(viableRecipes);
+
+        console.log('TODO: implement crafting step 2');
+        return true;
+        
+        // show the recipe selection screen for those recipes
         // this._parentScreen.showItemsSubScreen(Game.Screen.craftStep2Screen, viableRecipes,'No recipes using those items.');
         
 
@@ -1897,28 +1936,32 @@ Game.Screen.storyScreen = {
                 //player.addItem(h);
                 player.wear(h);
                 
-                var itemTesting = false;
+                var itemTesting = true;
                 /////////////////////////////
                 /// CODE FOR ITEM TESTING!!!!
                 if (itemTesting) {
                     console.log('item testing code is active');
                 
 //                player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('human corpse'),player.getX(),player.getY(),player.getZ());
-                player.addItem(Game.ItemRepository.create('sack'));
-                player.addItem(Game.ItemRepository.create('shoulder-strap'));
-                player.addItem(Game.ItemRepository.create('shoulder-strap'));
-                player.addItem(Game.ItemRepository.create('bandolier'));
-                player.addItem(Game.ItemRepository.create('stone shot'));
-                player.addItem(Game.ItemRepository.create('stone shot'));
-                player.addItem(Game.ItemRepository.create('iron shot'));
-                player.addItem(Game.ItemRepository.create('iron shot'));
-
+               // player.addItem(Game.ItemRepository.create('sack'));
+               // player.addItem(Game.ItemRepository.create('shoulder-strap'));
+               // player.addItem(Game.ItemRepository.create('shoulder-strap'));
+               // player.addItem(Game.ItemRepository.create('bandolier'));
+               // player.addItem(Game.ItemRepository.create('stone shot'));
+               // player.addItem(Game.ItemRepository.create('stone shot'));
+               // player.addItem(Game.ItemRepository.create('iron shot'));
+               // player.addItem(Game.ItemRepository.create('iron shot'));
+                player.addItem(Game.ItemRepository.create('sinew'));
+                player.addItem(Game.ItemRepository.create('sinew'));
+                player.addItem(Game.ItemRepository.create('leather piece'));
+                player.addItem(Game.ItemRepository.create('obsidian shard'));
+ 
                 for (var i=0;i<6;i++) {
                     player.addItem(Game.ItemRepository.createRandom());
                     player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('lodestone'),player.getX(),player.getY(),player.getZ());
                 }
                 
-                for (var i=0;i<24;i++) {
+                for (var i=0;i<9;i++) {
                     player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.createRandom(),player.getX(),player.getY(),player.getZ());
 //                    player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('human corpse'),player.getX(),player.getY(),player.getZ());
 //                    player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('geodic nut'),player.getX(),player.getY(),player.getZ());

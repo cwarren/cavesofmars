@@ -134,7 +134,9 @@ Game.ItemRepository.define('rock', {
     isWeapon: true,
     craftingGroup: 'structure',
     craftingQuality: '1',
-    mixins: [Game.ItemMixins.Ammo, Game.ItemMixins.CraftingIngredient]
+    craftingToolGroup: 'whacker',
+    craftingToolQuality: '2',
+    mixins: [Game.ItemMixins.Ammo, Game.ItemMixins.CraftingIngredient, Game.ItemMixins.CraftingTool]
 });
 
 Game.ItemRepository.define('lodestone', {
@@ -252,7 +254,9 @@ Game.ItemRepository.define('JAT tool, damaged', {
     isWeapon: true,
     isTool: true,
     description: "The JAT (Jack-of-All-Trades) tool is the standard-issue tool for work on Mars. While not as good as a specialized tool, it's at least moderately effective as a shovel, prybar, pick, axe, and walking stick for navigating rough terrain. Unfortunately this one has been badly damaged, but you could still probably hit something with it if you had to.",
-    mixins: [Game.ItemMixins.DigTool]
+    craftingToolGroup: 'cutter',
+    craftingToolQuality: '2',
+    mixins: [Game.ItemMixins.DigTool, Game.ItemMixins.CraftingTool]
 }, {
     disableRandomCreation: true
 });
@@ -270,7 +274,9 @@ Game.ItemRepository.define('JAT tool, patched', {
     isWeapon: true,
     isTool: true,
     description: "The JAT (Jack-of-All-Trades) tool is the standard-issue tool for work on Mars. While not as good as a specialized tool, it's at least moderately effective as a shovel, prybar, pick, axe, and walking stick for navigating rough terrain. This one was badly damaged, but subsequently somewhat repaired in a makeshift kind of way.",
-    mixins: [Game.ItemMixins.DigTool]
+    craftingToolGroup: 'cutter',
+    craftingToolQuality: '3',
+    mixins: [Game.ItemMixins.DigTool, Game.ItemMixins.CraftingTool]
 }, {
     disableRandomCreation: true
 });
@@ -288,7 +294,9 @@ Game.ItemRepository.define('JAT tool', {
     isWeapon: true,
     isTool: true,
     description: "The JAT (Jack-of-All-Trades) tool is the standard-issue tool for work on Mars. While not as good as a specialized tool, it's at least moderately effective as a shovel, prybar, pick, axe, and walking stick for navigating rough terrain. Plus, if you have to you can use it to give something a pretty solid whack.",
-    mixins: [Game.ItemMixins.DigTool]
+    craftingToolGroup: 'cutter',
+    craftingToolQuality: '3',
+    mixins: [Game.ItemMixins.DigTool, Game.ItemMixins.CraftingTool]
 }, {
     disableRandomCreation: true
 });
@@ -302,7 +310,9 @@ Game.ItemRepository.define('shard blade', {
     attackValue: 4,
     isWeapon: true,
     description: "A large, sharp piece of volcanic glass has been shaped and affixed to a handle made of bone. Primitive, but effective.",
-    mixins: []
+    craftingToolGroup: 'cutter',
+    craftingToolQuality: '3',
+    mixins: [Game.ItemMixins.CraftingTool]
 }, {
     disableRandomCreation: true
 });
@@ -316,7 +326,9 @@ Game.ItemRepository.define('stone sword', {
     attackValue: 8,
     isWeapon: true,
     description: "A long piece of something like wood has been embedded with carefully shaped and fit pieces of dark glass. Primitive, but very effective.",
-    mixins: []
+    craftingToolGroup: 'cutter',
+    craftingToolQuality: '3',
+    mixins: [Game.ItemMixins.CraftingTool]
 }, {
     disableRandomCreation: true
 });
@@ -334,7 +346,9 @@ Game.ItemRepository.define('staff', {
     isWeapon: true,
     isTool: true,
     description: "Someone - maybe another quake survivor? - has crafted a long fairly thin piece of something that resembles wood, with wrappings where the hands are to be placed. It's light weight and flex makes it more of a defensive weapon.",
-    mixins: [Game.ItemMixins.DigTool]
+    craftingToolGroup: 'bracer',
+    craftingToolQuality: '1',
+    mixins: [Game.ItemMixins.DigTool,Game.ItemMixins.CraftingTool]
 }, {
     disableRandomCreation: true
 });
@@ -352,7 +366,9 @@ Game.ItemRepository.define('shod staff', {
     isWeapon: true,
     isTool: true,
     description: "A long heavy piece of something that resembles wood. Parts of it are also wrapped in some kind of metal. It's heavy, but well balanced.",
-    mixins: [Game.ItemMixins.DigTool]
+    craftingToolGroup: 'bracer',
+    craftingToolQuality: '1',
+    mixins: [Game.ItemMixins.DigTool,Game.ItemMixins.CraftingTool]
 }, {
     disableRandomCreation: true
 });
@@ -508,7 +524,7 @@ Game.ItemRepository.define('shoulder-strap', {
     group: 'container',
     character: Game.ItemRepository.Symbol['container'],
     invWeight: 250,
-    invBulk: 650,
+    invBulk: 350,
     foreground: '#ba7',
     description: "a padded strap to carry a single, quickly accessible item",
     maxCarryWeight: 90000,
@@ -528,7 +544,7 @@ Game.ItemRepository.define('bandolier', {
     group: 'container',
     character: Game.ItemRepository.Symbol['container'],
     invWeight: 350,
-    invBulk: 650,
+    invBulk: 450,
     foreground: '#ba4',
     description: "a padded strap covered with small pockets and loops",
     maxCarryWeight: 2400,
@@ -564,7 +580,7 @@ Game.ItemRepository.define('belt-sheath', {
     group: 'container',
     character: Game.ItemRepository.Symbol['container'],
     invWeight: 450,
-    invBulk: 380,
+    invBulk: 450,
     foreground: '#983',
     description: "an adjustable looped belt system for easily carrying and rapidly accessing a blade of most any size",
     maxCarryWeight: 3200,
@@ -685,7 +701,9 @@ Game.ItemRepository.define('jaw piece', {
     invBulk: 170,
     craftingGroup: 'edge',
     craftingQuality: '1',
-    mixins: [Game.ItemMixins.CraftingIngredient]
+    craftingToolGroup: 'cutter',
+    craftingToolQuality: '1',
+    mixins: [Game.ItemMixins.CraftingIngredient,Game.ItemMixins.CraftingTool]
 }, {
     disableRandomCreation: true
 });
@@ -700,7 +718,9 @@ Game.ItemRepository.define('stone shard', {
     invBulk: 140,
     craftingGroup: 'edge',
     craftingQuality: '2',
-    mixins: [Game.ItemMixins.CraftingIngredient]
+    craftingToolGroup: 'cutter',
+    craftingToolQuality: '1',
+    mixins: [Game.ItemMixins.CraftingIngredient,Game.ItemMixins.CraftingTool]
 }, {
     disableRandomCreation: true
 });
@@ -717,7 +737,9 @@ Game.ItemRepository.define('obsidian shard', {
     invBulk: 140,
     craftingGroup: 'edge',
     craftingQuality: '3',
-    mixins: [Game.ItemMixins.CraftingIngredient]
+    craftingToolGroup: 'cutter',
+    craftingToolQuality: '2',
+    mixins: [Game.ItemMixins.CraftingIngredient,Game.ItemMixins.CraftingTool]
 }, {
     disableRandomCreation: true
 });
@@ -732,7 +754,9 @@ Game.ItemRepository.define('iron blade', {
     invBulk: 140,
     craftingGroup: 'edge',
     craftingQuality: '4',
-    mixins: [Game.ItemMixins.CraftingIngredient]
+    craftingToolGroup: 'cutter',
+    craftingToolQuality: '3',
+    mixins: [Game.ItemMixins.CraftingIngredient,Game.ItemMixins.CraftingTool]
 }, {
     disableRandomCreation: true
 });
@@ -747,7 +771,9 @@ Game.ItemRepository.define('JAT piece - edge', {
     invBulk: 200,
     craftingGroup: 'edge',
     craftingQuality: '6',
-    mixins: [Game.ItemMixins.CraftingIngredient]
+    craftingToolGroup: 'cutter',
+    craftingToolQuality: '4',
+    mixins: [Game.ItemMixins.CraftingIngredient,Game.ItemMixins.CraftingTool]
 }, {
     disableRandomCreation: true
 });
@@ -765,7 +791,9 @@ Game.ItemRepository.define('cured mycelium - pole', {
     invBulk: 2000,
     craftingGroup: 'pole',
     craftingQuality: '1',
-    mixins: [Game.ItemMixins.CraftingIngredient]
+    craftingToolGroup: 'bracer',
+    craftingToolQuality: '1',
+    mixins: [Game.ItemMixins.CraftingIngredient,Game.ItemMixins.CraftingTool]
 }, {
     disableRandomCreation: true
 });
@@ -781,7 +809,9 @@ Game.ItemRepository.define('long chitin segment', {
     invBulk: 2000,
     craftingGroup: 'pole',
     craftingQuality: '3',
-    mixins: [Game.ItemMixins.CraftingIngredient]
+    craftingToolGroup: 'bracer',
+    craftingToolQuality: '1',
+    mixins: [Game.ItemMixins.CraftingIngredient,Game.ItemMixins.CraftingTool]
 }, {
     disableRandomCreation: true
 });
@@ -796,7 +826,9 @@ Game.ItemRepository.define('JAT piece - pole', {
     invBulk: 2000,
     craftingGroup: 'pole',
     craftingQuality: '5',
-    mixins: [Game.ItemMixins.CraftingIngredient]
+    craftingToolGroup: 'bracer',
+    craftingToolQuality: '1',
+    mixins: [Game.ItemMixins.CraftingIngredient,Game.ItemMixins.CraftingTool]
 }, {
     disableRandomCreation: true
 });
@@ -828,7 +860,9 @@ Game.ItemRepository.define('cured mycelium - stick', {
     invBulk: 330,
     craftingGroup: 'stick',
     craftingQuality: '2',
-    mixins: [Game.ItemMixins.CraftingIngredient]
+    craftingToolGroup: 'bracer',
+    craftingToolQuality: '1',
+    mixins: [Game.ItemMixins.CraftingIngredient,Game.ItemMixins.CraftingTool]
 }, {
     disableRandomCreation: true
 });
@@ -843,7 +877,9 @@ Game.ItemRepository.define('short chitin segment', {
     invBulk: 330,
     craftingGroup: 'stick',
     craftingQuality: '3',
-    mixins: [Game.ItemMixins.CraftingIngredient]
+    craftingToolGroup: 'bracer',
+    craftingToolQuality: '1',
+    mixins: [Game.ItemMixins.CraftingIngredient,Game.ItemMixins.CraftingTool]
 }, {
     disableRandomCreation: true
 });
@@ -858,7 +894,9 @@ Game.ItemRepository.define('bone', {
     invBulk: 330,
     craftingGroup: 'stick',
     craftingQuality: '4',
-    mixins: [Game.ItemMixins.CraftingIngredient]
+    craftingToolGroup: 'bracer',
+    craftingToolQuality: '1',
+    mixins: [Game.ItemMixins.CraftingIngredient,Game.ItemMixins.CraftingTool]
 }, {
     disableRandomCreation: true
 });
@@ -873,7 +911,9 @@ Game.ItemRepository.define('iron rod', {
     invBulk: 330,
     craftingGroup: 'stick',
     craftingQuality: '5',
-    mixins: [Game.ItemMixins.CraftingIngredient]
+    craftingToolGroup: 'bracer',
+    craftingToolQuality: '1',
+    mixins: [Game.ItemMixins.CraftingIngredient,Game.ItemMixins.CraftingTool]
 }, {
     disableRandomCreation: true
 });
@@ -888,7 +928,9 @@ Game.ItemRepository.define('JAT piece - stick', {
     invBulk: 330,
     craftingGroup: 'stick',
     craftingQuality: '6',
-    mixins: [Game.ItemMixins.CraftingIngredient]
+    craftingToolGroup: 'bracer',
+    craftingToolQuality: '1',
+    mixins: [Game.ItemMixins.CraftingIngredient,Game.ItemMixins.CraftingTool]
 }, {
     disableRandomCreation: true
 });
@@ -935,7 +977,9 @@ Game.ItemRepository.define('scute', {
     invBulk: 730,
     craftingGroup: 'plate',
     craftingQuality: '3',
-    mixins: [Game.ItemMixins.CraftingIngredient]
+    craftingToolGroup: 'worksurface',
+    craftingToolQuality: '1',
+    mixins: [Game.ItemMixins.CraftingIngredient,Game.ItemMixins.CraftingTool]
 }, {
     disableRandomCreation: true
 });
@@ -950,7 +994,9 @@ Game.ItemRepository.define('iron plate', {
     invBulk: 730,
     craftingGroup: 'plate',
     craftingQuality: '5',
-    mixins: [Game.ItemMixins.CraftingIngredient]
+    craftingToolGroup: 'worksurface',
+    craftingToolQuality: '1',
+    mixins: [Game.ItemMixins.CraftingIngredient,Game.ItemMixins.CraftingTool]
 }, {
     disableRandomCreation: true
 });
@@ -965,7 +1011,9 @@ Game.ItemRepository.define('metallo-ceramic plate', {
     invBulk: 730,
     craftingGroup: 'plate',
     craftingQuality: '7',
-    mixins: [Game.ItemMixins.CraftingIngredient]
+    craftingToolGroup: 'worksurface',
+    craftingToolQuality: '1',
+    mixins: [Game.ItemMixins.CraftingIngredient,Game.ItemMixins.CraftingTool]
 }, {
     disableRandomCreation: true
 });
@@ -997,7 +1045,9 @@ Game.ItemRepository.define('leather strip', {
     invBulk: 105,
     craftingGroup: 'cord',
     craftingQuality: '2',
-    mixins: [Game.ItemMixins.CraftingIngredient]
+    craftingToolGroup: 'holder',
+    craftingToolQuality: '1',
+    mixins: [Game.ItemMixins.CraftingIngredient,Game.ItemMixins.CraftingTool]
 }, {
     disableRandomCreation: true
 });
@@ -1012,7 +1062,9 @@ Game.ItemRepository.define('cured mycelial fiber', {
     invBulk: 40,
     craftingGroup: 'cord',
     craftingQuality: '3',
-    mixins: [Game.ItemMixins.CraftingIngredient]
+    craftingToolGroup: 'holder',
+    craftingToolQuality: '1',
+    mixins: [Game.ItemMixins.CraftingIngredient,Game.ItemMixins.CraftingTool]
 }, {
     disableRandomCreation: true
 });
@@ -1027,7 +1079,9 @@ Game.ItemRepository.define('sinew', {
     invBulk: 105,
     craftingGroup: 'cord',
     craftingQuality: '4',
-    mixins: [Game.ItemMixins.CraftingIngredient]
+    craftingToolGroup: 'holder',
+    craftingToolQuality: '1',
+    mixins: [Game.ItemMixins.CraftingIngredient,Game.ItemMixins.CraftingTool]
 }, {
     disableRandomCreation: true
 });
@@ -1042,13 +1096,91 @@ Game.ItemRepository.define('kevlar-carbon thread', {
     invBulk: 25,
     craftingGroup: 'cord',
     craftingQuality: '6',
-    mixins: [Game.ItemMixins.CraftingIngredient]
+    craftingToolGroup: 'holder',
+    craftingToolQuality: '1',
+    mixins: [Game.ItemMixins.CraftingIngredient,Game.ItemMixins.CraftingTool]
 }, {
     disableRandomCreation: true
 });
 
 // ------------
 
+Game.ItemRepository.define('starch paste', {
+    name: 'starch paste',
+    group: 'crafting ingredient',
+    character: Game.ItemRepository.Symbol['crafting ingredient'],
+    description: "",
+    foreground: '#bb9',
+    invWeight: 10,
+    invBulk: 25,
+    craftingGroup: 'binder',
+    craftingQuality: '1',
+    mixins: [Game.ItemMixins.CraftingIngredient]
+}, {
+    disableRandomCreation: true
+});
+
+Game.ItemRepository.define('pitch', {
+    name: 'pitch',
+    group: 'crafting ingredient',
+    character: Game.ItemRepository.Symbol['crafting ingredient'],
+    description: "",
+    foreground: '#bb9',
+    invWeight: 10,
+    invBulk: 25,
+    craftingGroup: 'binder',
+    craftingQuality: '2',
+    mixins: [Game.ItemMixins.CraftingIngredient]
+}, {
+    disableRandomCreation: true
+});
+
+Game.ItemRepository.define('protein glue', {
+    name: 'protein glue',
+    group: 'crafting ingredient',
+    character: Game.ItemRepository.Symbol['crafting ingredient'],
+    description: "",
+    foreground: '#bb9',
+    invWeight: 10,
+    invBulk: 25,
+    craftingGroup: 'binder',
+    craftingQuality: '3',
+    mixins: [Game.ItemMixins.CraftingIngredient]
+}, {
+    disableRandomCreation: true
+});
+
+Game.ItemRepository.define('epoxy', {
+    name: 'epoxy',
+    group: 'crafting ingredient',
+    character: Game.ItemRepository.Symbol['crafting ingredient'],
+    description: "",
+    foreground: '#bb9',
+    invWeight: 10,
+    invBulk: 25,
+    craftingGroup: 'binder',
+    craftingQuality: '5',
+    mixins: [Game.ItemMixins.CraftingIngredient]
+}, {
+    disableRandomCreation: true
+});
+
+Game.ItemRepository.define('nano-cement', {
+    name: 'nano-cement',
+    group: 'crafting ingredient',
+    character: Game.ItemRepository.Symbol['crafting ingredient'],
+    description: "",
+    foreground: '#bb9',
+    invWeight: 10,
+    invBulk: 25,
+    craftingGroup: 'binder',
+    craftingQuality: '7',
+    mixins: [Game.ItemMixins.CraftingIngredient]
+}, {
+    disableRandomCreation: true
+});
+
+// ------------
 
 Game.ItemRepository.define('worked stone', {
     name: 'worked stone',
@@ -1060,7 +1192,9 @@ Game.ItemRepository.define('worked stone', {
     invBulk: 25,
     craftingGroup: 'structure',
     craftingQuality: '3',
-    mixins: [Game.ItemMixins.CraftingIngredient]
+    craftingToolGroup: 'whacker',
+    craftingToolQuality: '1',
+    mixins: [Game.ItemMixins.CraftingIngredient,Game.ItemMixins.CraftingTool]
 }, {
     disableRandomCreation: true
 });
