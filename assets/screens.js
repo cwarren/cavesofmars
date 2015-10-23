@@ -1235,8 +1235,8 @@ Game.Screen.craftStep1Screen = new Game.Screen.ItemListScreen({
             }
         }
                 
-        console.log('VIABLE RECIPES:');
-        console.dir(viableRecipes);
+        //console.log('VIABLE RECIPES:');
+        //console.dir(viableRecipes);
 
         //console.log('TODO: implement crafting step 2');
         //return true;
@@ -1248,6 +1248,10 @@ Game.Screen.craftStep1Screen = new Game.Screen.ItemListScreen({
         return true;
     }
 });
+
+Game.Screen.craftStep1Screen.getSelectedIngredients = function() {
+    return this._selectedIngredients;
+};
 
 Game.Screen.craftStep1Screen.getHelpSections = function() {
     return ['datanav'];
@@ -1262,14 +1266,27 @@ Game.Screen.craftStep2Screen = new Game.Screen.ItemListScreen({
     },
     canSelect: true,
     canSelectMultipleItems: false,
+    _selectedRecipe: '',
     ok: function(selectedItems) {
 
-        console.log('SELECTED RECIPE:');
-        console.dir(selectedItems);
-        return true;
+        //console.log('SELECTED RECIPE:');
+        //console.dir(selectedItems);
+//        return true;
 
-        // TODO: implement recipe activation        
+        // TODO: implement recipe activation
+        
+        // extract ingredients from inventory
+        // perform success check
+        // if successful, create result item and add it to inventory
+    
+        //console.log('SELECTED INGREDIENTS:');
+        //console.dir(Game.Screen.craftStep1Screen.getSelectedIngredients());
 
+        console.log("TODO: handle crafting duration stuff (see digging for example)");
+
+        this._selectedRecipe = selectedItems[Object.keys(selectedItems)[0]];
+        this.handleCraftFinish();
+        
         return true;
     }
 });
@@ -1277,6 +1294,25 @@ Game.Screen.craftStep2Screen = new Game.Screen.ItemListScreen({
 Game.Screen.craftStep2Screen.getHelpSections = function() {
     return ['datanav'];
 };
+
+Game.Screen.craftStep2Screen.handleCraftFinish = function() {
+    var ings = Game.Screen.craftStep1Screen.getSelectedIngredients();
+    var p = Game.getPlayer();
+    var idxAry = Object.keys(ings);
+    for (var i=0;i<idxAry.length;i++) {
+        p.extractThisItem(ings[idxAry[i]]);
+    }
+
+    if (ROT.RNG.getUniform() <= this._selectedRecipe.getSuccessChance()) {
+        var numSuccesses = this._selectedRecipe.getSuccessCountTable().random();
+        for (var i=0;i<numSuccesses;i++) {
+            var newItem = this._selectedRecipe.getSuccessObject();
+            p.addItem(newItem);
+            Game.sendMessage(this._player,'You got %s',[newItem.describeA()]);
+            
+        }
+    }
+}
 
 //-------------------
 

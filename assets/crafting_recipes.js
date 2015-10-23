@@ -34,7 +34,7 @@ Game.RecipeRepository.define('sling', {
     recipeType: 'compose',
     craftingIngredients: {'G:cord~2': 2, 'G:material~2': 1},
     craftingTools: {'G:cutter~2':1},
-    successChance: '.25',
+    successChance: '1',
     outcomeObject: 'sling',
     mixins: [Game.ItemMixins.CraftingRecipe]
 });

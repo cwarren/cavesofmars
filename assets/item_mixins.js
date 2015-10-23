@@ -817,11 +817,30 @@ Game.ItemMixins.CraftingRecipe = {
         this._successCountTable = template['successCountTable'] || [1]; // random pick from the array gives count for number of outcomes
     
         // NOTE: a recipe has either and outcomeObject OR ELSE and outcomeRandomTable, not both
-        this._outcomeObject = template['outcomeObject'] || ''; // a single thing that is created on a success
-        this._outcomeRandomTable = template['outcomeRandomTable'] || ''; // a randomTable with the possible outcomes of a success
+        this._outcomeObject = template['outcomeObject'] || ''; // a single item name that is created on a success
+        this._outcomeRandomTable = template['outcomeRandomTable'] || ''; // a randomTable with the item names of possible outcomes of a success
     },
     getRecipeType: function() {
         return this._recipeType;
+    },
+    getSuccessChance: function() {
+        return this._successChance;
+    },
+    getSuccessCountTable: function() {
+        return this._successCountTable;
+    },
+    getOutcomeObject: function() {
+        return this._outcomeObject;
+    },
+    getOutcomeRandomTable: function() {
+        return this._outcomeRandomTable;
+    },
+    getSuccessObject: function() {
+        if (this._outcomeObject != '') {
+            return Game.ItemRepository.create(this._outcomeObject);
+        } else if (this._outcomeRandomTable!= '') {
+            return Game.ItemRepository.create(this._outcomeRandomTable.getOne());
+        }
     },
     canBeUsedWith: function(ingredients,tools,structures) {
         //console.log('TODO: implement real CraftingRecipe.canBeUsedWith');
