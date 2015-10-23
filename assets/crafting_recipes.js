@@ -12,6 +12,21 @@ Game.RecipeRepository.define('breakdown', {
 });
 */
 
+Game.RecipeRepository.define('BREAKDOWN', {
+    name: 'BREAKDOWN',
+    group: 'crafting recipe',
+    description: "break an item down into parts",
+    recipeType: 'decompose',
+    craftingIngredients: "SEEITEM",
+    craftingTools: "SEEITEM",
+    craftingStructures: "SEEITEM",
+    successChance: "SEEITEM",
+    outcomeObject: "SEEITEM",
+    mixins: [Game.ItemMixins.CraftingRecipe]
+});
+
+
+
 Game.RecipeRepository.define('sling', {
     name: 'sling',
     group: 'crafting recipe',
@@ -30,10 +45,10 @@ Game.RecipeRepository.define('shard blade', {
     group: 'crafting recipe',
     description: "a basic knife",
     recipeType: 'compose',
-    craftingIngredients: {'G:edge~2': 1, 'G:cord~1': 1, 'G:binder~2': 1, 'G:stick~3': 1},
+    craftingIngredients: {'G:edge~2': 1, 'G:cord': 1, 'G:binder~2': 1, 'G:stick~3': 1},
     craftingTools: {'G:bracer':1,'G:holder':1},
     successChance: '.15',
     outcomeObject: 'shard blade',
     mixins: [Game.ItemMixins.CraftingRecipe]
 });
-
+

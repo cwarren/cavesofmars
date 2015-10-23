@@ -232,7 +232,7 @@ Game.EntityMixins.Digger = {
             var digAdds = [];
 
             var w = this.getHolding();
-            if (w && w.isTool()) {
+            if (w && w.isDigTool()) {
                 digMults = digMults.concat(Game.util.scanEventResultsFor(w.raiseEvent('onDigging'),'digMultiplier'));
                 digAdds = digAdds.concat(Game.util.scanEventResultsFor(w.raiseEvent('onDigging'),'digAdder'));
             }

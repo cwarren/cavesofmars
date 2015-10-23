@@ -71,6 +71,7 @@ Game.ItemMixins.DigTool = {
     init: function(template) {
         this._digMultiplier = template['digMultiplier'] || 1;
         this._digAdder = template['digAdder'] || 1;
+        this._isDigTool = true;
     },
     getDigMultiplier: function() {
         return this._digMultiplier;
@@ -670,6 +671,7 @@ Game.ItemMixins.CraftingTool = {
     init: function(template) {
         this._craftingToolGroup = template['craftingToolGroup'] || 'whacker';
         this._craftingToolQuality = template['craftingToolQuality'] || 1;
+        this._isCraftTool = true;
     },
     getCraftingToolGroup: function() {
         return this._craftingToolGroup;
@@ -679,8 +681,8 @@ Game.ItemMixins.CraftingTool = {
     },
     listeners: {
         'details': function() {
-            var det = [{key: 'crafting tool type', value: this._craftingToolGroup},
-                       {key: 'quality', value: this._craftingToolQuality}];
+            var det = [{key: 'craft tool type', value: this._craftingToolGroup},
+                       {key: 'craft tool quality', value: this._craftingToolQuality}];
             return det;
         },
         'calcDetails': function() {
@@ -818,6 +820,9 @@ Game.ItemMixins.CraftingRecipe = {
         this._outcomeObject = template['outcomeObject'] || ''; // a single thing that is created on a success
         this._outcomeRandomTable = template['outcomeRandomTable'] || ''; // a randomTable with the possible outcomes of a success
     },
+    getRecipeType: function() {
+        return this._recipeType;
+    },
     canBeUsedWith: function(ingredients,tools,structures) {
         //console.log('TODO: implement real CraftingRecipe.canBeUsedWith');
 
@@ -836,6 +841,11 @@ Game.ItemMixins.CraftingRecipe = {
         //console.dir(toolAr);
         //console.dir(struAr);
 
+        if (Object.keys(ingredients).length == 1) {
+            console.log("TODO: check for BREAKDOWN as a viable recipe (look at the item for any required tools and/or structures)");
+        }
+
+        
         //---------- start ingredient checking ----------------
 
         // ingredient check order: first specific items, second groups in descending quality order
@@ -994,6 +1004,92 @@ Game.ItemMixins.CraftingRecipe = {
         //---------- end structure checking ----------------
 
         return true;
+    },
+    details: function() {
+    /*
+        var details = [];
+        var detailGroups = this.raiseEvent('details');
+        // Iterate through each return value, grabbing the detaisl from the arrays.
+        if (detailGroups) {
+            for (var i = 0, l = detailGroups.length; i < l; i++) {
+                if (detailGroups[i]) {
+                    for (var j = 0; j < detailGroups[i].length; j++) {
+                        details.push(detailGroups[i][j].key + ': ' +  detailGroups[i][j].value);          
+                    }
+                }
+            }
+        }
+        
+        // CSW TODO : prettify the details string, perhaps (e.g. especially if there's a 'richDescription' key...?)
+        var detStr = details.join(', ');
+        if (! detStr) {
+            return '';
+        }
+        return this.describeA(false) + '- '+detStr;
+        */
+        if (this._name == 'BREAKDOWN') {
+            return "INGREDIENTS: selected item\nTOOLS: varies\nSTRUCTURES: varies";
+        }
+        
+        var detStr = "";
+        var ingItems = this._craftIngrItemsToCheck.join(",");
+        for (var q=20;q>=0;q--) {
+            if (this._craftIngrGroupsToCheck[q] != undefined) {
+                if (ingItems.length > 0) {
+                    ingItems += '; ';
+                }
+                if (q<=1) {
+                    ingItems += "any ";
+                } else {
+                    ingItems += "quality "+q+"+ ";
+                }
+                ingItems += this._craftIngrGroupsToCheck[q].join(",");
+            }
+        }
+        if (ingItems.length > 0) {
+            detStr += "INGREDIENTS: "+ingItems;
+        }
+        
+        var ingTools = this._craftToolItemsToCheck.join(",");
+        for (var q=20;q>=0;q--) {
+            if (this._craftToolGroupsToCheck[q] != undefined) {
+                if (ingTools.length > 0) {
+                    ingTools += '; ';
+                }
+
+                if (q<=1) {
+                    ingTools += "any ";
+                } else {
+                    ingTools += "quality "+q+"+ ";
+                }
+                
+                ingTools += this._craftToolGroupsToCheck[q].join(",");
+            }
+        }
+        if (ingTools.length > 0) {
+            detStr += "\nTOOLS: "+ingTools;
+        }
+        
+
+        var ingStrus = this._craftStruItemsToCheck.join(",");
+        for (var q=20;q>=0;q--) {
+            if (this._craftStruGroupsToCheck[q] != undefined) {
+                if (ingStrus.length > 0) {
+                    ingStrus += '; ';
+                }
+                if (q<=1) {
+                    ingStrus += "any ";
+                } else {
+                    ingStrus += "quality "+q+"+ ";
+                }
+                ingStrus += this._craftStruGroupsToCheck[q].join(",");
+            }
+        }
+        if (ingStrus.length > 0) {
+            detStr += "\nSTRUCTURES: "+ingStrus;
+        }
+
+        return detStr;
     },
     listeners: {
         'details': function() {

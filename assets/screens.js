@@ -335,6 +335,10 @@ Game.Screen.playScreen = {
             Game.sendMessage(this._player, "action INVENTORY_USE not yet implemented"); Game.refresh();
             return;
 
+        } else if (gameAction === Game.Bindings.Actions.Knowledge.KNOWLEDGE_CRAFT) {
+            this.showItemsSubScreen(Game.Screen.craftRecipeKnowledgeScreen, this._player.getCraftingRecipes(),'You don\'t know any crafting recipes.');
+            return;
+        
         //----------------------------
         // world actions
         } else if (gameAction === Game.Bindings.Actions.World.LOOK) {
@@ -1031,6 +1035,8 @@ Game.Screen.examineScreen = new Game.Screen.ItemListScreen({
 //                Game.sendMessage(this._player, descr);
                 Game.AuxScreen.infoScreen.setCurrentDetailInfo(descr);
 
+            } else {
+                Game.AuxScreen.infoScreen.setCurrentDetailInfo("");
             }
             //Game.sendMessage(this._player, '');
 
@@ -1189,6 +1195,9 @@ Game.Screen.craftStep1Screen = new Game.Screen.ItemListScreen({
     },
     canSelect: true,
     canSelectMultipleItems: true,
+    isAcceptable: function(item) {
+            return item && item.hasMixin('CraftingIngredient');
+    },
     _selectedIngredients: {},
     _availableTools: {},
     _availableStructures: {},
@@ -1209,6 +1218,7 @@ Game.Screen.craftStep1Screen = new Game.Screen.ItemListScreen({
             }
         }
 
+        console.log('TODO: implement crafting structure availability');
         this._availableStructures = {};
 
         //console.dir(this._selectedIngredients);
@@ -1224,15 +1234,15 @@ Game.Screen.craftStep1Screen = new Game.Screen.ItemListScreen({
                 viableRecipes.push(allKnownRecipes[i]);
             }
         }
-        
+                
         console.log('VIABLE RECIPES:');
         console.dir(viableRecipes);
 
-        console.log('TODO: implement crafting step 2');
-        return true;
+        //console.log('TODO: implement crafting step 2');
+        //return true;
         
         // show the recipe selection screen for those recipes
-        // this._parentScreen.showItemsSubScreen(Game.Screen.craftStep2Screen, viableRecipes,'No recipes using those items.');
+        this._parentScreen.showItemsSubScreen(Game.Screen.craftStep2Screen, viableRecipes,'You don\'t know any recipes using those items.');
         
 
         return true;
@@ -1240,6 +1250,70 @@ Game.Screen.craftStep1Screen = new Game.Screen.ItemListScreen({
 });
 
 Game.Screen.craftStep1Screen.getHelpSections = function() {
+    return ['datanav'];
+};
+
+
+//-------------------
+
+Game.Screen.craftStep2Screen = new Game.Screen.ItemListScreen({
+    caption: function() {
+        return 'Choose crafting recipe';
+    },
+    canSelect: true,
+    canSelectMultipleItems: false,
+    ok: function(selectedItems) {
+
+        console.log('SELECTED RECIPE:');
+        console.dir(selectedItems);
+        return true;
+
+        // TODO: implement recipe activation        
+
+        return true;
+    }
+});
+
+Game.Screen.craftStep2Screen.getHelpSections = function() {
+    return ['datanav'];
+};
+
+//-------------------
+
+Game.Screen.craftRecipeKnowledgeScreen = new Game.Screen.ItemListScreen({
+    caption: function() {
+        return 'You know these crafting recipes; choose one to learn more about it';
+    },
+    canSelect: true,
+    canSelectMultipleItems: false,
+    ok: function(selectedItems) {
+
+        console.log('SELECTED RECIPE:');
+        console.dir(selectedItems);
+//        return true;
+
+        var recipe = selectedItems[Object.keys(selectedItems)[0]];
+
+        var descr = recipe.getDescription();
+        if (descr) {
+            if (recipe.getRecipeType() == 'compose') {
+                descr = "make "+descr;
+            }
+            Game.AuxScreen.infoScreen.setCurrentShortInfo(descr);
+
+        }
+        Game.AuxScreen.infoScreen.setCurrentDetailInfo(recipe.details());
+
+
+        //Game.AuxScreen.avatarScreen.render();
+        Game.refresh();
+
+
+        return true;
+    }
+});
+
+Game.Screen.craftRecipeKnowledgeScreen.getHelpSections = function() {
     return ['datanav'];
 };
 
