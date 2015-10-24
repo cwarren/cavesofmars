@@ -823,6 +823,9 @@ Game.ItemMixins.CraftingRecipe = {
     getRecipeType: function() {
         return this._recipeType;
     },
+    getCraftingDuration: function() {
+        return this._craftingDuration;
+    },
     getSuccessChance: function() {
         return this._successChance;
     },

@@ -278,7 +278,7 @@ Game.EntityMixins.Digger = {
                 p.digger.setOgaInterrupt(preTile.getName() != postTile.getName());
                 p.digger.setLastActionDuration(p.digDur);
                 p.digger.raiseEvent('onActed');
-                p.digger.stepOgaCounter()
+                p.digger.stepOgaCounter();
                 Game.sendMessage(p.digger,'You are digging ('+p.digger.getOgaCounter()+') ...');
             },
             {digger: this, digRate: adjRate, digX: x, digY: y, digZ: z, digDur: incrementalActivityDuration},

@@ -79,8 +79,8 @@ Game.Bindings = {
             INVENTORY_CRAFT:   {id: 13, unique_id: Game.util.generateRandomString(24), word:"craft",     descr: "make something(s) into/out of some other thing(s), possibly using tools and/or structures"}
         },
         Knowledge: {
-            KNOWLEDGE_CRAFT:   {id: 1, unique_id: Game.util.generateRandomString(24), word:"can craft",  descr: "items you know how to craft"},
-            KNOWLEDGE_BUILD:   {id: 2, unique_id: Game.util.generateRandomString(24), word:"can build",  descr: "structures you know how to build"}
+            KNOWLEDGE_CRAFT:   {id: 1, unique_id: Game.util.generateRandomString(24), word:"craftable",  descr: "items you know how to craft"},
+            KNOWLEDGE_BUILD:   {id: 2, unique_id: Game.util.generateRandomString(24), word:"buildable",  descr: "structures you know how to build"}
         },
         DataNav: {
             PAGE_UP:       {id: 1, unique_id: Game.util.generateRandomString(24), word:"page up",         descr: "scroll up by one screens worth"},

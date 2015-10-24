@@ -331,6 +331,7 @@ Game.Screen.playScreen = {
             this.showItemsSubScreen(Game.Screen.craftStep1Screen, this._player.getItems(),'You have nothing to craft.');
 //            Game.sendMessage(this._player, "action INVENTORY_CRAFT not yet implemented"); Game.refresh();
             return;
+            
         } else if (gameAction === Game.Bindings.Actions.Inventory.INVENTORY_USE) {
             Game.sendMessage(this._player, "action INVENTORY_USE not yet implemented"); Game.refresh();
             return;
@@ -657,8 +658,10 @@ Game.Screen.ItemListScreen.prototype.render = function(display) {
             // Render at the correct row and add 1
             var item_symbol = this._displayItems[i].getColorDesignator()+this._displayItems[i].getChar()+Game.Screen.DEFAULT_COLOR_SETTER;
             display.drawText(0, 1 + row, Game.Screen.DEFAULT_COLOR_SETTER + letter + ' ' + selectionState + ' ' + item_symbol + ' ' +this._displayItems[i].getName() + suffix);
-            display.drawText(50, 1 + row, weightNote);
-            display.drawText(65, 1 + row, bulkNote);
+            if (this.showWeightBulk()) {
+                display.drawText(50, 1 + row, weightNote);
+                display.drawText(65, 1 + row, bulkNote);
+            }
             row++;
         }
     }
@@ -667,6 +670,10 @@ Game.Screen.ItemListScreen.prototype.render = function(display) {
             row++;
     }
 };
+
+Game.Screen.ItemListScreen.prototype.showWeightBulk = function() {
+    return true;
+}
 
 Game.Screen.ItemListScreen.prototype.executeOkFunction = function() {
     // Gather the selected items.
@@ -800,8 +807,21 @@ Game.Screen.inventoryScreen.handleInput = function(inputType, inputData) {
     } else if (gameAction === Game.Bindings.Actions.Inventory.INVENTORY_UNPACK) {
         this._parentScreen.showItemsSubScreen(Game.Screen.unpackScreen, this._player.getItems(),'You have no containers.');
         return;
+
+    } else if (gameAction === Game.Bindings.Actions.Inventory.INVENTORY_CRAFT) {
+        this._parentScreen.showItemsSubScreen(Game.Screen.craftStep1Screen, this._player.getItems(),'You have nothing to craft.');
+        return;
+
+    } else if (gameAction === Game.Bindings.Actions.Inventory.INVENTORY_USE) {
+        Game.sendMessage(this._player, "action INVENTORY_USE not yet implemented"); Game.refresh();
+        return;
+
+    } else if (gameAction === Game.Bindings.Actions.Knowledge.KNOWLEDGE_CRAFT) {
+        this._parentScreen.showItemsSubScreen(Game.Screen.craftRecipeKnowledgeScreen, this._player.getCraftingRecipes(),'You don\'t know any crafting recipes.');
+        return;
     }
-    
+
+
     //----------------------------
     // data nav actions
     if (gameAction === Game.Bindings.Actions.DataNav.PAGE_UP) {
@@ -1282,10 +1302,30 @@ Game.Screen.craftStep2Screen = new Game.Screen.ItemListScreen({
         //console.log('SELECTED INGREDIENTS:');
         //console.dir(Game.Screen.craftStep1Screen.getSelectedIngredients());
 
-        console.log("TODO: handle crafting duration stuff (see digging for example)");
-
         this._selectedRecipe = selectedItems[Object.keys(selectedItems)[0]];
-        this.handleCraftFinish();
+
+        var incrementalActivityDuration = 50; // average of twenty craft steps per typical turn duration CSW NOTE: will need to generalize speed scaling to handle this kind of thing...
+        
+        Game.getPlayer().setupOngoingActivity(function(p) {
+            if (p.thePlayer.getOgaCumuDuration() < p.theRecipe.getCraftingDuration()*(1+ROT.RNG.getUniform())) {
+                Game.sendMessage(p.thePlayer,'You are working on %s ... ('+p.thePlayer.getOgaCounter()+') ...',[p.theRecipe.describeThe()]);
+            } else {
+                Game.sendMessage(p.thePlayer,'You have finshed your work on %s.',[p.theRecipe.describeThe()]);
+                p.thePlayer.setOgaInterrupt(true);
+                Game.Screen.craftStep2Screen.handleCraftFinish();
+            }
+
+            p.thePlayer.setLastActionDuration(p.craftDur);
+            p.thePlayer.raiseEvent('onActed');
+            p.thePlayer.stepOgaCounter()
+//                Game._aux_screen_message.refresh();
+        },
+        {thePlayer: Game.getPlayer(), theRecipe: this._selectedRecipe, craftDur: incrementalActivityDuration},
+        incrementalActivityDuration);
+
+        Game.getPlayer().setLastActionDuration(1);
+
+        //this.handleCraftFinish();
         
         return true;
     }
@@ -1294,6 +1334,14 @@ Game.Screen.craftStep2Screen = new Game.Screen.ItemListScreen({
 Game.Screen.craftStep2Screen.getHelpSections = function() {
     return ['datanav'];
 };
+
+Game.Screen.craftStep2Screen.getSelectedRecipe = function() {
+    return this._selectedRecipe;
+};
+
+Game.Screen.craftStep2Screen.showWeightBulk = function() {
+    return false;
+}
 
 Game.Screen.craftStep2Screen.handleCraftFinish = function() {
     var ings = Game.Screen.craftStep1Screen.getSelectedIngredients();
@@ -1309,8 +1357,9 @@ Game.Screen.craftStep2Screen.handleCraftFinish = function() {
             var newItem = this._selectedRecipe.getSuccessObject();
             p.addItem(newItem);
             Game.sendMessage(this._player,'You got %s',[newItem.describeA()]);
-            
         }
+    } else {
+        Game.sendMessage(this._player,'Your %s project didn\'t work.',[this._selectedRecipe.getName()]);
     }
 }
 
@@ -1324,8 +1373,8 @@ Game.Screen.craftRecipeKnowledgeScreen = new Game.Screen.ItemListScreen({
     canSelectMultipleItems: false,
     ok: function(selectedItems) {
 
-        console.log('SELECTED RECIPE:');
-        console.dir(selectedItems);
+        //console.log('SELECTED RECIPE:');
+        //console.dir(selectedItems);
 //        return true;
 
         var recipe = selectedItems[Object.keys(selectedItems)[0]];
@@ -1352,6 +1401,11 @@ Game.Screen.craftRecipeKnowledgeScreen = new Game.Screen.ItemListScreen({
 Game.Screen.craftRecipeKnowledgeScreen.getHelpSections = function() {
     return ['datanav'];
 };
+
+Game.Screen.craftRecipeKnowledgeScreen.showWeightBulk = function() {
+    return false;
+}
+
 
 ////////////////////////////////////////////////////////////
 
