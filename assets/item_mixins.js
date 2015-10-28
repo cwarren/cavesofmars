@@ -665,6 +665,45 @@ Game.ItemMixins.CraftingIngredient = {
     }
 };
 
+Game.ItemMixins.CraftingBreakdown = {
+    name: 'CraftingBreakdown',
+    init: function(template) {
+        this._craftingTools = template['craftingTools'] || [];
+        this._craftingStructures = template['craftingStructures'] || [];
+        
+        this._craftingDuration = template['craftingDuration'] || 10000;
+        
+        this._successChance = template['successChance'] || 1;  // 0-1
+        this._successCountTable = template['successCountTable'] || [1]; // random pick from the array gives count for number of outcomes
+    
+        // NOTE: has either and outcomeObject OR ELSE and outcomeRandomTable, not both
+        this._outcomeObject = template['outcomeObject'] || ''; // a single item name that is created on a success
+        this._outcomeRandomTable = template['outcomeRandomTable'] || ''; // a randomTable with the item names of possible outcomes of a success
+    },
+    getCraftingTools: function() {
+        return this._craftingTools;
+    },
+    getCraftingStructures: function() {
+        return this._craftingStructures;
+    },    
+    getCraftingDuration: function() {
+        return this._craftingDuration;
+    },
+    getCraftingStructures: function() {
+        return this._successChance;
+    },
+    getSuccessCountTable: function() {
+        return this._successCountTable;
+    },
+    getOutcomeObject: function() {
+        return this._outcomeObject;
+    },
+    getOutcomeRandomTable: function() {
+            return this._outcomeRandomTable;
+    },
+    listeners: {
+    }
+};
 
 Game.ItemMixins.CraftingTool = {
     name: 'CraftingTool',
@@ -735,6 +774,35 @@ Game.ItemMixins.Craftable = {
 };
 */
 
+// takes : specHash - a hash of names as keys with values of counts, names prefixed with G: indicate a crafting group rather than a specific item, a ~ suffix indicates a minumum quality requirement
+// returns : a hash with two entries 'indivs' and 'groups'. indiv items in one array (item repeated as count indicated), groups in a hash of arrays, keyed by quality
+function processCraftingSpecToIndivsAndGroups(specHash) {
+
+        var indivs = [];
+        var groups = {};
+        
+        
+        var specKeys = Object.keys(specHash);
+        for (var i=0;i<specKeys.length;i++) {
+            if (specKeys[i].startsWith('G:')) {
+                var groupInfo = specKeys[i].slice(2) + '~0'; // trim off the G:, append a base quality level (which is subsequently ignored if one was already specified)
+                var groupSplit = groupInfo.split('~');
+                if (groups[groupSplit[1]] == undefined) {
+                    groups[groupSplit[1]] = [];
+                }
+                for (var j=0;j<specHash[specKeys[i]];j++) {
+                    groups[groupSplit[1]].push(groupSplit[0]);
+                }                
+            } else {
+                for (var j=0;j<specHash[specKeys[i]];j++) {
+                    indivs.push(specKeys[i]);
+                }
+            }
+        }
+        
+        return {'indivs': indivs, 'groups': groups};
+}
+
 Game.ItemMixins.CraftingRecipe = {
     name: 'CraftingRecipe',
     init: function(template) {
@@ -743,72 +811,11 @@ Game.ItemMixins.CraftingRecipe = {
         this._recipeType = template['recipeType'] || 'compose'; // compose, decompose, build
         
         // ingredients are items in inventory that are used up when the recipe is activated
-        this._craftingIngredients = template['craftingIngredients'] || [];  // a hash of names as keys with values of counts, names prefixed with G: indicate a crafting group rather than a specific item, a ~ suffix indicates a minumum quality requirement
-        // process the crafting ingredients to make subsequent checks much easier- indiv items in one array (item repeated as count indicated), groups in a hash of arrays, keyed by quality
-        this._craftIngrItemsToCheck = [];
-        this._craftIngrGroupsToCheck = {};
-        var ingKeys = Object.keys(this._craftingIngredients);
-        for (var i=0;i<ingKeys.length;i++) {
-            if (ingKeys[i].startsWith('G:')) {
-                var groupInfo = ingKeys[i].slice(2) + '~0'; // trim off the G:, append a base quality level (which is subsequently ignored if one was already specified)
-                var groupSplit = groupInfo.split('~');
-                if (this._craftIngrGroupsToCheck[groupSplit[1]] == undefined) {
-                    this._craftIngrGroupsToCheck[groupSplit[1]] = [];
-                }
-                for (var j=0;j<this._craftingIngredients[ingKeys[i]];j++) {
-                    this._craftIngrGroupsToCheck[groupSplit[1]].push(groupSplit[0]);
-                }                
-            } else {
-                for (var j=0;j<this._craftingIngredients[ingKeys[i]];j++) {
-                    this._craftIngrItemsToCheck.push(ingKeys[i]);
-                }
-            }
-        }
-
-        // structures are world elements that must be in the current or adjacent space to activate this recipe
-        this._craftingStructures = template['craftingStructures'] || []; // a hash of names as keys with values of counts, names prefixed with G: indicate a crafting group rather than a specific item, a ~ suffix indicates a minumum quality requirement
-        this._craftStruItemsToCheck = [];
-        this._craftStruGroupsToCheck = {};
-        var struKeys = Object.keys(this._craftingStructures);
-        for (var i=0;i<struKeys.length;i++) {
-            if (struKeys[i].startsWith('G:')) {
-                var groupInfo = struKeys[i].slice(2) + '~0'; // trim off the G:, append a base quality level (which is subsequently ignored if one was already specified)
-                var groupSplit = groupInfo.split('~');
-                if (this._craftStruGroupsToCheck[groupSplit[1]] == undefined) {
-                    this._craftStruGroupsToCheck[groupSplit[1]] = [];
-                }
-                for (var j=0;j<this._craftingStructures[struKeys[i]];j++) {
-                    this._craftStruGroupsToCheck[groupSplit[1]].push(groupSplit[0]);
-                }                
-            } else {
-                for (var j=0;j<this._craftingStructures[struKeys[i]];j++) {
-                    this._craftStruItemsToCheck.push(struKeys[i]);
-                }
-            }
-        }
-        
-        // tools are items in inventory that are NOT used up when the recipe is activated
-        this._craftingTools = template['craftingTools'] || []; // a hash of names as keys with values of counts, names prefixed with G: indicate a crafting group rather than a specific item, a ~ suffix indicates a minumum quality requirement
-        this._craftToolItemsToCheck = [];
-        this._craftToolGroupsToCheck = {};
-        var toolKeys = Object.keys(this._craftingTools);
-        for (var i=0;i<toolKeys.length;i++) {
-            if (toolKeys[i].startsWith('G:')) {
-                var groupInfo = toolKeys[i].slice(2) + '~0'; // trim off the G:, append a base quality level (which is subsequently ignored if one was already specified)
-                var groupSplit = groupInfo.split('~');
-                if (this._craftToolGroupsToCheck[groupSplit[1]] == undefined) {
-                    this._craftToolGroupsToCheck[groupSplit[1]] = [];
-                }
-                for (var j=0;j<this._craftingTools[toolKeys[i]];j++) {
-                    this._craftToolGroupsToCheck[groupSplit[1]].push(groupSplit[0]);
-                }                
-            } else {
-                for (var j=0;j<this._craftingTools[toolKeys[i]];j++) {
-                    this._craftToolItemsToCheck.push(toolKeys[i]);
-                }
-            }
-        }
-        
+        this._craftingIngredients = template['craftingIngredients'] || {};  // a hash of names as keys with values of counts, names prefixed with G: indicate a crafting group rather than a specific item, a ~ suffix indicates a minumum quality requirement
+        this._craftingStructures = template['craftingStructures'] || {}; // a hash of names as keys with values of counts, names prefixed with G: indicate a crafting group rather than a specific item, a ~ suffix indicates a minumum quality requirement
+        this._craftingTools = template['craftingTools'] || {}; // a hash of names as keys with values of counts, names prefixed with G: indicate a crafting group rather than a specific item, a ~ suffix indicates a minumum quality requirement
+        this.setupCheckStructures();
+       
         //console.dir(this);
 
         this._craftingDuration = template['craftingDuration'] || 10000;
@@ -819,6 +826,22 @@ Game.ItemMixins.CraftingRecipe = {
         // NOTE: a recipe has either and outcomeObject OR ELSE and outcomeRandomTable, not both
         this._outcomeObject = template['outcomeObject'] || ''; // a single item name that is created on a success
         this._outcomeRandomTable = template['outcomeRandomTable'] || ''; // a randomTable with the item names of possible outcomes of a success
+    },
+    setupCheckStructures: function() {
+        // process the crafting ingredients to make subsequent checks much easier- indiv items in one array (item repeated as count indicated), groups in a hash of arrays, keyed by quality
+        var ingProcessed = processCraftingSpecToIndivsAndGroups(this._craftingIngredients);
+        this._craftIngrItemsToCheck = ingProcessed['indivs'];
+        this._craftIngrGroupsToCheck = ingProcessed['groups'];
+
+        // structures are world elements that must be in the current or adjacent space to activate this recipe
+        var struProcessed = processCraftingSpecToIndivsAndGroups(this._craftingStructures);
+        this._craftStruItemsToCheck = struProcessed['indivs'];
+        this._craftStruGroupsToCheck = struProcessed['groups'];
+
+        // tools are items in inventory that are NOT used up when the recipe is activated
+        var toolProcessed = processCraftingSpecToIndivsAndGroups(this._craftingTools);
+        this._craftToolItemsToCheck = toolProcessed['indivs'];
+        this._craftToolGroupsToCheck = toolProcessed['groups'];
     },
     getRecipeType: function() {
         return this._recipeType;
@@ -863,54 +886,38 @@ Game.ItemMixins.CraftingRecipe = {
         //console.dir(toolAr);
         //console.dir(struAr);
 
-        if (Object.keys(ingredients).length == 1) {
-            console.log("TODO: check for BREAKDOWN as a viable recipe (look at the item for any required tools and/or structures)");
-        }
-
-        
-        //---------- start ingredient checking ----------------
-
-        // ingredient check order: first specific items, second groups in descending quality order
-        // loop though ingredients to look for and the ingAr, pulling items out of ingAr as they're found
-        // if a required ingredient is ever not found, return false
-        // if at end of all checking there are any remaining ingredients, return false (player can't choose any extras)
-        
-        var remainingIngs = [];                
-        for (var i=0;i<this._craftIngrItemsToCheck.length;i++) {
-            var found = false;
-            for (var j=0;j<ingAr.length;j++) {
-                if (!found && ingAr[j].getNameSimple() == this._craftIngrItemsToCheck[i]) {
-                    found = true;
-                } else {
-                    remainingIngs.push(ingAr[j]);
+        if (this.getNameSimple() == 'BREAKDOWN') {
+            if (ingAr.length == 1) {
+                console.log("TODO: check for BREAKDOWN as a viable recipe (look at the item for any required tools and/or structures)");
+            
+                if (! ingAr[0].hasMixin('CraftingBreakdown')) {
+                    return false;
                 }
-            }
-            if (! found) { 
-                //console.log('missing ingredient '+this._craftIngrItemsToCheck[i]);
+            } else {
                 return false;
             }
-            ingAr = remainingIngs;
-            remainingIngs = [];
-            //console.log('ingAr:');
-            //console.dir(ingAr);
-        }
+        } else {
 
-        var qualityKeys = Object.keys(this._craftIngrGroupsToCheck);
-        qualityKeys.sort(function(a, b){return b-a}); // descending order of quality
-        for (var qi=0;qi<qualityKeys.length;qi++) {
-            var qual = qualityKeys[qi];
-            var checkAr = this._craftIngrGroupsToCheck[qual];            
-            for (var i=0;i<checkAr.length;i++) {
+
+            //---------- start ingredient checking ----------------
+
+            // ingredient check order: first specific items, second groups in descending quality order
+            // loop though ingredients to look for and the ingAr, pulling items out of ingAr as they're found
+            // if a required ingredient is ever not found, return false
+            // if at end of all checking there are any remaining ingredients, return false (player can't choose any extras)
+
+            var remainingIngs = [];                
+            for (var i=0;i<this._craftIngrItemsToCheck.length;i++) {
                 var found = false;
                 for (var j=0;j<ingAr.length;j++) {
-                    if (!found && ingAr[j].getCraftingQuality() >= qual && ingAr[j].getCraftingGroup() == checkAr[i]) {
+                    if (!found && ingAr[j].getNameSimple() == this._craftIngrItemsToCheck[i]) {
                         found = true;
                     } else {
                         remainingIngs.push(ingAr[j]);
                     }
                 }
                 if (! found) { 
-                    //console.log('missing ingredient '+checkAr[i]+'~'+qual);
+                    //console.log('missing ingredient '+this._craftIngrItemsToCheck[i]);
                     return false;
                 }
                 ingAr = remainingIngs;
@@ -918,14 +925,38 @@ Game.ItemMixins.CraftingRecipe = {
                 //console.log('ingAr:');
                 //console.dir(ingAr);
             }
-        }
-        
-        if (ingAr.length>0) {
-            //console.log('leftover ingredients:');
-            //console.dir(ingAr);
-            return false;
-        }
 
+            var qualityKeys = Object.keys(this._craftIngrGroupsToCheck);
+            qualityKeys.sort(function(a, b){return b-a}); // descending order of quality
+            for (var qi=0;qi<qualityKeys.length;qi++) {
+                var qual = qualityKeys[qi];
+                var checkAr = this._craftIngrGroupsToCheck[qual];            
+                for (var i=0;i<checkAr.length;i++) {
+                    var found = false;
+                    for (var j=0;j<ingAr.length;j++) {
+                        if (!found && ingAr[j].getCraftingQuality() >= qual && ingAr[j].getCraftingGroup() == checkAr[i]) {
+                            found = true;
+                        } else {
+                            remainingIngs.push(ingAr[j]);
+                        }
+                    }
+                    if (! found) { 
+                        //console.log('missing ingredient '+checkAr[i]+'~'+qual);
+                        return false;
+                    }
+                    ingAr = remainingIngs;
+                    remainingIngs = [];
+                    //console.log('ingAr:');
+                    //console.dir(ingAr);
+                }
+            }
+
+            if (ingAr.length>0) {
+                //console.log('leftover ingredients:');
+                //console.dir(ingAr);
+                return false;
+            }
+        }
 
         //---------- end ingredient checking, start tool checking ----------------
 
@@ -1028,27 +1059,6 @@ Game.ItemMixins.CraftingRecipe = {
         return true;
     },
     details: function() {
-    /*
-        var details = [];
-        var detailGroups = this.raiseEvent('details');
-        // Iterate through each return value, grabbing the detaisl from the arrays.
-        if (detailGroups) {
-            for (var i = 0, l = detailGroups.length; i < l; i++) {
-                if (detailGroups[i]) {
-                    for (var j = 0; j < detailGroups[i].length; j++) {
-                        details.push(detailGroups[i][j].key + ': ' +  detailGroups[i][j].value);          
-                    }
-                }
-            }
-        }
-        
-        // CSW TODO : prettify the details string, perhaps (e.g. especially if there's a 'richDescription' key...?)
-        var detStr = details.join(', ');
-        if (! detStr) {
-            return '';
-        }
-        return this.describeA(false) + '- '+detStr;
-        */
         if (this._name == 'BREAKDOWN') {
             return "INGREDIENTS: selected item\nTOOLS: varies\nSTRUCTURES: varies";
         }

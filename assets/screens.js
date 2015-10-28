@@ -1216,7 +1216,7 @@ Game.Screen.craftStep1Screen = new Game.Screen.ItemListScreen({
     canSelect: true,
     canSelectMultipleItems: true,
     isAcceptable: function(item) {
-            return item && item.hasMixin('CraftingIngredient');
+            return item && (item.hasMixin('CraftingIngredient') || item.hasMixin('CraftingBreakdown'));
     },
     _selectedIngredients: {},
     _availableTools: {},
