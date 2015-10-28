@@ -678,7 +678,12 @@ Game.ItemMixins.CraftingBreakdown = {
     
         // NOTE: has either and outcomeObject OR ELSE and outcomeRandomTable, not both
         this._breakdownOutcomeObject = template['breakdownOutcomeObject'] || ''; // a single item name that is created on a success
-        this._breakdownOutcomeRandomTable = template['breakdownOutcomeRandomTable'] || ''; // a randomTable with the item names of possible outcomes of a success
+        this._breakdownOutcomeRandomTableSpec = template['breakdownOutcomeRandomTableSpec'] || []; // a randomTable with the item names of possible outcomes of a success
+
+        this._breakdownOutcomeRandomTable = '';
+        if (this._breakdownOutcomeRandomTableSpec.length >0) {
+            this._breakdownOutcomeRandomTable = new Game.RandomTable('BREAKDOWN '+this._name+' '+Game.util.generateRandomString(18),Game.ItemRepository,this._breakdownOutcomeRandomTableSpec);
+        }
     },
     getBreakdownTools: function() {
         return this._breakdownTools;
@@ -864,13 +869,13 @@ Game.ItemMixins.CraftingRecipe = {
         this._craftToolGroupsToCheck = toolProcessed['groups'];
     },
     _resetForBreakdownItem: function(itm) {
-        this._craftingStructures = itm.getCraftingStructures();
-        this._craftingTools = itm.getCraftingTools();
-        this._craftingDuration = itm.getCraftingDuration();        
-        this._successChance = itm.getSuccessChance();
-        this._successCountTable = itm.getSuccessCountTable();    
-        this._outcomeObject = itm.getOutcomeObject();
-        this._outcomeRandomTable = itm.getOutcomeRandomTable();
+        this._craftingStructures = itm.getBreakdownStructures();
+        this._craftingTools = itm.getBreakdownTools();
+        this._craftingDuration = itm.getBreakdownDuration();        
+        this._craftingSuccessChance = itm.getBreakdownSuccessChance();
+        this._craftingSuccessCountTable = itm.getBreakdownSuccessCountTable();    
+        this._craftingOutcomeObject = itm.getBreakdownOutcomeObject();
+        this._craftingOutcomeRandomTable = itm.getBreakdownOutcomeRandomTable();
         
         this._setupCheckStructures();
     },
@@ -892,12 +897,17 @@ Game.ItemMixins.CraftingRecipe = {
     getCraftingOutcomeRandomTable: function() {
         return this._craftingOutcomeRandomTable;
     },
-    getSuccessObject: function() {
+    getCraftingSuccessObject: function() {
+        console.log('getting crafting success object');
+        //console.dir(this);
+        var resObj = '';
         if (this._craftingOutcomeObject != '') {
-            return Game.ItemRepository.create(this._craftingOutcomeObject);
+            resObj = Game.ItemRepository.create(this._craftingOutcomeObject);
         } else if (this._craftingOutcomeRandomTable!= '') {
-            return Game.ItemRepository.create(this._craftingOutcomeRandomTable.getOne());
+            resObj = this._craftingOutcomeRandomTable.getOne();
         }
+        console.dir(resObj);
+        return resObj;
     },
     canBeUsedWith: function(ingredients,tools,structures) {
         //console.log('TODO: implement real CraftingRecipe.canBeUsedWith');
@@ -913,11 +923,12 @@ Game.ItemMixins.CraftingRecipe = {
         });
 
         //console.log('ingAr:');
-        //console.dir(ingAr);
-        //console.dir(toolAr);
-        //console.dir(struAr);
+        console.log('checking recipe '+this._name);
+        console.dir(ingAr);
+        console.dir(toolAr);
+        console.dir(struAr);
 
-        if (this.getNameSimple() == 'BREAKDOWN') {
+        if (this._name == 'BREAKDOWN') {
             if (ingAr.length == 1) {
                 if (! ingAr[0].hasMixin('CraftingBreakdown')) {
                     return false;
@@ -940,6 +951,9 @@ Game.ItemMixins.CraftingRecipe = {
             for (var i=0;i<this._craftIngrItemsToCheck.length;i++) {
                 var found = false;
                 for (var j=0;j<ingAr.length;j++) {
+                    if (!ingAr[j].hasMixin('CraftingIngredient')) {
+                        return false;
+                    }
                     if (!found && ingAr[j].getNameSimple() == this._craftIngrItemsToCheck[i]) {
                         found = true;
                     } else {
@@ -964,6 +978,9 @@ Game.ItemMixins.CraftingRecipe = {
                 for (var i=0;i<checkAr.length;i++) {
                     var found = false;
                     for (var j=0;j<ingAr.length;j++) {
+                        if (!ingAr[j].hasMixin('CraftingIngredient')) {
+                            return false;
+                        }
                         if (!found && ingAr[j].getCraftingQuality() >= qual && ingAr[j].getCraftingGroup() == checkAr[i]) {
                             found = true;
                         } else {
@@ -1086,32 +1103,39 @@ Game.ItemMixins.CraftingRecipe = {
         
         //---------- end structure checking ----------------
 
+        console.log(' - valid reicpe '+this._name);
+        console.dir(this);
+
+
         return true;
     },
     details: function() {
-        if (this._name == 'BREAKDOWN') {
-            return "INGREDIENTS: selected item\nTOOLS: varies\nSTRUCTURES: varies";
-        }
-        
         var detStr = "";
-        var ingItems = processCraftingIndivsAndGroupsToDescription(this._craftIngrItemsToCheck,this._craftIngrGroupsToCheck);
-        if (ingItems.length > 0) {
-            detStr += "INGREDIENTS: "+ingItems;
-        }
-        
-        var ingTools = processCraftingIndivsAndGroupsToDescription(this._craftToolItemsToCheck,this._craftToolGroupsToCheck);
-        if (ingTools.length > 0) {
-            detStr += "\nTOOLS: "+ingTools;
-        }
-        
+        if (this._name == 'BREAKDOWN') {
+            detStr =  "INGREDIENTS: selected item\nTOOLS: varies\nSTRUCTURES: varies\nTIME: varies\nSUCCESS RATE: varies";
+        } else {
+            var ingItems = processCraftingIndivsAndGroupsToDescription(this._craftIngrItemsToCheck,this._craftIngrGroupsToCheck);
+            if (ingItems.length > 0) {
+                detStr += "INGREDIENTS: "+ingItems;
+            }
 
-        var ingStrus = processCraftingIndivsAndGroupsToDescription(this._craftStruItemsToCheck,this._craftStruGroupsToCheck);
-        if (ingStrus.length > 0) {
-            detStr += "\nSTRUCTURES: "+ingStrus;
-        }
+            var ingTools = processCraftingIndivsAndGroupsToDescription(this._craftToolItemsToCheck,this._craftToolGroupsToCheck);
+            if (ingTools.length > 0) {
+                detStr += "\nTOOLS: "+ingTools;
+            }
 
+
+            var ingStrus = processCraftingIndivsAndGroupsToDescription(this._craftStruItemsToCheck,this._craftStruGroupsToCheck);
+            if (ingStrus.length > 0) {
+                detStr += "\nSTRUCTURES: "+ingStrus;
+            }
+            
+            detStr += "\nTIME: apx " + this._craftingDuration/1000 + ' turns';
+            detStr += "\nSUCCESS RATE: "+ (this._craftingSuccessChance * 100).toFixed(0) + '%';
+        }
         return detStr;
-    },
+    }
+/*
     listeners: {
         'details': function() {
             var det = [];
@@ -1123,4 +1147,5 @@ Game.ItemMixins.CraftingRecipe = {
             return det;
         }
     }
+    */
 };

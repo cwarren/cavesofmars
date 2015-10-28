@@ -1303,6 +1303,8 @@ Game.Screen.craftStep2Screen = new Game.Screen.ItemListScreen({
         //console.dir(Game.Screen.craftStep1Screen.getSelectedIngredients());
 
         this._selectedRecipe = selectedItems[Object.keys(selectedItems)[0]];
+        console.log("selected recipe is");
+        console.dir(this._selectedRecipe);
 
         var incrementalActivityDuration = 50; // average of twenty craft steps per typical turn duration CSW NOTE: will need to generalize speed scaling to handle this kind of thing...
         
@@ -1351,10 +1353,10 @@ Game.Screen.craftStep2Screen.handleCraftFinish = function() {
         p.extractThisItem(ings[idxAry[i]]);
     }
 
-    if (ROT.RNG.getUniform() <= this._selectedRecipe.getSuccessChance()) {
-        var numSuccesses = this._selectedRecipe.getSuccessCountTable().random();
+    if (ROT.RNG.getUniform() <= this._selectedRecipe.getCraftingSuccessChance()) {
+        var numSuccesses = this._selectedRecipe.getCraftingSuccessCountTable().random();
         for (var i=0;i<numSuccesses;i++) {
-            var newItem = this._selectedRecipe.getSuccessObject();
+            var newItem = this._selectedRecipe.getCraftingSuccessObject();
             p.addItem(newItem);
             Game.sendMessage(this._player,'You got %s',[newItem.describeA()]);
         }

@@ -256,7 +256,19 @@ Game.ItemRepository.define('JAT tool, damaged', {
     description: "The JAT (Jack-of-All-Trades) tool is the standard-issue tool for work on Mars. While not as good as a specialized tool, it's at least moderately effective as a shovel, prybar, pick, axe, and walking stick for navigating rough terrain. Unfortunately this one has been badly damaged, but you could still probably hit something with it if you had to.",
     craftingToolGroup: 'cutter',
     craftingToolQuality: '2',
-    mixins: [Game.ItemMixins.DigTool, Game.ItemMixins.CraftingTool]
+    breakdownTools: {'G:cutter~2':1,'G:whacker':1},
+    breakdownSuccessChance: 1,
+    breakdownDuration: 40,
+    breakdownSuccessCountTable: [1,1,2,2,2,3,4],
+    breakdownOutcomeRandomTableSpec: [
+        {'name':'kevlar-carbon thread',  'weight':10,  'flag_deweight': true},
+        {'name':'JAT piece - stick',     'weight':60,  'flag_decrement': true, 'count': 3, 'on_exhausted': 'remove', 'flag_deweight': true},
+        {'name':'iron rod',              'weight':10,  'flag_decrement': true, 'count': 1, 'on_exhausted': 'remove'},
+        {'name':'JAT piece - pole',      'weight':40,  'flag_decrement': true, 'count': 1, 'on_exhausted': 'remove'},
+        {'name':'JAT piece - edge',      'weight':30,  'flag_decrement': true, 'count': 1, 'on_exhausted': 'remove'},
+        {'name':'iron blade',            'weight':10,  'flag_decrement': true, 'count': 1, 'on_exhausted': 'remove'}
+    ],
+    mixins: [Game.ItemMixins.DigTool, Game.ItemMixins.CraftingTool, Game.ItemMixins.CraftingBreakdown]
 }, {
     disableRandomCreation: true
 });
@@ -764,7 +776,7 @@ Game.ItemRepository.define('iron blade', {
 });
 
 Game.ItemRepository.define('JAT piece - edge', {
-    name: 'JAT scrap - edge',
+    name: 'JAT piece - edge',
     group: 'crafting ingredient',
     character: Game.ItemRepository.Symbol['crafting ingredient'],
     description: "",
@@ -819,7 +831,7 @@ Game.ItemRepository.define('long chitin segment', {
 });
 
 Game.ItemRepository.define('JAT piece - pole', {
-    name: 'JAT piece - edge',
+    name: 'JAT piece - pole',
     group: 'crafting ingredient',
     character: Game.ItemRepository.Symbol['crafting ingredient'],
     description: "",
@@ -921,7 +933,7 @@ Game.ItemRepository.define('iron rod', {
 });
 
 Game.ItemRepository.define('JAT piece - stick', {
-    name: 'JAT scrap - edge',
+    name: 'JAT piece - stick',
     group: 'crafting ingredient',
     character: Game.ItemRepository.Symbol['crafting ingredient'],
     description: "",
