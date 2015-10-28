@@ -668,38 +668,38 @@ Game.ItemMixins.CraftingIngredient = {
 Game.ItemMixins.CraftingBreakdown = {
     name: 'CraftingBreakdown',
     init: function(template) {
-        this._craftingTools = template['craftingTools'] || [];
-        this._craftingStructures = template['craftingStructures'] || [];
+        this._breakdownTools = template['breakdownTools'] || [];
+        this._breakdownStructures = template['breakdownStructures'] || [];
         
-        this._craftingDuration = template['craftingDuration'] || 10000;
+        this._breakdownDuration = template['breakdownDuration'] || 10000;
         
-        this._successChance = template['successChance'] || 1;  // 0-1
-        this._successCountTable = template['successCountTable'] || [1]; // random pick from the array gives count for number of outcomes
+        this._breakdownSuccessChance = template['breakdownSuccessChance'] || 1;  // 0-1
+        this._breakdownSuccessCountTable = template['breakdownSuccessCountTable'] || [1]; // random pick from the array gives count for number of outcomes
     
         // NOTE: has either and outcomeObject OR ELSE and outcomeRandomTable, not both
-        this._outcomeObject = template['outcomeObject'] || ''; // a single item name that is created on a success
-        this._outcomeRandomTable = template['outcomeRandomTable'] || ''; // a randomTable with the item names of possible outcomes of a success
+        this._breakdownOutcomeObject = template['breakdownOutcomeObject'] || ''; // a single item name that is created on a success
+        this._breakdownOutcomeRandomTable = template['breakdownOutcomeRandomTable'] || ''; // a randomTable with the item names of possible outcomes of a success
     },
-    getCraftingTools: function() {
-        return this._craftingTools;
+    getBreakdownTools: function() {
+        return this._breakdownTools;
     },
-    getCraftingStructures: function() {
-        return this._craftingStructures;
+    getBreakdownStructures: function() {
+        return this._breakdownStructures;
     },    
-    getCraftingDuration: function() {
-        return this._craftingDuration;
+    getBreakdownDuration: function() {
+        return this._breakdownDuration;
     },
-    getCraftingStructures: function() {
-        return this._successChance;
+    getBreakdownSuccessChance: function() {
+        return this._breakdownSuccessChance;
     },
-    getSuccessCountTable: function() {
-        return this._successCountTable;
+    getBreakdownSuccessCountTable: function() {
+        return this._breakdownSuccessCountTable;
     },
-    getOutcomeObject: function() {
-        return this._outcomeObject;
+    getBreakdownOutcomeObject: function() {
+        return this._breakdownOutcomeObject;
     },
-    getOutcomeRandomTable: function() {
-            return this._outcomeRandomTable;
+    getBreakdownOutcomeRandomTable: function() {
+            return this._breakdownOutcomeRandomTable;
     },
     listeners: {
     }
@@ -777,30 +777,48 @@ Game.ItemMixins.Craftable = {
 // takes : specHash - a hash of names as keys with values of counts, names prefixed with G: indicate a crafting group rather than a specific item, a ~ suffix indicates a minumum quality requirement
 // returns : a hash with two entries 'indivs' and 'groups'. indiv items in one array (item repeated as count indicated), groups in a hash of arrays, keyed by quality
 function processCraftingSpecToIndivsAndGroups(specHash) {
+    var indivs = [];
+    var groups = {};
 
-        var indivs = [];
-        var groups = {};
-        
-        
-        var specKeys = Object.keys(specHash);
-        for (var i=0;i<specKeys.length;i++) {
-            if (specKeys[i].startsWith('G:')) {
-                var groupInfo = specKeys[i].slice(2) + '~0'; // trim off the G:, append a base quality level (which is subsequently ignored if one was already specified)
-                var groupSplit = groupInfo.split('~');
-                if (groups[groupSplit[1]] == undefined) {
-                    groups[groupSplit[1]] = [];
-                }
-                for (var j=0;j<specHash[specKeys[i]];j++) {
-                    groups[groupSplit[1]].push(groupSplit[0]);
-                }                
-            } else {
-                for (var j=0;j<specHash[specKeys[i]];j++) {
-                    indivs.push(specKeys[i]);
-                }
+
+    var specKeys = Object.keys(specHash);
+    for (var i=0;i<specKeys.length;i++) {
+        if (specKeys[i].startsWith('G:')) {
+            var groupInfo = specKeys[i].slice(2) + '~0'; // trim off the G:, append a base quality level (which is subsequently ignored if one was already specified)
+            var groupSplit = groupInfo.split('~');
+            if (groups[groupSplit[1]] == undefined) {
+                groups[groupSplit[1]] = [];
+            }
+            for (var j=0;j<specHash[specKeys[i]];j++) {
+                groups[groupSplit[1]].push(groupSplit[0]);
+            }                
+        } else {
+            for (var j=0;j<specHash[specKeys[i]];j++) {
+                indivs.push(specKeys[i]);
             }
         }
-        
-        return {'indivs': indivs, 'groups': groups};
+    }
+
+    return {'indivs': indivs, 'groups': groups};
+}
+
+
+function processCraftingIndivsAndGroupsToDescription(indivs,groups) {
+    var retStr = indivs.join(",");
+    for (var q=20;q>=0;q--) {
+        if (groups[q] != undefined) {
+            if (retStr.length > 0) {
+                retStr += '; ';
+            }
+            if (q<=1) {
+                retStr += "any ";
+            } else {
+                retStr += "quality "+q+"+ ";
+            }
+            retStr += groups[q].join(",");
+        }
+    }
+    return retStr;
 }
 
 Game.ItemMixins.CraftingRecipe = {
@@ -814,20 +832,22 @@ Game.ItemMixins.CraftingRecipe = {
         this._craftingIngredients = template['craftingIngredients'] || {};  // a hash of names as keys with values of counts, names prefixed with G: indicate a crafting group rather than a specific item, a ~ suffix indicates a minumum quality requirement
         this._craftingStructures = template['craftingStructures'] || {}; // a hash of names as keys with values of counts, names prefixed with G: indicate a crafting group rather than a specific item, a ~ suffix indicates a minumum quality requirement
         this._craftingTools = template['craftingTools'] || {}; // a hash of names as keys with values of counts, names prefixed with G: indicate a crafting group rather than a specific item, a ~ suffix indicates a minumum quality requirement
-        this.setupCheckStructures();
-       
-        //console.dir(this);
 
         this._craftingDuration = template['craftingDuration'] || 10000;
         
-        this._successChance = template['successChance'] || 1;  // 0-1
-        this._successCountTable = template['successCountTable'] || [1]; // random pick from the array gives count for number of outcomes
+        this._craftingSuccessChance = template['craftingSuccessChance'] || 1;  // 0-1
+        this._craftingSuccessCountTable = template['craftingSuccessCountTable'] || [1]; // random pick from the array gives count for number of outcomes
     
         // NOTE: a recipe has either and outcomeObject OR ELSE and outcomeRandomTable, not both
-        this._outcomeObject = template['outcomeObject'] || ''; // a single item name that is created on a success
-        this._outcomeRandomTable = template['outcomeRandomTable'] || ''; // a randomTable with the item names of possible outcomes of a success
+        this._craftingOutcomeObject = template['craftingOutcomeObject'] || ''; // a single item name that is created on a success
+        this._craftingOutcomeRandomTable = template['craftingOutcomeRandomTable'] || ''; // a randomTable with the item names of possible outcomes of a success
+
+        this._setupCheckStructures();
+       
+        //console.dir(this);
+
     },
-    setupCheckStructures: function() {
+    _setupCheckStructures: function() {
         // process the crafting ingredients to make subsequent checks much easier- indiv items in one array (item repeated as count indicated), groups in a hash of arrays, keyed by quality
         var ingProcessed = processCraftingSpecToIndivsAndGroups(this._craftingIngredients);
         this._craftIngrItemsToCheck = ingProcessed['indivs'];
@@ -843,29 +863,40 @@ Game.ItemMixins.CraftingRecipe = {
         this._craftToolItemsToCheck = toolProcessed['indivs'];
         this._craftToolGroupsToCheck = toolProcessed['groups'];
     },
+    _resetForBreakdownItem: function(itm) {
+        this._craftingStructures = itm.getCraftingStructures();
+        this._craftingTools = itm.getCraftingTools();
+        this._craftingDuration = itm.getCraftingDuration();        
+        this._successChance = itm.getSuccessChance();
+        this._successCountTable = itm.getSuccessCountTable();    
+        this._outcomeObject = itm.getOutcomeObject();
+        this._outcomeRandomTable = itm.getOutcomeRandomTable();
+        
+        this._setupCheckStructures();
+    },
     getRecipeType: function() {
         return this._recipeType;
     },
     getCraftingDuration: function() {
         return this._craftingDuration;
     },
-    getSuccessChance: function() {
-        return this._successChance;
+    getCraftingSuccessChance: function() {
+        return this._craftingSuccessChance;
     },
-    getSuccessCountTable: function() {
-        return this._successCountTable;
+    getCraftingSuccessCountTable: function() {
+        return this._craftingSuccessCountTable;
     },
-    getOutcomeObject: function() {
-        return this._outcomeObject;
+    getCraftingOutcomeObject: function() {
+        return this._craftingOutcomeObject;
     },
-    getOutcomeRandomTable: function() {
-        return this._outcomeRandomTable;
+    getCraftingOutcomeRandomTable: function() {
+        return this._craftingOutcomeRandomTable;
     },
     getSuccessObject: function() {
-        if (this._outcomeObject != '') {
-            return Game.ItemRepository.create(this._outcomeObject);
-        } else if (this._outcomeRandomTable!= '') {
-            return Game.ItemRepository.create(this._outcomeRandomTable.getOne());
+        if (this._craftingOutcomeObject != '') {
+            return Game.ItemRepository.create(this._craftingOutcomeObject);
+        } else if (this._craftingOutcomeRandomTable!= '') {
+            return Game.ItemRepository.create(this._craftingOutcomeRandomTable.getOne());
         }
     },
     canBeUsedWith: function(ingredients,tools,structures) {
@@ -888,11 +919,10 @@ Game.ItemMixins.CraftingRecipe = {
 
         if (this.getNameSimple() == 'BREAKDOWN') {
             if (ingAr.length == 1) {
-                console.log("TODO: check for BREAKDOWN as a viable recipe (look at the item for any required tools and/or structures)");
-            
                 if (! ingAr[0].hasMixin('CraftingBreakdown')) {
                     return false;
                 }
+                this._resetForBreakdownItem(ingAr[0]);
             } else {
                 return false;
             }
@@ -1064,59 +1094,18 @@ Game.ItemMixins.CraftingRecipe = {
         }
         
         var detStr = "";
-        var ingItems = this._craftIngrItemsToCheck.join(",");
-        for (var q=20;q>=0;q--) {
-            if (this._craftIngrGroupsToCheck[q] != undefined) {
-                if (ingItems.length > 0) {
-                    ingItems += '; ';
-                }
-                if (q<=1) {
-                    ingItems += "any ";
-                } else {
-                    ingItems += "quality "+q+"+ ";
-                }
-                ingItems += this._craftIngrGroupsToCheck[q].join(",");
-            }
-        }
+        var ingItems = processCraftingIndivsAndGroupsToDescription(this._craftIngrItemsToCheck,this._craftIngrGroupsToCheck);
         if (ingItems.length > 0) {
             detStr += "INGREDIENTS: "+ingItems;
         }
         
-        var ingTools = this._craftToolItemsToCheck.join(",");
-        for (var q=20;q>=0;q--) {
-            if (this._craftToolGroupsToCheck[q] != undefined) {
-                if (ingTools.length > 0) {
-                    ingTools += '; ';
-                }
-
-                if (q<=1) {
-                    ingTools += "any ";
-                } else {
-                    ingTools += "quality "+q+"+ ";
-                }
-                
-                ingTools += this._craftToolGroupsToCheck[q].join(",");
-            }
-        }
+        var ingTools = processCraftingIndivsAndGroupsToDescription(this._craftToolItemsToCheck,this._craftToolGroupsToCheck);
         if (ingTools.length > 0) {
             detStr += "\nTOOLS: "+ingTools;
         }
         
 
-        var ingStrus = this._craftStruItemsToCheck.join(",");
-        for (var q=20;q>=0;q--) {
-            if (this._craftStruGroupsToCheck[q] != undefined) {
-                if (ingStrus.length > 0) {
-                    ingStrus += '; ';
-                }
-                if (q<=1) {
-                    ingStrus += "any ";
-                } else {
-                    ingStrus += "quality "+q+"+ ";
-                }
-                ingStrus += this._craftStruGroupsToCheck[q].join(",");
-            }
-        }
+        var ingStrus = processCraftingIndivsAndGroupsToDescription(this._craftStruItemsToCheck,this._craftStruGroupsToCheck);
         if (ingStrus.length > 0) {
             detStr += "\nSTRUCTURES: "+ingStrus;
         }
