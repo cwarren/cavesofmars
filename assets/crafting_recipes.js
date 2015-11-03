@@ -47,7 +47,7 @@ Game.RecipeRepository.define('worked stone', {
     craftingIngredients: {'rock': 1},
     craftingTools: {'G:whacker~1':1},
     craftingDuration: 20000,
-    craftingSuccessChance: '.2',
+    craftingSuccessChance: '.4',
     craftingOutcomeObject: 'worked stone',
     mixins: [Game.ItemMixins.CraftingRecipe]
 });
@@ -59,26 +59,38 @@ Game.RecipeRepository.define('stone hammer', {
     recipeType: 'compose',
     craftingIngredients: {'worked stone': 1,'G:cord~2':1,'G:binder~2':1,'G:stick~3':1},
     craftingTools: {'G:bracer~1':1},
-    craftingDuration: 20000,
-    craftingSuccessChance: '.75',
+    craftingSuccessChance: '.85',
     craftingOutcomeObject: 'stone hammer',
     mixins: [Game.ItemMixins.CraftingRecipe]
 });
 
+Game.RecipeRepository.define('stone shot', {
+    name: 'stone shot',
+    group: 'crafting recipe',
+    description: "sling ammunition",
+    recipeType: 'compose',
+    craftingIngredients: {'worked stone': 1},
+    craftingTools: {'G:whacker~2': 1},
+    craftingSuccessChance: '.7',
+    craftingDuration: 15000,
+    craftingSuccessCountTable: [1,1,1,2,2],
+    craftingOutcomeObject: 'stone shot',
+    mixins: [Game.ItemMixins.CraftingRecipe]
+});
 
 Game.RecipeRepository.define('iron shot', {
     name: 'iron shot',
     group: 'crafting recipe',
-    description: "effective ammunition",
+    description: "more effective sling ammunition",
     recipeType: 'compose',
     craftingIngredients: {'iron nugget': 1},
     craftingTools: {'G:whacker~3':1,'G:worksurface~5':1},
-    craftingSuccessChance: '.7',
+    craftingSuccessChance: '.9',
+    craftingDuration: 20000,
     craftingSuccessCountTable: [1,1,1,1,2,3],
     craftingOutcomeObject: 'iron shot',
     mixins: [Game.ItemMixins.CraftingRecipe]
 });
-
 
 Game.RecipeRepository.define('shard blade', {
     name: 'shard blade',
@@ -87,7 +99,8 @@ Game.RecipeRepository.define('shard blade', {
     recipeType: 'compose',
     craftingIngredients: {'G:edge~2': 1, 'G:cord': 1, 'G:binder~2': 1, 'G:stick~3': 1},
     craftingTools: {'G:bracer':1,'G:holder':1},
-    craftingSuccessChance: '.15',
+    craftingDuration: 25000,
+    craftingSuccessChance: '.6',
     craftingOutcomeObject: 'shard blade',
     mixins: [Game.ItemMixins.CraftingRecipe]
 });

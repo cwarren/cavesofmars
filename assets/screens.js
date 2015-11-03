@@ -1353,7 +1353,9 @@ Game.Screen.craftStep2Screen.handleCraftFinish = function() {
         p.extractThisItem(ings[idxAry[i]]);
     }
 
-    if (ROT.RNG.getUniform() <= this._selectedRecipe.getCraftingSuccessChance()) {
+    var successCheck = ROT.RNG.getUniform();
+    //console.log('success check is '+successCheck);
+    if (successCheck <= this._selectedRecipe.getCraftingSuccessChance()) {
         /*
         console.log("success count table:");
         console.dir(this._selectedRecipe.getCraftingSuccessCountTable());
