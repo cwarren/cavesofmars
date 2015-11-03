@@ -1356,13 +1356,20 @@ Game.EntityMixins.CorpseDropper = {
                 if (Game.ItemRepository.has(this._corpseName)) {
                     newCorpse = Game.ItemRepository.create(this._corpseName);
                 } else {
-                    newCorpse = Game.ItemRepository.create('corpse', {
+                    var corpseSpec = {
                         name: this._corpseName,
                         foreground: this._foreground,
                         invWeight:  Math.floor(this._corpseSizeFactor*(this.getMaxHp() + Game.util.getRandomInteger(0,5))),
                         invBulk: Math.floor(this._corpseSizeFactor*((this.getMaxHp()*.8) + Game.util.getRandomInteger(0,5))),
-                        foodValue: this._corpseFoodValue
-                    });
+                        mixins: []
+                    };
+                    if (this._corpseFoodValue > 0) {
+                        corpseSpec['foodValue'] = this._corpseFoodValue,
+                        corpseSpec['mixins'].push(Game.ItemMixins.Edible);
+                    }
+                    console.log('TODO: check for corpse breakdown info and add Game.ItemMixins.CraftingBreakdown if appropriate');
+                    
+                    newCorpse = Game.ItemRepository.create('corpse', corpseSpec);
 
                     if (this._corpseDescription) {
                         newCorpse.setDescription(this._corpseDescription);

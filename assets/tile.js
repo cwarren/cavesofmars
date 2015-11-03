@@ -132,7 +132,7 @@ Game.Tile.softenedSandstoneTile = new Game.Tile({
     diggable: true,
     digResistance: 8,
     digDropChance: .2,
-    digDropTable: ['rock','rock','rock','rock','rock','rock','rock','rock','stone shot','stone shot','iron shot'],
+    digDropTable: ['rock','rock','rock','rock','rock','rock','rock','rock','rock','iron nugget'],
     transparent: false,
     description: 'softened sandstone'
     });

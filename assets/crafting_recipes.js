@@ -20,8 +20,8 @@ Game.RecipeRepository.define('BREAKDOWN', {
     craftingIngredients: "SEEITEM",
     craftingTools: "SEEITEM",
     craftingStructures: "SEEITEM",
-    successChance: "SEEITEM",
-    outcomeObject: "SEEITEM",
+    craftingSuccessChance: "SEEITEM",
+    craftingOutcomeObject: "SEEITEM",
     mixins: [Game.ItemMixins.CraftingRecipe]
 });
 
@@ -34,8 +34,48 @@ Game.RecipeRepository.define('sling', {
     recipeType: 'compose',
     craftingIngredients: {'G:cord~2': 2, 'G:material~2': 1},
     craftingTools: {'G:cutter~2':1},
-    successChance: '1',
-    outcomeObject: 'sling',
+    craftingSuccessChance: '1',
+    craftingOutcomeObject: 'sling',
+    mixins: [Game.ItemMixins.CraftingRecipe]
+});
+
+Game.RecipeRepository.define('worked stone', {
+    name: 'worked stone',
+    group: 'crafting recipe',
+    description: "a piece of stone shaped and worked to be more useful and with only the hardest, strongest parts remaining; only a few rocks end up being usable",
+    recipeType: 'compose',
+    craftingIngredients: {'rock': 1},
+    craftingTools: {'G:whacker~1':1},
+    craftingDuration: 20000,
+    craftingSuccessChance: '.2',
+    craftingOutcomeObject: 'worked stone',
+    mixins: [Game.ItemMixins.CraftingRecipe]
+});
+
+Game.RecipeRepository.define('stone hammer', {
+    name: 'stone hammer',
+    group: 'crafting recipe',
+    description: "a piece of stone shaped and worked to be more useful and with only the hardest, strongest parts remaining; only a few rocks end up being usable",
+    recipeType: 'compose',
+    craftingIngredients: {'worked stone': 1,'G:cord~2':1,'G:binder~2':1,'G:stick~3':1},
+    craftingTools: {'G:bracer~1':1},
+    craftingDuration: 20000,
+    craftingSuccessChance: '.75',
+    craftingOutcomeObject: 'stone hammer',
+    mixins: [Game.ItemMixins.CraftingRecipe]
+});
+
+
+Game.RecipeRepository.define('iron shot', {
+    name: 'iron shot',
+    group: 'crafting recipe',
+    description: "effective ammunition",
+    recipeType: 'compose',
+    craftingIngredients: {'iron nugget': 1},
+    craftingTools: {'G:whacker~3':1,'G:worksurface~5':1},
+    craftingSuccessChance: '.7',
+    craftingSuccessCountTable: [1,1,1,1,2,3],
+    craftingOutcomeObject: 'iron shot',
     mixins: [Game.ItemMixins.CraftingRecipe]
 });
 
@@ -47,8 +87,8 @@ Game.RecipeRepository.define('shard blade', {
     recipeType: 'compose',
     craftingIngredients: {'G:edge~2': 1, 'G:cord': 1, 'G:binder~2': 1, 'G:stick~3': 1},
     craftingTools: {'G:bracer':1,'G:holder':1},
-    successChance: '.15',
-    outcomeObject: 'shard blade',
+    craftingSuccessChance: '.15',
+    craftingOutcomeObject: 'shard blade',
     mixins: [Game.ItemMixins.CraftingRecipe]
 });
 

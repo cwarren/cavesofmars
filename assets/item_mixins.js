@@ -901,6 +901,7 @@ Game.ItemMixins.CraftingRecipe = {
         console.log('getting crafting success object');
         //console.dir(this);
         var resObj = '';
+        console.log('this._craftingOutcomeObject is '+this._craftingOutcomeObject);
         if (this._craftingOutcomeObject != '') {
             resObj = Game.ItemRepository.create(this._craftingOutcomeObject);
         } else if (this._craftingOutcomeRandomTable!= '') {

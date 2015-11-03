@@ -1354,11 +1354,22 @@ Game.Screen.craftStep2Screen.handleCraftFinish = function() {
     }
 
     if (ROT.RNG.getUniform() <= this._selectedRecipe.getCraftingSuccessChance()) {
-        var numSuccesses = this._selectedRecipe.getCraftingSuccessCountTable().random();
+        /*
+        console.log("success count table:");
+        console.dir(this._selectedRecipe.getCraftingSuccessCountTable());
+        console.log("success table random is "+(this._selectedRecipe.getCraftingSuccessCountTable()).random());
+        console.log("success table random is "+(this._selectedRecipe.getCraftingSuccessCountTable()).random());
+        console.log("success table random is "+(this._selectedRecipe.getCraftingSuccessCountTable()).random());
+        console.log("success table random is "+(this._selectedRecipe.getCraftingSuccessCountTable()).random());
+        console.log("success table random is "+(this._selectedRecipe.getCraftingSuccessCountTable()).random());
+        console.log("success table random is "+(this._selectedRecipe.getCraftingSuccessCountTable()).random());
+        */
+        var numSuccesses = (this._selectedRecipe.getCraftingSuccessCountTable()).random();
+        //console.log("crafting numSuccesses is "+numSuccesses);
         for (var i=0;i<numSuccesses;i++) {
             var newItem = this._selectedRecipe.getCraftingSuccessObject();
             p.addItem(newItem);
-            Game.sendMessage(this._player,'You got %s',[newItem.describeA()]);
+            Game.sendMessage(this._player,'You got %s',[newItem.describeN(numSuccesses)]);
         }
     } else {
         Game.sendMessage(this._player,'Your %s project didn\'t work.',[this._selectedRecipe.getName()]);
@@ -2121,6 +2132,9 @@ Game.Screen.storyScreen = {
                 player.addItem(Game.ItemRepository.create('sinew'));
                 player.addItem(Game.ItemRepository.create('leather piece'));
                 player.addItem(Game.ItemRepository.create('obsidian shard'));
+                player.addItem(Game.ItemRepository.create('iron nugget'));
+                player.addItem(Game.ItemRepository.create('iron nugget'));
+                player.addItem(Game.ItemRepository.create('stone hammer'));
  
                 for (var i=0;i<6;i++) {
                     player.addItem(Game.ItemRepository.createRandom());

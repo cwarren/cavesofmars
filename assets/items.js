@@ -75,8 +75,9 @@ Game.ItemRepository.define('corpse', {
     character: String.fromCharCode(169), // copyright symbol
     foodValue: 5,
     consumptions: 1,
-    description: "A chilling reminder of your own mortality",
-    mixins: [Game.ItemMixins.Edible]
+    description: "A chilling reminder of your own mortality"
+    /*,
+    mixins: [Game.ItemMixins.Edible]*/
 }, {
     disableRandomCreation: true
 });
@@ -135,7 +136,7 @@ Game.ItemRepository.define('rock', {
     craftingGroup: 'structure',
     craftingQuality: '1',
     craftingToolGroup: 'whacker',
-    craftingToolQuality: '2',
+    craftingToolQuality: '1',
     mixins: [Game.ItemMixins.Ammo, Game.ItemMixins.CraftingIngredient, Game.ItemMixins.CraftingTool]
 });
 
@@ -155,12 +156,23 @@ Game.ItemRepository.define('iron nugget', {
     name: 'iron nugget',
     group: 'mineral',
     character: Game.ItemRepository.Symbol['mineral'],
-    invWeight: 4785,
-    invBulk: 975,
+    invWeight: 385,
+    invBulk: 100,
     foreground: '#ca9',
-    description: "A large mass of iron, with various obvious impurities. Not much use... in it's current state."
+    description: "A mass of iron, with various obvious impurities. Not much use... in it's current state.",
+    mixins: [Game.ItemMixins.CraftingIngredient]
 });
 
+Game.ItemRepository.define('lead ore', {
+    name: 'lead ore',
+    group: 'mineral',
+    character: Game.ItemRepository.Symbol['mineral'],
+    invWeight: 685,
+    invBulk: 250,
+    foreground: '#456',
+    description: "A heavy lump of stone, shot through with grey and white. Not much use... in it's current state.",
+    mixins: [Game.ItemMixins.CraftingIngredient]
+});
 
 // ----------------------------------------------
 
@@ -204,6 +216,7 @@ Game.ItemRepository.define('lead shot', {
     reuseChance: .25,
     mixins: [Game.ItemMixins.Ammo]
 });
+
 
 // ----------------------------------------------
 
@@ -257,8 +270,7 @@ Game.ItemRepository.define('JAT tool, damaged', {
     craftingToolGroup: 'cutter',
     craftingToolQuality: '2',
     breakdownTools: {'G:cutter~2':1,'G:whacker':1},
-    breakdownSuccessChance: 1,
-    breakdownDuration: 40,
+    breakdownSuccessChance: .8,
     breakdownSuccessCountTable: [1,1,2,2,2,3,4],
     breakdownOutcomeRandomTableSpec: [
         {'name':'kevlar-carbon thread',  'weight':10,  'flag_deweight': true},
@@ -1164,6 +1176,21 @@ Game.ItemRepository.define('protein glue', {
     disableRandomCreation: true
 });
 
+Game.ItemRepository.define('resin matrix', {
+    name: 'resin matrix',
+    group: 'crafting ingredient',
+    character: Game.ItemRepository.Symbol['crafting ingredient'],
+    description: "",
+    foreground: '#bb9',
+    invWeight: 10,
+    invBulk: 25,
+    craftingGroup: 'binder',
+    craftingQuality: '4',
+    mixins: [Game.ItemMixins.CraftingIngredient]
+}, {
+    disableRandomCreation: true
+});
+
 Game.ItemRepository.define('epoxy', {
     name: 'epoxy',
     group: 'crafting ingredient',
@@ -1207,10 +1234,43 @@ Game.ItemRepository.define('worked stone', {
     craftingGroup: 'structure',
     craftingQuality: '3',
     craftingToolGroup: 'whacker',
-    craftingToolQuality: '1',
+    craftingToolQuality: '2',
     mixins: [Game.ItemMixins.CraftingIngredient,Game.ItemMixins.CraftingTool]
 }, {
     disableRandomCreation: true
 });
 
 // ------------
+Game.ItemRepository.define('stone hammer', {
+    name: 'stone hammer',
+    group: 'tool',
+    character: Game.ItemRepository.Symbol['tool'],
+    attackValue: 2,
+    isWeapon: true,
+    description: "An appropriately shaped stone on the end of a handle, suitable for work, somewhat usable for fighting",
+    foreground: 'lightGrey',
+    invWeight: 1000,
+    invBulk: 1400,
+    craftingToolGroup: 'whacker',
+    craftingToolQuality: '3',
+    mixins: [Game.ItemMixins.CraftingTool]
+}, {
+    disableRandomCreation: true
+});
+
+Game.ItemRepository.define('iron hammer', {
+    name: 'iron hammer',
+    group: 'tool',
+    character: Game.ItemRepository.Symbol['tool'],
+    attackValue: 5,
+    isWeapon: true,
+    description: "Shaped iron affixed to a sturdy handle, a good tool and an effective weapon if need be",
+    foreground: 'lightGrey',
+    invWeight: 800,
+    invBulk: 900,
+    craftingToolGroup: 'whacker',
+    craftingToolQuality: '4',
+    mixins: [Game.ItemMixins.CraftingTool]
+}, {
+    disableRandomCreation: true
+});
