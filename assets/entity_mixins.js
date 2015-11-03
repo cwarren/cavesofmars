@@ -1337,6 +1337,8 @@ Game.EntityMixins.CorpseDropper = {
         this._corpseFoodValue = template['corpseFoodValue'] || 0;
         this._corpseFoodDensityFactor = template['corpseFoodDensityFactor'] || 1;
         this._corpseSizeFactor = template['corpseSizeFactor'] || Game.util.getRandomInteger(450,550);
+        
+        // corspe breakdown stuff (see damaged jat tool for example breakdown spec info
     },
     getCorpseFoodValue: function() {
         return this._corpseFoodValue;
