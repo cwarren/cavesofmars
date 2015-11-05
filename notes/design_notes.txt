@@ -94,7 +94,6 @@ TODO NEXT:
 
 !! DEGUG: some issue with inven weight not being correctly handled when items unpacked from a container....?
 
-2. crafting : corpse breakdown stuff
 
 3. structures
 

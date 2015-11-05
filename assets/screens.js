@@ -74,7 +74,7 @@ Game.Screen.playScreen = {
         return this._player;
     },
     enter: function() {
-        console.log('entered play screen');        
+        //console.log('entered play screen');        
 
 //        width = 80;
 //        height = 24;
@@ -93,7 +93,9 @@ Game.Screen.playScreen = {
         // Start the map's engine
 //        map.getEngine().start();
     },
-    exit: function() { console.log("Exited play screen."); },
+    exit: function() { 
+        //console.log("Exited play screen."); 
+    },
     getScreenOffsets: function() {
         // Make sure we still have enough space to fit an entire game screen
         var topLeftX = Math.max(0, this._player.getX() - (Game.getScreenWidth() / 2));
@@ -1288,23 +1290,13 @@ Game.Screen.craftStep2Screen = new Game.Screen.ItemListScreen({
     canSelectMultipleItems: false,
     _selectedRecipe: '',
     ok: function(selectedItems) {
-
-        //console.log('SELECTED RECIPE:');
-        //console.dir(selectedItems);
-//        return true;
-
-        // TODO: implement recipe activation
-        
         // extract ingredients from inventory
         // perform success check
         // if successful, create result item and add it to inventory
-    
-        //console.log('SELECTED INGREDIENTS:');
-        //console.dir(Game.Screen.craftStep1Screen.getSelectedIngredients());
 
         this._selectedRecipe = selectedItems[Object.keys(selectedItems)[0]];
-        console.log("selected recipe is");
-        console.dir(this._selectedRecipe);
+        //console.log("selected recipe is");
+        //console.dir(this._selectedRecipe);
 
         var incrementalActivityDuration = 50; // average of twenty craft steps per typical turn duration CSW NOTE: will need to generalize speed scaling to handle this kind of thing...
         
@@ -1320,14 +1312,10 @@ Game.Screen.craftStep2Screen = new Game.Screen.ItemListScreen({
             p.thePlayer.setLastActionDuration(p.craftDur);
             p.thePlayer.raiseEvent('onActed');
             p.thePlayer.stepOgaCounter()
-//                Game._aux_screen_message.refresh();
         },
         {thePlayer: Game.getPlayer(), theRecipe: this._selectedRecipe, craftDur: incrementalActivityDuration},
         incrementalActivityDuration);
-
         Game.getPlayer().setLastActionDuration(1);
-
-        //this.handleCraftFinish();
         
         return true;
     }
@@ -2118,46 +2106,46 @@ Game.Screen.storyScreen = {
                 //player.addItem(h);
                 player.wear(h);
                 
-                var itemTesting = true;
+                var itemTesting = false;
                 /////////////////////////////
                 /// CODE FOR ITEM TESTING!!!!
                 if (itemTesting) {
                     console.log('item testing code is active');
-                
-//                player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('human corpse'),player.getX(),player.getY(),player.getZ());
-               // player.addItem(Game.ItemRepository.create('sack'));
-               // player.addItem(Game.ItemRepository.create('shoulder-strap'));
-               // player.addItem(Game.ItemRepository.create('shoulder-strap'));
-               // player.addItem(Game.ItemRepository.create('bandolier'));
-               // player.addItem(Game.ItemRepository.create('stone shot'));
-               // player.addItem(Game.ItemRepository.create('stone shot'));
-               // player.addItem(Game.ItemRepository.create('iron shot'));
-               // player.addItem(Game.ItemRepository.create('iron shot'));
-                player.addItem(Game.ItemRepository.create('sinew'));
-                player.addItem(Game.ItemRepository.create('sinew'));
-                player.addItem(Game.ItemRepository.create('leather piece'));
-                player.addItem(Game.ItemRepository.create('obsidian shard'));
-                player.addItem(Game.ItemRepository.create('iron nugget'));
-                player.addItem(Game.ItemRepository.create('iron nugget'));
-                player.addItem(Game.ItemRepository.create('stone hammer'));
- 
-                for (var i=0;i<6;i++) {
-                    player.addItem(Game.ItemRepository.createRandom());
-                    player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('lodestone'),player.getX(),player.getY(),player.getZ());
-                }
-                
-                for (var i=0;i<9;i++) {
-                    player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.createRandom(),player.getX(),player.getY(),player.getZ());
-//                    player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('human corpse'),player.getX(),player.getY(),player.getZ());
-//                    player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('geodic nut'),player.getX(),player.getY(),player.getZ());
-//                    player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('geodic nut'),player.getX(),player.getY(),player.getZ());
-//                    player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('spore-y mass'),player.getX(),player.getY(),player.getZ());
-//                    player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('lodestone'),player.getX(),player.getY(),player.getZ());
-                }
-/*
-                  player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('plated leather armor'),player.getX(),player.getY(),player.getZ());
 
-                */
+    //                player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('human corpse'),player.getX(),player.getY(),player.getZ());
+                   // player.addItem(Game.ItemRepository.create('sack'));
+                   // player.addItem(Game.ItemRepository.create('shoulder-strap'));
+                   // player.addItem(Game.ItemRepository.create('shoulder-strap'));
+                   // player.addItem(Game.ItemRepository.create('bandolier'));
+                   // player.addItem(Game.ItemRepository.create('stone shot'));
+                   // player.addItem(Game.ItemRepository.create('stone shot'));
+                   // player.addItem(Game.ItemRepository.create('iron shot'));
+                   // player.addItem(Game.ItemRepository.create('iron shot'));
+                    player.addItem(Game.ItemRepository.create('sinew'));
+                    player.addItem(Game.ItemRepository.create('sinew'));
+                    player.addItem(Game.ItemRepository.create('leather piece'));
+                    player.addItem(Game.ItemRepository.create('obsidian shard'));
+                    player.addItem(Game.ItemRepository.create('iron nugget'));
+                    player.addItem(Game.ItemRepository.create('iron nugget'));
+                    player.addItem(Game.ItemRepository.create('stone hammer'));
+
+                    for (var i=0;i<6;i++) {
+                        player.addItem(Game.ItemRepository.createRandom());
+                        player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('lodestone'),player.getX(),player.getY(),player.getZ());
+                    }
+
+                    for (var i=0;i<9;i++) {
+                        player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.createRandom(),player.getX(),player.getY(),player.getZ());
+    //                    player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('human corpse'),player.getX(),player.getY(),player.getZ());
+    //                    player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('geodic nut'),player.getX(),player.getY(),player.getZ());
+    //                    player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('geodic nut'),player.getX(),player.getY(),player.getZ());
+    //                    player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('spore-y mass'),player.getX(),player.getY(),player.getZ());
+    //                    player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('lodestone'),player.getX(),player.getY(),player.getZ());
+                    }
+    /*
+                      player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('plated leather armor'),player.getX(),player.getY(),player.getZ());
+
+                    */
                 }
                 /// CODE FOR ITEM TESTING!!!!
                 /////////////////////////////
@@ -2291,7 +2279,7 @@ Game.Screen.fallingScreen = {
         return [];
     },
     enter: function() {
-        console.log("Entered falling screen."); 
+        //console.log("Entered falling screen."); 
         this._player = Game.getPlayer();
         this._fallLine = '';
         for (var i=0;i<Game.getScreenWidth();i++) {
@@ -2308,7 +2296,7 @@ Game.Screen.fallingScreen = {
         Game.AuxScreen.helpScreen.refresh(this.getHelpSections());
     },
     exit: function() {
-        console.log("Exited falling screen.");
+        //console.log("Exited falling screen.");
     },
     render: function(display) {
         var wallRep = Game.Tile.STANDARD_WALL_TILES.random().getRepresentation();
@@ -2390,10 +2378,12 @@ Game.Screen.winScreen = {
         return ['winning'];
     },
     enter: function() {
-        console.log("Entered win screen."); 
+        //console.log("Entered win screen."); 
         Game.AuxScreen.helpScreen.refresh(this.getHelpSections());
     },
-    exit: function() { console.log("Exited win screen."); },
+    exit: function() {
+        //console.log("Exited win screen.");
+    },
     render: function(display) {
         // Render our prompt to the screen
         display.drawText(2,3,this._texts[this._text_idx]);
@@ -2444,7 +2434,8 @@ Game.Screen.winScreen = {
 
 // Define our losing screen
 Game.Screen.loseScreen = {
-    enter: function() {    console.log("Entered lose screen.");
+    enter: function() {    
+        //console.log("Entered lose screen.");
         Game.AuxScreen.helpScreen.refresh(this.getHelpSections());
         Game.AuxScreen.infoScreen.setCurrentShortInfo('');
         Game.AuxScreen.infoScreen.setCurrentDetailInfo('');
@@ -2452,7 +2443,9 @@ Game.Screen.loseScreen = {
         Game.getPlayer().resetMessages();
         Game.AuxScreen.messageScreen.refresh();
     },
-    exit: function() { console.log("Exited lose screen."); },
+    exit: function() {
+        //console.log("Exited lose screen.");
+    },
     getHelpSections: function() {
         return ['losing'];
     },

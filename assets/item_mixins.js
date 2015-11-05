@@ -642,7 +642,7 @@ Game.ItemMixins.Container = {
 Game.ItemMixins.CraftingIngredient = {
     name: 'CraftingIngredient',
     init: function(template) {
-        this._craftingGroup = template['craftingGroup'] || 'miscellaneous scraps';
+        this._craftingGroup = template['craftingGroup'] || 'miscellaneous';
         this._craftingQuality = template['craftingQuality'] || 1;
     },
     getCraftingGroup: function() {
@@ -898,16 +898,16 @@ Game.ItemMixins.CraftingRecipe = {
         return this._craftingOutcomeRandomTable;
     },
     getCraftingSuccessObject: function() {
-        console.log('getting crafting success object');
+        //console.log('getting crafting success object');
         //console.dir(this);
         var resObj = '';
-        console.log('this._craftingOutcomeObject is '+this._craftingOutcomeObject);
+        //console.log('this._craftingOutcomeObject is '+this._craftingOutcomeObject);
         if (this._craftingOutcomeObject != '') {
             resObj = Game.ItemRepository.create(this._craftingOutcomeObject);
         } else if (this._craftingOutcomeRandomTable!= '') {
             resObj = this._craftingOutcomeRandomTable.getOne();
         }
-        console.dir(resObj);
+        //console.dir(resObj);
         return resObj;
     },
     canBeUsedWith: function(ingredients,tools,structures) {
@@ -924,10 +924,10 @@ Game.ItemMixins.CraftingRecipe = {
         });
 
         //console.log('ingAr:');
-        console.log('checking recipe '+this._name);
-        console.dir(ingAr);
-        console.dir(toolAr);
-        console.dir(struAr);
+        //console.log('checking recipe '+this._name);
+        //console.dir(ingAr);
+        //console.dir(toolAr);
+        //console.dir(struAr);
 
         if (this._name == 'BREAKDOWN') {
             if (ingAr.length == 1) {
@@ -1104,9 +1104,8 @@ Game.ItemMixins.CraftingRecipe = {
         
         //---------- end structure checking ----------------
 
-        console.log(' - valid reicpe '+this._name);
-        console.dir(this);
-
+        //console.log(' - valid reicpe '+this._name);
+        //console.dir(this);
 
         return true;
     },

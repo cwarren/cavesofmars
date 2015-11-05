@@ -1223,6 +1223,23 @@ Game.ItemRepository.define('blob of nano-cement', {
 
 // ------------
 
+Game.ItemRepository.define('iron ingot', {
+    name: 'iron ingot',
+    group: 'crafting ingredient',
+    character: Game.ItemRepository.Symbol['crafting ingredient'],
+    description: "",
+    foreground: '#655',
+    invWeight: 1325,
+    invBulk: 850,
+    craftingGroup: 'supply',
+    craftingQuality: '4',
+    craftingToolGroup: 'whacker',
+    craftingToolQuality: '2',
+    mixins: [Game.ItemMixins.CraftingIngredient,Game.ItemMixins.CraftingTool]
+}, {
+    disableRandomCreation: true
+});
+
 Game.ItemRepository.define('worked stone', {
     name: 'worked stone',
     group: 'crafting ingredient',
@@ -1231,7 +1248,7 @@ Game.ItemRepository.define('worked stone', {
     foreground: '#b99',
     invWeight: 10,
     invBulk: 25,
-    craftingGroup: 'structure',
+    craftingGroup: 'supply',
     craftingQuality: '3',
     craftingToolGroup: 'whacker',
     craftingToolQuality: '2',

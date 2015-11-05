@@ -1,17 +1,5 @@
 Game.RecipeRepository = new Game.Repository('recipes', Game.Item);
 
-/*
-Game.RecipeRepository.define('breakdown', {
-    name: 'BREAK DOWN',
-    group: 'crafting recipe',
-    description: "pieces that might be used for something else by breaking down an item",
-    recipeType: 'decompose',
-    successChance: '1',
-    outcomeObject: 'ITEM_DEPENDENT',
-    mixins: [Game.ItemMixins.CraftingRecipe]
-});
-*/
-
 Game.RecipeRepository.define('BREAKDOWN', {
     name: 'BREAKDOWN',
     group: 'crafting recipe',
@@ -25,7 +13,33 @@ Game.RecipeRepository.define('BREAKDOWN', {
     mixins: [Game.ItemMixins.CraftingRecipe]
 });
 
+/*
 
+HOW RECIPES / CRAFTING WORK (conceptual):
+    * ingredients are used up regardless of crafting success or failure
+    * tools and structures are not used up (usually)
+    * ingredients and tools are kept in inventory
+    * structures are on the map - player must be adjacent to or co-located with structures to be used for crafting
+
+
+As a general rule, recipes with a lower success rate should have a shorter duration, and recipes with a guaranteed success should have a duration at least 2x normal.
+
+As a general rule, recipes that produce better things should:
+    - have more and more stringent ingredients
+    - require special tools and / or structures
+    - have some sort of crafting chain / pyramid below them
+    - take longer
+    - NOT be less likely to succeed (and actually usually have high or even guaranteed success)
+    - may have quality-based enhancements (once that part of the game is implemented)
+
+As a general rule, recipes that form the bottom of pyramids / chains:
+    - use common, easy ingredients
+    - have minimal tool and/or structure needs
+    - are relatively short duration
+    - may have low success rates
+    - don't care about quality beyond certain minimal standards; no quality-based enhancements on results
+
+*/
 
 Game.RecipeRepository.define('sling', {
     name: 'sling',
@@ -34,7 +48,8 @@ Game.RecipeRepository.define('sling', {
     recipeType: 'compose',
     craftingIngredients: {'G:cord~2': 2, 'G:material~2': 1},
     craftingTools: {'G:cutter~2':1},
-    craftingSuccessChance: '1',
+    craftingSuccessChance: '.9',
+    craftingDuration: 16000,
     craftingOutcomeObject: 'sling',
     mixins: [Game.ItemMixins.CraftingRecipe]
 });
@@ -46,7 +61,7 @@ Game.RecipeRepository.define('worked stone', {
     recipeType: 'compose',
     craftingIngredients: {'rock': 1},
     craftingTools: {'G:whacker~1':1},
-    craftingDuration: 20000,
+    craftingDuration: 6000,
     craftingSuccessChance: '.4',
     craftingOutcomeObject: 'worked stone',
     mixins: [Game.ItemMixins.CraftingRecipe]
@@ -55,7 +70,7 @@ Game.RecipeRepository.define('worked stone', {
 Game.RecipeRepository.define('stone hammer', {
     name: 'stone hammer',
     group: 'crafting recipe',
-    description: "a piece of stone shaped and worked to be more useful and with only the hardest, strongest parts remaining; only a few rocks end up being usable",
+    description: "a carefully shaped piece of strong stone attached to a handle",
     recipeType: 'compose',
     craftingIngredients: {'worked stone': 1,'G:cord~2':1,'G:binder~2':1,'G:stick~3':1},
     craftingTools: {'G:bracer~1':1},
@@ -72,7 +87,7 @@ Game.RecipeRepository.define('stone shot', {
     craftingIngredients: {'worked stone': 1},
     craftingTools: {'G:whacker~2': 1},
     craftingSuccessChance: '.7',
-    craftingDuration: 15000,
+    craftingDuration: 9000,
     craftingSuccessCountTable: [1,1,1,2,2],
     craftingOutcomeObject: 'stone shot',
     mixins: [Game.ItemMixins.CraftingRecipe]
@@ -86,7 +101,7 @@ Game.RecipeRepository.define('iron shot', {
     craftingIngredients: {'iron nugget': 1},
     craftingTools: {'G:whacker~3':1,'G:worksurface~5':1},
     craftingSuccessChance: '.9',
-    craftingDuration: 20000,
+    craftingDuration: 10000,
     craftingSuccessCountTable: [1,1,1,1,2,3],
     craftingOutcomeObject: 'iron shot',
     mixins: [Game.ItemMixins.CraftingRecipe]
