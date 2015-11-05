@@ -1355,29 +1355,41 @@ Game.EntityMixins.CorpseDropper = {
             if (Math.round(ROT.RNG.getUniform() * 100) <= this._corpseDropRate) {
                 // Create a new corpse item and drop it.
                 var newCorpse;
+                var corpseSpec = {mixins: []}
+                var corpseItemName = 'corpse';
+                
+                // specific corpse or general one
                 if (Game.ItemRepository.has(this._corpseName)) {
-                    newCorpse = Game.ItemRepository.create(this._corpseName);
+                    corpseItemName = this._corpseName;
                 } else {
-                    var corpseSpec = {
+                    corpseSpec = {
                         name: this._corpseName,
                         foreground: this._foreground,
                         invWeight:  Math.floor(this._corpseSizeFactor*(this.getMaxHp() + Game.util.getRandomInteger(0,5))),
                         invBulk: Math.floor(this._corpseSizeFactor*((this.getMaxHp()*.8) + Game.util.getRandomInteger(0,5))),
                         mixins: []
                     };
-                    if (this._corpseFoodValue > 0) {
-                        corpseSpec['foodValue'] = this._corpseFoodValue,
-                        corpseSpec['mixins'].push(Game.ItemMixins.Edible);
-                    }
-                    console.log('TODO: check for corpse breakdown info and add Game.ItemMixins.CraftingBreakdown if appropriate');
-                    
-                    newCorpse = Game.ItemRepository.create('corpse', corpseSpec);
 
-                    if (this._corpseDescription) {
-                        newCorpse.setDescription(this._corpseDescription);
-                    }
-                    //console.dir(newCorpse);
                 }
+
+                // food stuff
+                if (this._corpseFoodValue > 0) {
+                    corpseSpec['foodValue'] = this._corpseFoodValue;
+                    corpseSpec['mixins'].push(Game.ItemMixins.Edible);
+                }
+
+                // crafting breakdown stuff
+                console.log('TODO: check for corpse breakdown info and add Game.ItemMixins.CraftingBreakdown if appropriate');
+
+
+                newCorpse = Game.ItemRepository.create(corpseItemName, corpseSpec);
+
+                if (this._corpseDescription) {
+                    newCorpse.setDescription(this._corpseDescription);
+                }
+                //console.log("newCorpse is");
+                //console.dir(newCorpse);
+
                 if (this.getGroup()) {
                     newCorpse.setGroup(this.getGroup()+' corpse');
                 }

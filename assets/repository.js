@@ -39,7 +39,19 @@ Game.Repository.prototype.create = function(name, extraProperties) {
     // Apply any extra properties
     if (extraProperties) {
         for (var key in extraProperties) {
-            template[key] = extraProperties[key];
+            if (key == 'mixins') {
+                if (! template.hasOwnProperty(key)) {
+                    template['mixins'] = extraProperties['mixins'];
+                } else {
+                    for (var i=0;i<extraProperties['mixins'].length;i++) {
+                        if (template['mixins'].indexOf(extraProperties['mixins'][i]) == -1) {
+                            template['mixins'].push(extraProperties['mixins'][i]);
+                        }
+                    }
+                }
+            } else {
+                template[key] = extraProperties[key];
+            }
         }
     }
     

@@ -94,15 +94,13 @@ TODO NEXT:
 
 !! DEGUG: some issue with inven weight not being correctly handled when items unpacked from a container....?
 
-1. add whip-spine to random tables for mob distribution
-
 2. crafting : corpse breakdown stuff
-
-2. crafting : more recipes
 
 3. structures
 
 4. crafting : structures
+
+4.5 crafting : more recipes
 
 5. figure out garbage collection on objects / creatures
     - maybe need some kind of history of where the player has been lately

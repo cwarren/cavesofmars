@@ -13,6 +13,8 @@ count: number of said things left in the table (default= weight)
 on_exhausted: "remove" - weight is set to 0; 'nothing' - return null; or "substitute_random_table" or "substitute_repo_entry" - use info in substitute_with  (default= "remove")
 substitute_with: name of a random table, or name of an entry in the repository that backs this random table
 
+
+
 */
 
 Game.RandomEntitiesByLevel = [
@@ -26,6 +28,7 @@ Game.RandomEntitiesByLevel = [
         {'name':'bat',              'weight':18},
         {'name':'busy-bug',         'weight':12},
         {'name':'angry-bug',        'weight':6},
+        {'name':'whip-spine',       'weight':9},
         {'name':'ooze',             'weight':2},
         {'name':'golden lizard',    'weight':3},
         {'name':'rock lizard',      'weight':10}
@@ -40,6 +43,7 @@ Game.RandomEntitiesByLevel = [
         {'name':'bat',              'weight':22},
         {'name':'busy-bug',         'weight':15},
         {'name':'angry-bug',        'weight':8},
+        {'name':'whip-spine',       'weight':18},
         {'name':'ooze',             'weight':6},
         {'name':'golden lizard',    'weight':10},
         {'name':'rock lizard',      'weight':12}
@@ -54,6 +58,7 @@ Game.RandomEntitiesByLevel = [
         {'name':'bat',              'weight':14},
         {'name':'busy-bug',         'weight':12},
         {'name':'angry-bug',        'weight':9},
+        {'name':'whip-spine',       'weight':17},
         {'name':'ooze',             'weight':10},
         {'name':'golden lizard',    'weight':16},
         {'name':'rock lizard',      'weight':10}
@@ -68,6 +73,7 @@ Game.RandomEntitiesByLevel = [
         {'name':'bat',              'weight':7},
         {'name':'busy-bug',         'weight':52},
         {'name':'angry-bug',        'weight':39},
+        {'name':'whip-spine',       'weight':9},
         {'name':'ooze',             'weight':2},
         {'name':'golden lizard',    'weight':3},
         {'name':'rock lizard',      'weight':7}
@@ -82,6 +88,7 @@ Game.RandomEntitiesByLevel = [
         {'name':'bat',              'weight':8},
         {'name':'busy-bug',         'weight':12},
         {'name':'angry-bug',        'weight':18},
+        {'name':'whip-spine',       'weight':9},
         {'name':'ooze',             'weight':23},
         {'name':'golden lizard',    'weight':30},
         {'name':'rock lizard',      'weight':10}
@@ -96,6 +103,7 @@ Game.RandomEntitiesByLevel = [
         {'name':'bat',              'weight':5},
         {'name':'busy-bug',         'weight':9},
         {'name':'angry-bug',        'weight':16},
+        {'name':'whip-spine',       'weight':14},
         {'name':'ooze',             'weight':32},
         {'name':'golden lizard',    'weight':23},
         {'name':'rock lizard',      'weight':10}
