@@ -1355,20 +1355,18 @@ Game.EntityMixins.CorpseDropper = {
             if (Math.round(ROT.RNG.getUniform() * 100) <= this._corpseDropRate) {
                 // Create a new corpse item and drop it.
                 var newCorpse;
-                var corpseSpec = {mixins: []}
+                var corpseSpec = {'mixins': []}
                 var corpseItemName = 'corpse';
                 
                 // specific corpse or general one
                 if (Game.ItemRepository.has(this._corpseName)) {
                     corpseItemName = this._corpseName;
+                    corpseSpec['name'] = this._corpseName+' of '+this.describeA();
                 } else {
-                    corpseSpec = {
-                        name: this._corpseName,
-                        foreground: this._foreground,
-                        invWeight:  Math.floor(this._corpseSizeFactor*(this.getMaxHp() + Game.util.getRandomInteger(0,5))),
-                        invBulk: Math.floor(this._corpseSizeFactor*((this.getMaxHp()*.8) + Game.util.getRandomInteger(0,5))),
-                        mixins: []
-                    };
+                    corpseSpec['name'] = this._corpseName;
+                    corpseSpec['foreground'] = this._foreground;
+                    corpseSpec['invWeight'] =  Math.floor(this._corpseSizeFactor*(this.getMaxHp() + Game.util.getRandomInteger(0,5)));
+                    corpseSpec['invBulk'] = Math.floor(this._corpseSizeFactor*((this.getMaxHp()*.8) + Game.util.getRandomInteger(0,5)));
 
                 }
 

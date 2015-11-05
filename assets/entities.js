@@ -274,11 +274,14 @@ Game.EntityRepository.define('whip-spine', {
     foreground: 'green',
     maxHp: 9,
     attackValue: 3,
+    sightRadius: 4,
     bumpsThings: true,
     corpseFoodValue: 30,
     // corpse breakdown stuff here...
     moveDuration: 350,
     meleeDuration: 3800,
+    baseBehavior: Game.EntityBehaviors.AggressiveWanderBehavior,
+    behaviors: [Game.EntityBehaviors.AggressiveWanderBehavior],
     mixins: [Game.EntityMixins.AggressiveRoamingBehaviorController, Game.EntityMixins.MeleeAttacker, Game.EntityMixins.Destructible, Game.EntityMixins.Seer, Game.EntityMixins.CorpseDropper,
              Game.EntityMixins.Retaliator, Game.EntityMixins.ExperienceGainer, Game.EntityMixins.RandomStatGainer, Game.EntityMixins.RandomMoveChooser]
 });

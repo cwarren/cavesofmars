@@ -32,6 +32,9 @@ Game.Repository.prototype.create = function(name, extraProperties) {
         throw new Error("No template named '" + name + "' in repository '" +
             this._name + "'");
     }
+
+    //console.log('creating '+name+' with extraProperties ');
+    //console.dir(extraProperties);
     
     // Copy the template
     var template = Object.create(this._templates[name]);
@@ -40,7 +43,9 @@ Game.Repository.prototype.create = function(name, extraProperties) {
     if (extraProperties) {
         for (var key in extraProperties) {
             if (key == 'mixins') {
-                if (! template.hasOwnProperty(key)) {
+//                console.log('handling mixin property');
+                if (! ('mixins' in template)) {
+//                    console.log('no mixins property');
                     template['mixins'] = extraProperties['mixins'];
                 } else {
                     for (var i=0;i<extraProperties['mixins'].length;i++) {
@@ -49,13 +54,16 @@ Game.Repository.prototype.create = function(name, extraProperties) {
                         }
                     }
                 }
+                
             } else {
                 template[key] = extraProperties[key];
             }
         }
     }
     
-    //console.log('creating '+name);
+//    console.log('modified template');
+//    console.dir(template);
+//    console.log('----');
     
     // Create the object, passing the template as an argument
     var new_obj = new this._obj_constructor(template);
