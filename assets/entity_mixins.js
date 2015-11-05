@@ -1339,6 +1339,18 @@ Game.EntityMixins.CorpseDropper = {
         this._corpseSizeFactor = template['corpseSizeFactor'] || Game.util.getRandomInteger(450,550);
         
         // corspe breakdown stuff (see damaged jat tool for example breakdown spec info
+        this._corpseBreakdownTools = template['corpseBreakdownTools'] || [];
+        this._corpseBreakdownStructures = template['corpseBreakdownStructures'] || [];
+        
+        this._corpseBreakdownDuration = template['corpseBreakdownDuration'] || 10000;
+        
+        this._corpseBreakdownSuccessChance = template['corpseBreakdownSuccessChance'] || 1;  // 0-1
+        this._corpseBreakdownSuccessCountTable = template['corpseBreakdownSuccessCountTable'] || [1]; // random pick from the array gives count for number of outcomes
+    
+        // NOTE: has either and outcomeObject OR ELSE and outcomeRandomTable, not both
+        this._corpseBreakdownOutcomeObject = template['corpseBreakdownOutcomeObject'] || ''; // a single item name that is created on a success
+        this._corpseBreakdownOutcomeRandomTableSpec = template['corpseBreakdownOutcomeRandomTableSpec'] || []; // a randomTable with the item names of possible outcomes of a success
+
     },
     getCorpseFoodValue: function() {
         return this._corpseFoodValue;
@@ -1377,8 +1389,17 @@ Game.EntityMixins.CorpseDropper = {
                 }
 
                 // crafting breakdown stuff
-                console.log('TODO: check for corpse breakdown info and add Game.ItemMixins.CraftingBreakdown if appropriate');
-
+//                console.log('TODO: check for corpse breakdown info and add Game.ItemMixins.CraftingBreakdown if appropriate');
+                if (this._corpseBreakdownOutcomeObject || this._corpseBreakdownOutcomeRandomTableSpec.length>0) {
+                    corpseSpec['breakdownTools'] = this._corpseBreakdownTools;
+                    corpseSpec['breakdownStructures'] = this._corpseBreakdownStructures;
+                    corpseSpec['breakdownDuration'] = this._corpseBreakdownDuration;
+                    corpseSpec['breakdownSuccessChance'] = this._corpseBreakdownSuccessChance;
+                    corpseSpec['breakdownSuccessCountTable'] = this._corpseBreakdownSuccessCountTable;
+                    corpseSpec['breakdownOutcomeObject'] = this._corpseBreakdownOutcomeObject;
+                    corpseSpec['breakdownOutcomeRandomTableSpec'] = this._corpseBreakdownOutcomeRandomTableSpec;
+                    corpseSpec['mixins'].push(Game.ItemMixins.CraftingBreakdown);                
+                }
 
                 newCorpse = Game.ItemRepository.create(corpseItemName, corpseSpec);
 

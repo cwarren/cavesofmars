@@ -1131,8 +1131,8 @@ Game.ItemRepository.define('kevlar-carbon thread', {
 
 // ------------
 
-Game.ItemRepository.define('starch paste', {
-    name: 'starch paste',
+Game.ItemRepository.define('blob of starch paste', {
+    name: 'blob of starch paste',
     group: 'crafting ingredient',
     character: Game.ItemRepository.Symbol['crafting ingredient'],
     description: "",
@@ -1146,8 +1146,8 @@ Game.ItemRepository.define('starch paste', {
     disableRandomCreation: true
 });
 
-Game.ItemRepository.define('pitch', {
-    name: 'pitch',
+Game.ItemRepository.define('blob of pitch', {
+    name: 'blob of pitch',
     group: 'crafting ingredient',
     character: Game.ItemRepository.Symbol['crafting ingredient'],
     description: "",
@@ -1161,8 +1161,8 @@ Game.ItemRepository.define('pitch', {
     disableRandomCreation: true
 });
 
-Game.ItemRepository.define('protein glue', {
-    name: 'protein glue',
+Game.ItemRepository.define('blob of protein glue', {
+    name: 'blob of protein glue',
     group: 'crafting ingredient',
     character: Game.ItemRepository.Symbol['crafting ingredient'],
     description: "",
@@ -1176,8 +1176,8 @@ Game.ItemRepository.define('protein glue', {
     disableRandomCreation: true
 });
 
-Game.ItemRepository.define('resin matrix', {
-    name: 'resin matrix',
+Game.ItemRepository.define('blob of resin matrix', {
+    name: 'blob of resin matrix',
     group: 'crafting ingredient',
     character: Game.ItemRepository.Symbol['crafting ingredient'],
     description: "",
@@ -1191,8 +1191,8 @@ Game.ItemRepository.define('resin matrix', {
     disableRandomCreation: true
 });
 
-Game.ItemRepository.define('epoxy', {
-    name: 'epoxy',
+Game.ItemRepository.define('blob of epoxy', {
+    name: 'blob of epoxy',
     group: 'crafting ingredient',
     character: Game.ItemRepository.Symbol['crafting ingredient'],
     description: "",
@@ -1206,8 +1206,8 @@ Game.ItemRepository.define('epoxy', {
     disableRandomCreation: true
 });
 
-Game.ItemRepository.define('nano-cement', {
-    name: 'nano-cement',
+Game.ItemRepository.define('blob of nano-cement', {
+    name: 'blob of nano-cement',
     group: 'crafting ingredient',
     character: Game.ItemRepository.Symbol['crafting ingredient'],
     description: "",

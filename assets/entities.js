@@ -114,7 +114,7 @@ Game.Entity.Stupidity = new Game.Entity({
 ////////////////////////////////////////////////////////////////
 
 // Create our central entity repository
-Game.EntityRepository = new Game.Repository('entities', Game.Entity);
+Game.EntityRepository = new Game.Repository('entities', Game.Entity);   
 
 Game.EntityRepository.define('fruiting fungus', {
     name: 'fruiting fungus',
@@ -129,6 +129,13 @@ Game.EntityRepository.define('fruiting fungus', {
     corpseFoodValue: 20,
     corpseSizeFactor: 130,
     suicideSpawnEntityName: 'quiescent fungus',
+    corpseBreakdownTools: {'G:whacker':1},
+    corpseBreakdownSuccessChance: 1,
+    corpseBreakdownSuccessCountTable: [1,1,1,2,2],
+    corpseBreakdownOutcomeRandomTableSpec: [
+        {'name':'blob of starch paste',  'weight':4,  'flag_deweight': true},
+        {'name':'blob of pitch',         'weight':1,  'flag_decrement': true, 'count': 1, 'on_exhausted': 'remove'}
+    ],    
     mixins: [Game.EntityMixins.FruitingFungusActor, Game.EntityMixins.Destructible, Game.EntityMixins.CorpseDropper, Game.EntityMixins.SuicideSpawner]
 });
 

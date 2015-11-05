@@ -1371,7 +1371,10 @@ Game.Screen.craftStep2Screen.handleCraftFinish = function() {
         for (var i=0;i<numSuccesses;i++) {
             var newItem = this._selectedRecipe.getCraftingSuccessObject();
             p.addItem(newItem);
-            Game.sendMessage(this._player,'You got %s',[newItem.describeN(numSuccesses)]);
+            Game.sendMessage(this._player,'You got %s',[newItem.describeA()]);
+        }
+        if (numSuccesses > 1) {
+            Game.sendMessage(this._player,'You got %s items from your work',[numSuccesses]);
         }
     } else {
         Game.sendMessage(this._player,'Your %s project didn\'t work.',[this._selectedRecipe.getName()]);
