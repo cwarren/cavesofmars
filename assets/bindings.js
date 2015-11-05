@@ -78,6 +78,10 @@ Game.Bindings = {
             INVENTORY_USE:     {id: 12, unique_id: Game.util.generateRandomString(24), word:"use",       descr: "make use of something that's carried"},
             INVENTORY_CRAFT:   {id: 13, unique_id: Game.util.generateRandomString(24), word:"craft",     descr: "make something(s) into/out of some other thing(s), possibly using tools and/or structures"}
         },
+        Knowledge: {
+            KNOWLEDGE_CRAFT:   {id: 1, unique_id: Game.util.generateRandomString(24), word:"craftable",  descr: "items you know how to craft"},
+            KNOWLEDGE_BUILD:   {id: 2, unique_id: Game.util.generateRandomString(24), word:"buildable",  descr: "structures you know how to build"}
+        },
         DataNav: {
             PAGE_UP:       {id: 1, unique_id: Game.util.generateRandomString(24), word:"page up",         descr: "scroll up by one screens worth"},
             PAGE_DOWN:     {id: 2, unique_id: Game.util.generateRandomString(24), word:"page down",       descr: "scroll down by one screens worth"}
@@ -128,6 +132,8 @@ Game.Bindings['BindingSet_Numpad']['isKeydown'][ROT.VK_F] = ['f',Game.Bindings.A
 Game.Bindings['BindingSet_Numpad']['isKeydown'][ROT.VK_P] = ['p',Game.Bindings.Actions.Inventory.INVENTORY_PACK];
 Game.Bindings['BindingSet_Numpad']['isKeydown'][ROT.VK_U] = ['u',Game.Bindings.Actions.Inventory.INVENTORY_USE];
 
+Game.Bindings['BindingSet_Numpad']['isKeydown'][ROT.VK_K] =             ['k',Game.Bindings.Actions.Knowledge.KNOWLEDGE_CRAFT];
+
 Game.Bindings['BindingSet_Numpad']['isKeydown'][ROT.VK_OPEN_BRACKET] =  ['[',Game.Bindings.Actions.DataNav.PAGE_UP];
 Game.Bindings['BindingSet_Numpad']['isKeydown'][ROT.VK_CLOSE_BRACKET] = [']',Game.Bindings.Actions.DataNav.PAGE_DOWN];
 
@@ -145,6 +151,7 @@ Game.Bindings['BindingSet_Numpad']['isKeydown']['isShift'][ROT.VK_P] = ['P',Game
 Game.Bindings['BindingSet_Numpad']['isKeydown']['isShift'][ROT.VK_C] = ['C',Game.Bindings.Actions.Inventory.INVENTORY_CRAFT];
 Game.Bindings['BindingSet_Numpad']['isKeydown']['isShift'][ROT.VK_B] = ['B',Game.Bindings.Actions.World.BUILD];
 Game.Bindings['BindingSet_Numpad']['isKeydown']['isShift'][ROT.VK_A] = ['A',Game.Bindings.Actions.World.ACTIVATE];
+Game.Bindings['BindingSet_Numpad']['isKeydown']['isShift'][ROT.VK_K] = ['K',Game.Bindings.Actions.Knowledge.KNOWLEDGE_BUILD];
 
 Game.Bindings['BindingSet_Numpad']['isKeypress'] = {};
 Game.Bindings['BindingSet_Numpad']['isKeypress']['<'] = ['<',Game.Bindings.Actions.Moves.MOVE_ASCEND];
@@ -175,6 +182,8 @@ Game.Bindings['BindingSet_Laptop']['isKeydown'][ROT.VK_F] = ['f',Game.Bindings.A
 Game.Bindings['BindingSet_Laptop']['isKeydown'][ROT.VK_P] = ['p',Game.Bindings.Actions.Inventory.INVENTORY_PACK];
 Game.Bindings['BindingSet_Laptop']['isKeydown'][ROT.VK_U] = ['u',Game.Bindings.Actions.Inventory.INVENTORY_USE];
 
+Game.Bindings['BindingSet_Laptop']['isKeydown'][ROT.VK_K] =             ['k',Game.Bindings.Actions.Knowledge.KNOWLEDGE_CRAFT];
+
 Game.Bindings['BindingSet_Laptop']['isKeydown'][ROT.VK_OPEN_BRACKET] =  ['[',Game.Bindings.Actions.DataNav.PAGE_UP];
 Game.Bindings['BindingSet_Laptop']['isKeydown'][ROT.VK_CLOSE_BRACKET] = [']',Game.Bindings.Actions.DataNav.PAGE_DOWN];
 
@@ -194,6 +203,7 @@ Game.Bindings['BindingSet_Laptop']['isKeydown']['isShift'][ROT.VK_P] = ['P',Game
 Game.Bindings['BindingSet_Laptop']['isKeydown']['isShift'][ROT.VK_C] = ['C',Game.Bindings.Actions.Inventory.INVENTORY_CRAFT];
 Game.Bindings['BindingSet_Laptop']['isKeydown']['isShift'][ROT.VK_B] = ['B',Game.Bindings.Actions.World.BUILD];
 Game.Bindings['BindingSet_Laptop']['isKeydown']['isShift'][ROT.VK_A] = ['A',Game.Bindings.Actions.World.ACTIVATE];
+Game.Bindings['BindingSet_Laptop']['isKeydown']['isShift'][ROT.VK_K] = ['K',Game.Bindings.Actions.Knowledge.KNOWLEDGE_BUILD];
 
 Game.Bindings['BindingSet_Laptop']['isKeypress'] = {};
 Game.Bindings['BindingSet_Laptop']['isKeypress']['<'] = ['<',Game.Bindings.Actions.Moves.MOVE_ASCEND];

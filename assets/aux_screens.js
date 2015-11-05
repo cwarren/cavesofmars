@@ -259,6 +259,12 @@ Game.AuxScreen.helpScreen = {
                 this._display.drawText(1,y,
                     this._color+this._characterLookups[Game.Bindings.Actions.Inventory.INVENTORY_PACK.unique_id]+'%b{#000},'+this._color+this._characterLookups[Game.Bindings.Actions.Inventory.INVENTORY_UNPACK.unique_id]);
                 this._display.drawText(5,y,Game.Bindings.Actions.Inventory.INVENTORY_PACK.word+','+Game.Bindings.Actions.Inventory.INVENTORY_UNPACK.word);
+                
+                y++;
+                this._display.drawText(1,y,
+                    this._color+this._characterLookups[Game.Bindings.Actions.Knowledge.KNOWLEDGE_CRAFT.unique_id]+'%b{#000},'+this._color+this._characterLookups[Game.Bindings.Actions.Knowledge.KNOWLEDGE_BUILD.unique_id]);
+                this._display.drawText(5,y,Game.Bindings.Actions.Knowledge.KNOWLEDGE_CRAFT.word+','+Game.Bindings.Actions.Knowledge.KNOWLEDGE_BUILD.word);
+                
             } else {
                 y++;
                 this._display.drawText(1,y,"also "+this._color+this._characterLookups[Game.Bindings.Actions.Inventory.INVENTORY_EAT.unique_id]+'%b{#000}, '+
@@ -266,6 +272,9 @@ Game.AuxScreen.helpScreen = {
                                                    this._color+this._characterLookups[Game.Bindings.Actions.Inventory.INVENTORY_CRAFT.unique_id]+'%b{#000}, '+
                                                    this._color+this._characterLookups[Game.Bindings.Actions.Inventory.INVENTORY_PACK.unique_id]+'%b{#000}, '+
                                                    this._color+this._characterLookups[Game.Bindings.Actions.Inventory.INVENTORY_UNPACK.unique_id]);
+                y++;
+                this._display.drawText(1,y,"also "+this._color+this._characterLookups[Game.Bindings.Actions.Knowledge.KNOWLEDGE_CRAFT.unique_id]+'%b{#000}, '+
+                                                   this._color+this._characterLookups[Game.Bindings.Actions.Knowledge.KNOWLEDGE_BUILD.unique_id]+'%b{#000}');
             }
 
             y += 2;

@@ -17,7 +17,7 @@ var Game =  {
         // Any necessary initialization will go here.
         this._randomSeed = 5 + Math.floor(Math.random()*100000);
         //this._randomSeed = 76250;
-        console.log(this._randomSeed);
+        console.log("using random seed "+this._randomSeed);
         
         ROT.RNG.setSeed(this._randomSeed);
 
@@ -30,6 +30,8 @@ var Game =  {
         //this._player.addItem(j);
         this._player.holdInHands(j);        
 
+        // at least in this stage of development the player knows all available recipes - later work may introduce the idea of starting with a small set and having to learn more
+        this._player.learnCraftingRecipes(Game.RecipeRepository.createSet('ALL'));
         
         this._display_main    = new ROT.Display({width: this._screenWidth, height: this._screenHeight, spacing: Game.SPACING});
         

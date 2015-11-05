@@ -39,6 +39,17 @@ powerbars
 analyzer
 
 
+------------------------------------------
+
+FULLY PROCEDURAL CONTENT
+
+dynamically build random tables from components and random number (and constraints)
+randomize seed rates, various drop rates, etc.
+the project ends up being creating a roguelike engine that uses a metaprogramming language than can incorporate various kinds of randomness
+    - meta-object/item/entity definitions
+    - constraint systems for meta-foo
+
+
 ----------------------------
 PROCESS TO ADD NEW SET OF FUNCTIONALITY
 
@@ -58,6 +69,17 @@ TEST: run game to make sure you can get to the new subscreens by using the appro
 ----------------------------
 
 
+GAME DESIGN THOUGHTS
+
+A key aspect of the game is improvement: of self, of equipment, and of environment.
+    - self improvement : PRIMARY- leveling up; choices of which things to improve; consider exercises (deliberate focus), practicing (used actions/skills), and 1-off improvements
+    - equipment improvement : PRIMARY- finding better stuff; add ways to improve existing stuff (crafting / modifying)
+    - environment improvement : protection, recovery, storage, combat help (traps et al)
+    
+
+----------------------------
+
+
 NOTE: a density function might be useful; consider even doing away with direct mass and instead deal with bulk and density...?
 
 additional player skills / attributes available for improvement during leveling events:
@@ -65,123 +87,44 @@ additional player skills / attributes available for improvement during leveling 
     - recovery : improves rate of healing
     - speed : improves (i.e. shortens) default action duration
         - split into movement speed and combat speed
+    - food efficiency
+    
 
 TODO NEXT:
 
 !! DEGUG: some issue with inven weight not being correctly handled when items unpacked from a container....?
 
-!! fixed DEBUG: bandolier missing after aborted throw!
-    - repeatable for any item!
-    
 
-.5. for random tables, think about an associated things system (e.g. if this thing is chosen, then a chance to choose these others as well)
+3. structures
+
+4. crafting : structures
+
+4.5 crafting : more recipes
+
+5. figure out garbage collection on objects / creatures
+    - maybe need some kind of history of where the player has been lately
+        + clear out rocks where the player is not
+        + clear out spore-y masses where the player is not
+        + clear out corpses where the player is not
+    - chance of quiescent funcus spawn decreases with greater number of them
+   ideally would have some kind of profiling tool to figure out where the slow-down is happening
+
+8 when nothing is in hands, the char summary on the left should indicate that
+
+10. for random tables, think about an associated things system (e.g. if this thing is chosen, then a chance to choose these others as well)
     - random tables hsould returns an array of chosen things
         + refactor existing first to return single-elt arrays and use cases to handle the returned arrays
 
 
-1. fill in random tables for entities and items
-1.2 items by level (loot-ish)
+15. add an html input box so tablets can do key-entry
 
-2. add an html input box so tablets can do key-entry
-
-3. make container access an ongoing action (so it can be interrupted part way through (otherwise a previously-out-of-sight entity can kill while the player is e.g. putting something in a sack))
-
-5. add new entity: small martian (colored @? m? a (references @)? p? other char?)
-5.1     design & build framework for a more volitional AI
-5.3.    which can pick up and equip items it finds (5 inven slots? 5 L? 10kg?)
-5.7     need a value metric function for things that can be found/gotten - should have option of spec-ing direct values for items, but the function should also support inspection-based valuation)
-5.8.    give small martians some starting loot
-5.9. martian drops inventory on death
-
-
-6. martian needs to be able to spot and head to interesting items
-    
-8. create a flee behavior and add it to appropriate controllers?
-
-
-10. add stackability to some items?
-    - Stackable mixin? inherent to items? Latter is easier to handle (no checking for mixins)
-        - perhaps store a function for isStackable (function defined in the item template)
-    - OR, contemplate a soft-stack model, where adjacent items of the same type are shown as a single with a count while remaining independent under the hood
-        - ... but probably not this; issues w/ space efficiency and general implementation w.r.t. inventory UI
-
-    NOTE: how to handle stability in containers that have qty limits? need to add a getItemCount method to container mixin - it loops through _items and adds the qty for each
-    NOTE: color-highlight the counts when showing an item list? there's getting to be a LOT of info on that screen....; figure out where to put the counts on that screen, and how to handl display of bulk / wt
-
-
-14. add to container item mixin some utility functions for transferring the things from one container to another
-    - two options for how to handle things that won't fit - a) leave them in the original container, b) drop them on the map
-
-14.5 refactor packing and unpacking to use the above utility functions
-
-18. mobs respond to ranged attacks by moving towards the source IF the source is in visual range and the mob is a melee attacker, away otherwise
-
-
-19. item mixin for materialsSource: max sourced, min sourced, _materialsRemaining (random from min to max), possible materials loot table
-    - figure out how this works with eating!
-
-
-20. !!!!!!!!!!!!! design crafting system!
-    two basic operations - break down (consume?) (create raw materials from something), and construct (build something from raw materials and/or other things)
-    TODO:
-        ! create a crafting tree
-        ! create a crafting recipe set
-    base materials & possible sources:
-        - surface
-            + leather (generally, creature parts)
-            + suit scraps
-            + dried mycelium (particular fungus, particular techniques?)
-        - cord
-            + sinew (generally, creature parts)
-            + suit scraps
-        - sticks, small
-            + dried mycelium (particular fungus, particular techniques?)
-            + bone (generally, creature parts)
-            + JAT scraps
-        - sticks, large
-            + bone (generally, creature parts)
-            + JAT scraps
-        - rocks
-        - adhesive
-            + fungus stuff (particular fungus, particular techniques?)
-            + creature-based
-        - edges
-            + stone shards (from worked stone)
-            + suit scraps
-            + teeth (generally, creature parts)
-        - hard material
-            + suit scraps
-            + scutes (generally, creature parts)
-            + worked stone (from rocks)
-            + dried mycelium (particular fungus, particular techniques?)
-    created:
-        - various weapons & armor
-        - ammo
-        - loose walls (rubble tiles)
-        - tight walls (cracked stone tiles)
-        - containers
-        - tools of various sorts
-        - structures
-            + forge, cooking hearth, & other installation tools / structures
-            + traps
-        - medicine?
-        - chemicals
-    tools:
-        - metal working tools
-            + metal working energy source
-        - hand tools (working with materials other than metals)
-        - earth-work tools (anything with a dig value)
-            + things especially for digging
-        - chemistry tools / cooking tools
-            + chemistry/cooking energy source
-        - material processing/acquiring tools
-        
+20. make container access an ongoing action (so it can be interrupted part way through (otherwise a previously-out-of-sight entity can kill while the player is e.g. putting something in a sack))
 
 25. useable items (potions, pods, etc.)
 
 30. cooking - requires certain equipment and conditions; reduces bulk by factor of X, weight by X/2, increases food density by at least 1/X
     NOTE: this is essentially crafting
-    
+
 33. figure out how to mark tiles as non-spawnable and/or creature averting
 33.5 add mechanism to allow player to do such marking
     via crafting, allow creation of:
@@ -190,191 +133,52 @@ TODO NEXT:
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
    NOTE: this step allows the player to build a home base!!!  At this point it in many ways transforms into a sandbox game! Embrace this!!!
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+NOTE: this is probably handled via Structures
 
 
-35. allow some containers to add contents directly to action item lists
+35. add new entity: small martian (colored @? m? a (references @)? p? other char?)
+35.1     design & build framework for a more volitional AI
+35.3.    which can pick up and equip items it finds (5 inven slots? 5 L? 10kg?)
+35.7     need a value metric function for things that can be found/gotten - should have option of spec-ing direct values for items, but the function should also support inspection-based valuation)
+35.8.    give small martians some starting loot
+35.9. martian drops inventory on death
+
+
+36. martian needs to be able to spot and head to interesting items
+    
+38. create a flee behavior and add it to appropriate controllers?
+
+44. add to container item mixin some utility functions for transferring the things from one container to another
+    - two options for how to handle things that won't fit - a) leave them in the original container, b) drop them on the map
+
+45. refactor packing and unpacking to use the above utility functions
+
+58. mobs respond to ranged attacks by moving towards the source IF the source is in visual range and the mob is a melee attacker, away otherwise
+
+65. allow some containers to add contents directly to action item lists
     NOTE: this will likely require a general re-structuring of the item list screen stuff
 
-42.5 consider a spore-y mass repository w/ different kinds of spore-y masses that grow on different things (even consider making this prodecurally generated - can dynamically set targets, exclusions, rates, etc.)
-42.75 consider docile fungi occasionally spawning nearby spore-y masses that share the same traits
+72.5 consider a spore-y mass repository w/ different kinds of spore-y masses that grow on different things (even consider making this prodecurally generated - can dynamically set targets, exclusions, rates, etc.)
+72.75 consider docile fungi occasionally spawning nearby spore-y masses that share the same traits
 
 
 
-70. design/implement alternate path to victory(ish) - post death, if killed at least one ooze and at least one fungus, or if killed by fungus, option to revive and play as a fungal zombie - food consumption increases dramatically, allied with fungus, no further equipping, but still can level/improve
+90. design/implement alternate path to victory(ish) - post death, if killed at least one ooze and at least one fungus, or if killed by fungus, option to revive and play as a fungal zombie - food consumption increases dramatically, allied with fungus, no further equipping, but still can level/improve
+
+100. add stackability to some items?
+    - Stackable mixin? inherent to items? Latter is easier to handle (no checking for mixins)
+        - perhaps store a function for isStackable (function defined in the item template)
+    - OR, contemplate a soft-stack model, where adjacent items of the same type are shown as a single with a count while remaining independent under the hood
+        - ... but probably not this; issues w/ space efficiency and general implementation w.r.t. inventory UI
+
+    NOTE: how to handle stability in containers that have qty limits? need to add a getItemCount method to container mixin - it loops through _items and adds the qty for each
+    NOTE: color-highlight the counts when showing an item list? there's getting to be a LOT of info on that screen....; figure out where to put the counts on that screen, and how to handl display of bulk / wt
+
+        
 
 
--------------------------------------------------------------------------------------------
--------------------------------------------------------------------------------------------
--------------------------------------------------------------------------------------------
-
-
-ITEM STUFF
-
-weapons
-    melee
-        knife
-        short sword
-        long sword
-        mace
-        flail
-        staff
-        shod staff
-    ranged
-        throwing spikes
-        sling
-        staff sling
-        blowgun
-        bow
-        air gun
-        plasma gun
-        taser
-armor
-    light leather
-    heavy leather
-    plated leather
-    kevlar-carbon suit
-    HEM, damaged
-    HEM, patched
-    HEM
-    HEM-A, damaged
-    HEM-A, patched
-    HEM-A
-"potions"
-    - heal hp
-    - fix bad state (blind, confused, ill, poison, etc.)
-    - feed
-    - boost
-        - combat
-        - awareness
-        - speed (base)
-    - offense (thrown)
-        - stink
-        - smoke cloud
-        - damage/poison
-        - damage/burn (chemical)
-knowledge
-    - maps
-    - notes
-    - plans
-    - crafting recipes
-    - locations of specific fixed special terrain features (e.g. pool, lava, sand fall, etc.)
-    - info about mobs
-        - general ('l'ook) info
-        - improved processing
-        - combat/interaction boni
-        - capable of establishing alliance (w/ individuals)
-resource gatherers
-    - pick (digging out minerals)
-    - seive (sorting minerals from sand & rubble)
-    - harvest tool (fungus et al)
-    - hunting knife (processing corpses, crude)
-    - dissecting kit (processing corpses, fine)
-    - shears (surfaces, cordage)
-    - flasks (liquids)
-    - hammer (mineral processing)
-    - saw (sticks, hard materials)
-crafting gates
-    - glassware (chemistry)
-    - hand tools (construction)
-    - ceramics (metal work, chemistry)
-    - magnets
-    - sterile/clean table
-    - protected space
-        - lab space
-        - work space
-food
-    - base nutrition
-    - beneficial side effect (indicates refinement possibilities)
-    - harmful side effect (indicates refinement possibilities (good and bad - poison->medicine))
-
-
-resources
-    * see section above (todo item) *
-
-
-mineral
-    stones
-        - pumice
-        - sandstone
-        - shale
-        - conglomerate
-        - scoria
-        - silica
-        - andesite
-        - basalt
-        - kimberlite
-        - chert
-        - gneiss
-        - travertine
-    crystals
-        - obsidian
-        - opal
-        - quartz
-        - diamond
-        - dolomite
-        - cinnabar
-        - chrysoberyl
-        - garnet
-        - stibnite
-        - topaz
-        - tourmaline
-        - 
-    metals
-        - iron
-        - copper
-        - silver
-        - gold
-        - bismuth
-        - lead
-        - nickel
-        - tin
+    
 
 
 
-chemical
-- murky water
-    - salt
-    - arsenic
-    - sulfur
-    - iron
-    - copper
-    - calcium
-    - magnesium
-    - cadmium
-    - flouride
-    - mercury
-    - zinc
-- fungus pieces
-    - various organics
-- creature pieces
-    - various organics
-- processed minerals
-    - powdered
-    - dissolved
-    - oxidized
-    - heated
-
-
-
-STRUCTURES
-- forge (w/ heat source)
-- cooking hearth (w/ heat source)
-- lab table
-- glass furnace
-- kiln
-- door
-- trap
-    - dead drop
-    - pit
-    - snare
-    - spring strike
-    - energy/explosion
-- desk
-- wall
-- obelisk / pillar
-- flagstone flooring (prevents creature spawning)
-- still
-- paper shot
-
-
-
+

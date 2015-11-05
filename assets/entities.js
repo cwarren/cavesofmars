@@ -19,7 +19,7 @@ Game.PlayerTemplate = {
     mixins: [Game.EntityMixins.PlayerActor, Game.EntityMixins.MeleeAttacker, Game.EntityMixins.RangedAttacker, Game.EntityMixins.MessageRecipient, 
              Game.EntityMixins.FoodConsumer, Game.EntityMixins.InventoryHolder, Game.EntityMixins.Seer, Game.EntityMixins.Digger,
              Game.EntityMixins.Equipper, Game.EntityMixins.ExperienceGainer, Game.EntityMixins.PlayerStatGainer, Game.EntityMixins.Allier,
-             Game.EntityMixins.RadioUser, Game.EntityMixins.Destructible]
+             Game.EntityMixins.RadioUser, Game.EntityMixins.Destructible, Game.EntityMixins.CraftingRecipeHolder]
 }
 
 
@@ -114,7 +114,7 @@ Game.Entity.Stupidity = new Game.Entity({
 ////////////////////////////////////////////////////////////////
 
 // Create our central entity repository
-Game.EntityRepository = new Game.Repository('entities', Game.Entity);
+Game.EntityRepository = new Game.Repository('entities', Game.Entity);   
 
 Game.EntityRepository.define('fruiting fungus', {
     name: 'fruiting fungus',
@@ -124,11 +124,18 @@ Game.EntityRepository.define('fruiting fungus', {
     foreground: 'brown',
     maxHp: 15,
     corpseName: 'pile of slimey mushroom caps',
-    corpseDescription: 'the analyzer says they\'re edible, but they don\'t look especially appetizing',
+    corpseDescription: 'the analyzer says they\'re edible, but they don\'t look especially appetizing...',
     defaultActionDuration: 4600,
     corpseFoodValue: 20,
     corpseSizeFactor: 130,
     suicideSpawnEntityName: 'quiescent fungus',
+    corpseBreakdownTools: {'G:whacker':1},
+    corpseBreakdownSuccessChance: 1,
+    corpseBreakdownSuccessCountTable: [1,1,1,2,2],
+    corpseBreakdownOutcomeRandomTableSpec: [
+        {'name':'blob of starch paste',  'weight':4,  'flag_deweight': true},
+        {'name':'blob of pitch',         'weight':1,  'flag_decrement': true, 'count': 1, 'on_exhausted': 'remove'}
+    ],    
     mixins: [Game.EntityMixins.FruitingFungusActor, Game.EntityMixins.Destructible, Game.EntityMixins.CorpseDropper, Game.EntityMixins.SuicideSpawner]
 });
 
@@ -228,6 +235,7 @@ Game.EntityRepository.define('bat', {
     foreground: 'blue',
     maxHp: 5,
     corpseFoodValue: 35,
+    // corpse breakdown stuff here...
     moveDuration: 500,
     mixins: [Game.EntityMixins.PeacefulRoamingBehaviorController, Game.EntityMixins.Destructible,Game.EntityMixins.CorpseDropper, Game.EntityMixins.RandomMoveChooser]
 });
@@ -242,6 +250,7 @@ Game.EntityRepository.define('golden lizard', {
     defenseValue: 1,
     bumpsThings: true,
     corpseFoodValue: 75,
+    // corpse breakdown stuff here...
     baseBehavior: Game.EntityBehaviors.AggressiveWanderBehavior,
     behaviors: [Game.EntityBehaviors.AggressiveWanderBehavior],
     mixins: [Game.EntityMixins.AggressiveRoamingBehaviorController, Game.EntityMixins.MeleeAttacker, Game.EntityMixins.Destructible, Game.EntityMixins.CorpseDropper, Game.EntityMixins.Retaliator,
@@ -259,6 +268,7 @@ Game.EntityRepository.define('rock lizard', {
     bumpsThings: true,
     digRate: 20,
     corpseFoodValue: 45,
+    // corpse breakdown stuff here...
     defaultActionDuration: 1350,
     mixins: [Game.EntityMixins.AggressiveRoamingBehaviorController, Game.EntityMixins.MeleeAttacker, Game.EntityMixins.Destructible, Game.EntityMixins.Digger, Game.EntityMixins.CorpseDropper,
              Game.EntityMixins.ExperienceGainer, Game.EntityMixins.RandomStatGainer, Game.EntityMixins.RandomMoveChooser]
@@ -271,10 +281,14 @@ Game.EntityRepository.define('whip-spine', {
     foreground: 'green',
     maxHp: 9,
     attackValue: 3,
+    sightRadius: 4,
     bumpsThings: true,
     corpseFoodValue: 30,
+    // corpse breakdown stuff here...
     moveDuration: 350,
     meleeDuration: 3800,
+    baseBehavior: Game.EntityBehaviors.AggressiveWanderBehavior,
+    behaviors: [Game.EntityBehaviors.AggressiveWanderBehavior],
     mixins: [Game.EntityMixins.AggressiveRoamingBehaviorController, Game.EntityMixins.MeleeAttacker, Game.EntityMixins.Destructible, Game.EntityMixins.Seer, Game.EntityMixins.CorpseDropper,
              Game.EntityMixins.Retaliator, Game.EntityMixins.ExperienceGainer, Game.EntityMixins.RandomStatGainer, Game.EntityMixins.RandomMoveChooser]
 });
@@ -326,6 +340,7 @@ Game.EntityRepository.define('busy-bug', {
     foreground: '#937',
     maxHp: 5,
     corpseFoodValue: 15,
+    // corpse breakdown stuff here...
     moveDuration: 900,
     mixins: [Game.EntityMixins.PeacefulRoamingBehaviorController, Game.EntityMixins.Destructible,Game.EntityMixins.CorpseDropper, Game.EntityMixins.ExplorationMoveChooser]
 }, {
@@ -344,6 +359,7 @@ Game.EntityRepository.define('angry-bug', {
     defenseValue: 1,
     sightRadius: 1,
     corpseFoodValue: 15,
+    // corpse breakdown stuff here...
     bumpsThings: true,
     allies: ['busy-bug','angry-bug'],
     baseBehavior: Game.EntityBehaviors.DangerousWanderBehavior,
@@ -353,6 +369,7 @@ Game.EntityRepository.define('angry-bug', {
 }, {
     disableRandomCreation: false
 });
+
 /*
 Game.EntityRepository.define('martian', {
     name: 'martian',

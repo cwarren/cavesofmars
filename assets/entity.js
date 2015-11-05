@@ -24,6 +24,7 @@ Game.Entity = function(properties) {
     this._ogaDuration = this._defaultActionDuration / 10;
     this._ogaInterrupt = false;
     this._ogaCounter = 0;
+    this._ogaCumuDuration = 0;
 
     // Call the glyph's construtor with our set of properties
     Game.DynamicGlyph.call(this, properties);
@@ -44,6 +45,14 @@ Game.Entity.prototype.setOgaParams = function(v) {
 Game.Entity.prototype.getOgaParams = function() {
     return this._ogaParams;
 }
+
+Game.Entity.prototype.setOgaCumuDuration = function(v) {
+    this._ogaCumuDuration = v;
+}
+Game.Entity.prototype.getOgaCumuDuration = function() {
+    return this._ogaCumuDuration;
+}
+
 
 Game.Entity.prototype.setOgaDuration = function(v) {
     this._ogaDuration = v;
@@ -72,6 +81,7 @@ Game.Entity.prototype.getOgaCounter = function() {
 Game.Entity.prototype.setupOngoingActivity = function(activity,params,activityDuration) {
     this.setOgaInterrupt(false);
     this.setOgaCounter(0);
+    this.setOgaCumuDuration(0);
     this.setOgaActivity(activity);
     this.setOgaParams(params);
     this.setOgaDuration(activityDuration);
@@ -88,6 +98,7 @@ Game.Entity.prototype.handleOngoingAction = function() {
         ret = true;
         Game.refresh();
         this.getMap().getScheduler().setDuration(this._ogaDuration);
+        this._ogaCumuDuration += this._ogaDuration;
         this.raiseEvent('handleClearMessages');
         if (this.hasMixin('PlayerActor')) {
             setTimeout(function() {

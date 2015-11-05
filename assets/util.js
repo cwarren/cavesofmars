@@ -1,3 +1,10 @@
+if (typeof String.prototype.startsWith != 'function') {
+  // see below for better implementation!
+  String.prototype.startsWith = function (str){
+    return this.indexOf(str) === 0;
+  };
+}
+
 Game.util = {
 newArray2D: function (xdim,ydim,initVal) {
     var ar = [];
@@ -72,6 +79,33 @@ scanEventResultsFor: function(eventResults,needle) {
         }
     }
     return res;
+},
+
+scalarArrayToHashOfCounts: function(scalarArray) {
+    var h = {};
+    for (var i = 0; i<scalarArray.length; i++) {
+        if (! h.hasOwnProperty(scalarArray[i])) {
+            h[scalarArray[i]] = 0;
+        }
+        h[scalarArray[i]]++;
+    }
+},
+
+A1isSupersetOfA2: function (aSuper,aSub) {    
+    if (aSuper.length < aSub.length) { return false; }
+    if ((aSuper == []) && (aSub == [])) { return true; }
+
+    var aSuperHash = Game.util.scalarArrayToHashOfCounts(aSuper);
+    var aSubHash = Game.util.scalarArrayToHashOfCounts(aSub);
+    
+    for (var k in aSubHash) {
+        if (aSubHash.hasOwnProperty(k)) {
+            if (! aSuperHash.hasOwnProperty(k)) { return false; }
+            if (aSuperHash[k] < aSubHash[k]) { return false; }
+        }
+    }
+    
+    return true;
 }
 
 };

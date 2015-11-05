@@ -232,7 +232,7 @@ Game.EntityMixins.Digger = {
             var digAdds = [];
 
             var w = this.getHolding();
-            if (w && w.isTool()) {
+            if (w && w.isDigTool()) {
                 digMults = digMults.concat(Game.util.scanEventResultsFor(w.raiseEvent('onDigging'),'digMultiplier'));
                 digAdds = digAdds.concat(Game.util.scanEventResultsFor(w.raiseEvent('onDigging'),'digAdder'));
             }
@@ -278,7 +278,7 @@ Game.EntityMixins.Digger = {
                 p.digger.setOgaInterrupt(preTile.getName() != postTile.getName());
                 p.digger.setLastActionDuration(p.digDur);
                 p.digger.raiseEvent('onActed');
-                p.digger.stepOgaCounter()
+                p.digger.stepOgaCounter();
                 Game.sendMessage(p.digger,'You are digging ('+p.digger.getOgaCounter()+') ...');
             },
             {digger: this, digRate: adjRate, digX: x, digY: y, digZ: z, digDur: incrementalActivityDuration},
@@ -913,7 +913,9 @@ Game.EntityMixins.InventoryHolder = {
         return eqs.concat(this._itemHolder.extractAllItems());
     },
     forceAddItem: function(item) {
-        return this._itemHolder.forceAddItems([item]);
+        var ret = this._itemHolder.forceAddItems([item]);
+        this._CleanInventory();
+        return ret;
     },
     addItem: function(item) {
         if (! this.canAddItem(item)) {
@@ -1335,6 +1337,20 @@ Game.EntityMixins.CorpseDropper = {
         this._corpseFoodValue = template['corpseFoodValue'] || 0;
         this._corpseFoodDensityFactor = template['corpseFoodDensityFactor'] || 1;
         this._corpseSizeFactor = template['corpseSizeFactor'] || Game.util.getRandomInteger(450,550);
+        
+        // corspe breakdown stuff (see damaged jat tool for example breakdown spec info
+        this._corpseBreakdownTools = template['corpseBreakdownTools'] || [];
+        this._corpseBreakdownStructures = template['corpseBreakdownStructures'] || [];
+        
+        this._corpseBreakdownDuration = template['corpseBreakdownDuration'] || 10000;
+        
+        this._corpseBreakdownSuccessChance = template['corpseBreakdownSuccessChance'] || 1;  // 0-1
+        this._corpseBreakdownSuccessCountTable = template['corpseBreakdownSuccessCountTable'] || [1]; // random pick from the array gives count for number of outcomes
+    
+        // NOTE: has either and outcomeObject OR ELSE and outcomeRandomTable, not both
+        this._corpseBreakdownOutcomeObject = template['corpseBreakdownOutcomeObject'] || ''; // a single item name that is created on a success
+        this._corpseBreakdownOutcomeRandomTableSpec = template['corpseBreakdownOutcomeRandomTableSpec'] || []; // a randomTable with the item names of possible outcomes of a success
+
     },
     getCorpseFoodValue: function() {
         return this._corpseFoodValue;
@@ -1351,22 +1367,48 @@ Game.EntityMixins.CorpseDropper = {
             if (Math.round(ROT.RNG.getUniform() * 100) <= this._corpseDropRate) {
                 // Create a new corpse item and drop it.
                 var newCorpse;
+                var corpseSpec = {'mixins': []}
+                var corpseItemName = 'corpse';
+                
+                // specific corpse or general one
                 if (Game.ItemRepository.has(this._corpseName)) {
-                    newCorpse = Game.ItemRepository.create(this._corpseName);
+                    corpseItemName = this._corpseName;
+                    corpseSpec['name'] = this._corpseName+' of '+this.describeA();
                 } else {
-                    newCorpse = Game.ItemRepository.create('corpse', {
-                        name: this._corpseName,
-                        foreground: this._foreground,
-                        invWeight:  Math.floor(this._corpseSizeFactor*(this.getMaxHp() + Game.util.getRandomInteger(0,5))),
-                        invBulk: Math.floor(this._corpseSizeFactor*((this.getMaxHp()*.8) + Game.util.getRandomInteger(0,5))),
-                        foodValue: this._corpseFoodValue
-                    });
+                    corpseSpec['name'] = this._corpseName;
+                    corpseSpec['foreground'] = this._foreground;
+                    corpseSpec['invWeight'] =  Math.floor(this._corpseSizeFactor*(this.getMaxHp() + Game.util.getRandomInteger(0,5)));
+                    corpseSpec['invBulk'] = Math.floor(this._corpseSizeFactor*((this.getMaxHp()*.8) + Game.util.getRandomInteger(0,5)));
 
-                    if (this._corpseDescription) {
-                        newCorpse.setDescription(this._corpseDescription);
-                    }
-                    //console.dir(newCorpse);
                 }
+
+                // food stuff
+                if (this._corpseFoodValue > 0) {
+                    corpseSpec['foodValue'] = this._corpseFoodValue;
+                    corpseSpec['mixins'].push(Game.ItemMixins.Edible);
+                }
+
+                // crafting breakdown stuff
+//                console.log('TODO: check for corpse breakdown info and add Game.ItemMixins.CraftingBreakdown if appropriate');
+                if (this._corpseBreakdownOutcomeObject || this._corpseBreakdownOutcomeRandomTableSpec.length>0) {
+                    corpseSpec['breakdownTools'] = this._corpseBreakdownTools;
+                    corpseSpec['breakdownStructures'] = this._corpseBreakdownStructures;
+                    corpseSpec['breakdownDuration'] = this._corpseBreakdownDuration;
+                    corpseSpec['breakdownSuccessChance'] = this._corpseBreakdownSuccessChance;
+                    corpseSpec['breakdownSuccessCountTable'] = this._corpseBreakdownSuccessCountTable;
+                    corpseSpec['breakdownOutcomeObject'] = this._corpseBreakdownOutcomeObject;
+                    corpseSpec['breakdownOutcomeRandomTableSpec'] = this._corpseBreakdownOutcomeRandomTableSpec;
+                    corpseSpec['mixins'].push(Game.ItemMixins.CraftingBreakdown);                
+                }
+
+                newCorpse = Game.ItemRepository.create(corpseItemName, corpseSpec);
+
+                if (this._corpseDescription) {
+                    newCorpse.setDescription(this._corpseDescription);
+                }
+                //console.log("newCorpse is");
+                //console.dir(newCorpse);
+
                 if (this.getGroup()) {
                     newCorpse.setGroup(this.getGroup()+' corpse');
                 }
@@ -1695,6 +1737,60 @@ Game.EntityMixins.PlayerStatGainer = {
             // Setup the gain stat screen and show it.
             Game.Screen.gainStatScreen.setup(this);
             Game.Screen.playScreen.setSubScreen(Game.Screen.gainStatScreen);
+        }
+    }
+};
+
+
+Game.EntityMixins.CraftingRecipeHolder = {
+    name: 'CraftingRecipeHolder',
+    init: function(template) {
+        // Set up an empty inventory.
+        this._craftingRecipeHolder = new Game.Item({
+            name: 'craftingRecipeHolder',
+            group: 'container',
+            character: '?',
+            foreground: '#fff',
+            description: "internal item container used to implement CraftingRecipeHolder entity mixin",
+            maxCarryWeight: -1,
+            maxCarryBulk: -1,
+            accessDuration: 1, // how long it takes to get something out of or put something in this container
+            mixins: [Game.ItemMixins.Container]
+        });        
+        this._craftingRecipeHolder.setInvWeight(0);
+        this._craftingRecipeHolder.setInvBulk(0);
+    },
+
+    getCraftingRecipes: function() {
+        return this._craftingRecipeHolder.getItems();
+    },
+    getCraftingRecipe: function(i) {
+        return (this._craftingRecipeHolder.getItemsAt([i]))[0];
+    },
+    clearCraftingRecipes: function() {
+        return this._craftingRecipeHolder.extractAllItems();
+    },
+    learnCraftingRecipe: function(recipe) {
+        return this._craftingRecipeHolder.forceAddItems([recipe]);
+    },
+    learnCraftingRecipes: function(recipeAry) {
+        return this._craftingRecipeHolder.forceAddItems(recipeAry);
+    },
+    forgetCraftingRecipe: function(i) {
+        return this._craftingRecipeHolder.extractItemsAt([i]);
+    },
+    
+    
+    extractThisCraftingRecipe: function(recipe) {
+        return (this._craftingRecipeHolder.extractItems([recipe]))[0];
+    },
+    getIndexOfCraftingRecipe: function(recipe) {
+        return (this._craftingRecipeHolder.getIndicesOf([recipe]))[0];
+    },
+
+    listeners: {
+        destroyKnownCraftingRecipe: function(recipe) {
+            return (this._craftingRecipeHolder.extractItems([recipe]))[0];
         }
     }
 };

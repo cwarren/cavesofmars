@@ -71,6 +71,7 @@ Game.ItemMixins.DigTool = {
     init: function(template) {
         this._digMultiplier = template['digMultiplier'] || 1;
         this._digAdder = template['digAdder'] || 1;
+        this._isDigTool = true;
     },
     getDigMultiplier: function() {
         return this._digMultiplier;
@@ -502,7 +503,6 @@ Game.ItemMixins.Container = {
         while (itmAry.length > 0) {
             this._items.push(itmAry.shift());
         }
-        this._CleanInventory();
         return true;
     },
     addItems: function(itmAry) {
@@ -637,3 +637,515 @@ Game.ItemMixins.Container = {
     }
 };
 
+
+
+Game.ItemMixins.CraftingIngredient = {
+    name: 'CraftingIngredient',
+    init: function(template) {
+        this._craftingGroup = template['craftingGroup'] || 'miscellaneous';
+        this._craftingQuality = template['craftingQuality'] || 1;
+    },
+    getCraftingGroup: function() {
+        return this._craftingGroup;
+    },
+    getCraftingQuality: function() {
+        return this._craftingQuality;
+    },
+    listeners: {
+        'details': function() {
+            var det = [{key: 'crafting type', value: this._craftingGroup},
+                       {key: 'quality', value: this._craftingQuality}];
+            return det;
+        },
+        'calcDetails': function() {
+            var det = [{key: 'craftingGroup', value: this._craftingGroup},
+                       {key: 'craftingQuality', value: this._craftingQuality}];
+            return det;
+        }
+    }
+};
+
+Game.ItemMixins.CraftingBreakdown = {
+    name: 'CraftingBreakdown',
+    init: function(template) {
+        this._breakdownTools = template['breakdownTools'] || [];
+        this._breakdownStructures = template['breakdownStructures'] || [];
+        
+        this._breakdownDuration = template['breakdownDuration'] || 10000;
+        
+        this._breakdownSuccessChance = template['breakdownSuccessChance'] || 1;  // 0-1
+        this._breakdownSuccessCountTable = template['breakdownSuccessCountTable'] || [1]; // random pick from the array gives count for number of outcomes
+    
+        // NOTE: has either and outcomeObject OR ELSE and outcomeRandomTable, not both
+        this._breakdownOutcomeObject = template['breakdownOutcomeObject'] || ''; // a single item name that is created on a success
+        this._breakdownOutcomeRandomTableSpec = template['breakdownOutcomeRandomTableSpec'] || []; // a randomTable with the item names of possible outcomes of a success
+
+        this._breakdownOutcomeRandomTable = '';
+        if (this._breakdownOutcomeRandomTableSpec.length >0) {
+            this._breakdownOutcomeRandomTable = new Game.RandomTable('BREAKDOWN '+this._name+' '+Game.util.generateRandomString(18),Game.ItemRepository,this._breakdownOutcomeRandomTableSpec);
+        }
+    },
+    getBreakdownTools: function() {
+        return this._breakdownTools;
+    },
+    getBreakdownStructures: function() {
+        return this._breakdownStructures;
+    },    
+    getBreakdownDuration: function() {
+        return this._breakdownDuration;
+    },
+    getBreakdownSuccessChance: function() {
+        return this._breakdownSuccessChance;
+    },
+    getBreakdownSuccessCountTable: function() {
+        return this._breakdownSuccessCountTable;
+    },
+    getBreakdownOutcomeObject: function() {
+        return this._breakdownOutcomeObject;
+    },
+    getBreakdownOutcomeRandomTable: function() {
+            return this._breakdownOutcomeRandomTable;
+    },
+    listeners: {
+    }
+};
+
+Game.ItemMixins.CraftingTool = {
+    name: 'CraftingTool',
+    init: function(template) {
+        this._craftingToolGroup = template['craftingToolGroup'] || 'whacker';
+        this._craftingToolQuality = template['craftingToolQuality'] || 1;
+        this._isCraftTool = true;
+    },
+    getCraftingToolGroup: function() {
+        return this._craftingToolGroup;
+    },
+    getCraftingToolQuality: function() {
+        return this._craftingToolQuality;
+    },
+    listeners: {
+        'details': function() {
+            var det = [{key: 'craft tool type', value: this._craftingToolGroup},
+                       {key: 'craft tool quality', value: this._craftingToolQuality}];
+            return det;
+        },
+        'calcDetails': function() {
+            var det = [{key: 'craftingToolGroup', value: this._craftingToolGroup},
+                       {key: 'craftingToolQuality', value: this._craftingToolQuality}];
+            return det;
+        }
+    }
+};
+
+/*
+Game.ItemMixins.Craftable = {
+    name: 'ComposeCraftable',
+    init: function(template) {
+        this._canCraftCompose = template['canCraftCompose'] || false;
+        this._canCraftDecompose = template['canCraftDecompose'] || false;
+    
+//        this._structureRequirementNamesCompose = template['structureRequirementNamesCompose'] || [];
+//        this._toolRequirementNamesCompose = template['toolRequirementNamesCompose'] || [];
+
+//        this._structureRequirementNamesDecompose = template['structureRequirementNamesDecompose'] || this._structureRequirementNamesCompose;
+//        this._toolRequirementNamesDecompose = template['toolRequirementNamesDecompose'] || this._toolRequirementNamesCompose;
+        
+        this._craftingComponentNames = template['craftingComponentNames'] || [];
+    },
+    canCraftCompose: function(structuresArray,itemsArrayTools,itemsArrayResources) {
+            var itemGroups = itemsArrayResources.map(function(resc){return resc.getCraftingGroup()});
+            var itemNames = itemsArrayResources.map(function(resc){return resc.getNameSimple()});
+            
+            Game.util.A1isSupersetOfA2(Game.DynamicGlyph.getNamesFromArray(itemsArrayResources),this._craftingComponentNames);
+    },
+    canCraftDecompose: function(structuresArray,itemsArrayTools) {
+        return
+            Game.util.A1isSupersetOfA2(Game.DynamicGlyph.getNamesFromArray(structuresArray),this._structureRequirementNamesDecompose) &&
+            Game.util.A1isSupersetOfA2(Game.DynamicGlyph.getNamesFromArray(itemsArrayTools),this._toolRequirementNamesDecompose);
+    },
+    listeners: {
+        'details': function() {
+            var det = [];
+//            var det = [{key: 'food', value: this.getFoodValue()}];
+            return det;
+        },
+        'calcDetails': function() {
+            var det = [];
+//            var det = [{key: 'foodValue', value: this._foodValue}];
+//            det.push({key: 'foodDensity', value: this._foodDensity});
+            return det;
+        }
+    }
+};
+*/
+
+// takes : specHash - a hash of names as keys with values of counts, names prefixed with G: indicate a crafting group rather than a specific item, a ~ suffix indicates a minumum quality requirement
+// returns : a hash with two entries 'indivs' and 'groups'. indiv items in one array (item repeated as count indicated), groups in a hash of arrays, keyed by quality
+function processCraftingSpecToIndivsAndGroups(specHash) {
+    var indivs = [];
+    var groups = {};
+
+
+    var specKeys = Object.keys(specHash);
+    for (var i=0;i<specKeys.length;i++) {
+        if (specKeys[i].startsWith('G:')) {
+            var groupInfo = specKeys[i].slice(2) + '~0'; // trim off the G:, append a base quality level (which is subsequently ignored if one was already specified)
+            var groupSplit = groupInfo.split('~');
+            if (groups[groupSplit[1]] == undefined) {
+                groups[groupSplit[1]] = [];
+            }
+            for (var j=0;j<specHash[specKeys[i]];j++) {
+                groups[groupSplit[1]].push(groupSplit[0]);
+            }                
+        } else {
+            for (var j=0;j<specHash[specKeys[i]];j++) {
+                indivs.push(specKeys[i]);
+            }
+        }
+    }
+
+    return {'indivs': indivs, 'groups': groups};
+}
+
+
+function processCraftingIndivsAndGroupsToDescription(indivs,groups) {
+    var retStr = indivs.join(",");
+    for (var q=20;q>=0;q--) {
+        if (groups[q] != undefined) {
+            if (retStr.length > 0) {
+                retStr += '; ';
+            }
+            if (q<=1) {
+                retStr += "any ";
+            } else {
+                retStr += "quality "+q+"+ ";
+            }
+            retStr += groups[q].join(",");
+        }
+    }
+    return retStr;
+}
+
+Game.ItemMixins.CraftingRecipe = {
+    name: 'CraftingRecipe',
+    init: function(template) {
+    
+        template = template || {};
+        this._recipeType = template['recipeType'] || 'compose'; // compose, decompose, build
+        
+        // ingredients are items in inventory that are used up when the recipe is activated
+        this._craftingIngredients = template['craftingIngredients'] || {};  // a hash of names as keys with values of counts, names prefixed with G: indicate a crafting group rather than a specific item, a ~ suffix indicates a minumum quality requirement
+        this._craftingStructures = template['craftingStructures'] || {}; // a hash of names as keys with values of counts, names prefixed with G: indicate a crafting group rather than a specific item, a ~ suffix indicates a minumum quality requirement
+        this._craftingTools = template['craftingTools'] || {}; // a hash of names as keys with values of counts, names prefixed with G: indicate a crafting group rather than a specific item, a ~ suffix indicates a minumum quality requirement
+
+        this._craftingDuration = template['craftingDuration'] || 10000;
+        
+        this._craftingSuccessChance = template['craftingSuccessChance'] || 1;  // 0-1
+        this._craftingSuccessCountTable = template['craftingSuccessCountTable'] || [1]; // random pick from the array gives count for number of outcomes
+    
+        // NOTE: a recipe has either and outcomeObject OR ELSE and outcomeRandomTable, not both
+        this._craftingOutcomeObject = template['craftingOutcomeObject'] || ''; // a single item name that is created on a success
+        this._craftingOutcomeRandomTable = template['craftingOutcomeRandomTable'] || ''; // a randomTable with the item names of possible outcomes of a success
+
+        this._setupCheckStructures();
+       
+        //console.dir(this);
+
+    },
+    _setupCheckStructures: function() {
+        // process the crafting ingredients to make subsequent checks much easier- indiv items in one array (item repeated as count indicated), groups in a hash of arrays, keyed by quality
+        var ingProcessed = processCraftingSpecToIndivsAndGroups(this._craftingIngredients);
+        this._craftIngrItemsToCheck = ingProcessed['indivs'];
+        this._craftIngrGroupsToCheck = ingProcessed['groups'];
+
+        // structures are world elements that must be in the current or adjacent space to activate this recipe
+        var struProcessed = processCraftingSpecToIndivsAndGroups(this._craftingStructures);
+        this._craftStruItemsToCheck = struProcessed['indivs'];
+        this._craftStruGroupsToCheck = struProcessed['groups'];
+
+        // tools are items in inventory that are NOT used up when the recipe is activated
+        var toolProcessed = processCraftingSpecToIndivsAndGroups(this._craftingTools);
+        this._craftToolItemsToCheck = toolProcessed['indivs'];
+        this._craftToolGroupsToCheck = toolProcessed['groups'];
+    },
+    _resetForBreakdownItem: function(itm) {
+        this._craftingStructures = itm.getBreakdownStructures();
+        this._craftingTools = itm.getBreakdownTools();
+        this._craftingDuration = itm.getBreakdownDuration();        
+        this._craftingSuccessChance = itm.getBreakdownSuccessChance();
+        this._craftingSuccessCountTable = itm.getBreakdownSuccessCountTable();    
+        this._craftingOutcomeObject = itm.getBreakdownOutcomeObject();
+        this._craftingOutcomeRandomTable = itm.getBreakdownOutcomeRandomTable();
+        
+        this._setupCheckStructures();
+    },
+    getRecipeType: function() {
+        return this._recipeType;
+    },
+    getCraftingDuration: function() {
+        return this._craftingDuration;
+    },
+    getCraftingSuccessChance: function() {
+        return this._craftingSuccessChance;
+    },
+    getCraftingSuccessCountTable: function() {
+        return this._craftingSuccessCountTable;
+    },
+    getCraftingOutcomeObject: function() {
+        return this._craftingOutcomeObject;
+    },
+    getCraftingOutcomeRandomTable: function() {
+        return this._craftingOutcomeRandomTable;
+    },
+    getCraftingSuccessObject: function() {
+        //console.log('getting crafting success object');
+        //console.dir(this);
+        var resObj = '';
+        //console.log('this._craftingOutcomeObject is '+this._craftingOutcomeObject);
+        if (this._craftingOutcomeObject != '') {
+            resObj = Game.ItemRepository.create(this._craftingOutcomeObject);
+        } else if (this._craftingOutcomeRandomTable!= '') {
+            resObj = this._craftingOutcomeRandomTable.getOne();
+        }
+        //console.dir(resObj);
+        return resObj;
+    },
+    canBeUsedWith: function(ingredients,tools,structures) {
+        //console.log('TODO: implement real CraftingRecipe.canBeUsedWith');
+
+        var ingAr = Object.keys(ingredients).map(function (key) {
+            return ingredients[key];
+        });
+        var toolAr = Object.keys(tools).map(function (key) {
+            return tools[key];
+        });
+        var struAr = Object.keys(structures).map(function (key) {
+            return structures[key];
+        });
+
+        //console.log('ingAr:');
+        //console.log('checking recipe '+this._name);
+        //console.dir(ingAr);
+        //console.dir(toolAr);
+        //console.dir(struAr);
+
+        if (this._name == 'BREAKDOWN') {
+            if (ingAr.length == 1) {
+                if (! ingAr[0].hasMixin('CraftingBreakdown')) {
+                    return false;
+                }
+                this._resetForBreakdownItem(ingAr[0]);
+            } else {
+                return false;
+            }
+        } else {
+
+
+            //---------- start ingredient checking ----------------
+
+            // ingredient check order: first specific items, second groups in descending quality order
+            // loop though ingredients to look for and the ingAr, pulling items out of ingAr as they're found
+            // if a required ingredient is ever not found, return false
+            // if at end of all checking there are any remaining ingredients, return false (player can't choose any extras)
+
+            var remainingIngs = [];                
+            for (var i=0;i<this._craftIngrItemsToCheck.length;i++) {
+                var found = false;
+                for (var j=0;j<ingAr.length;j++) {
+                    if (!ingAr[j].hasMixin('CraftingIngredient')) {
+                        return false;
+                    }
+                    if (!found && ingAr[j].getNameSimple() == this._craftIngrItemsToCheck[i]) {
+                        found = true;
+                    } else {
+                        remainingIngs.push(ingAr[j]);
+                    }
+                }
+                if (! found) { 
+                    //console.log('missing ingredient '+this._craftIngrItemsToCheck[i]);
+                    return false;
+                }
+                ingAr = remainingIngs;
+                remainingIngs = [];
+                //console.log('ingAr:');
+                //console.dir(ingAr);
+            }
+
+            var qualityKeys = Object.keys(this._craftIngrGroupsToCheck);
+            qualityKeys.sort(function(a, b){return b-a}); // descending order of quality
+            for (var qi=0;qi<qualityKeys.length;qi++) {
+                var qual = qualityKeys[qi];
+                var checkAr = this._craftIngrGroupsToCheck[qual];            
+                for (var i=0;i<checkAr.length;i++) {
+                    var found = false;
+                    for (var j=0;j<ingAr.length;j++) {
+                        if (!ingAr[j].hasMixin('CraftingIngredient')) {
+                            return false;
+                        }
+                        if (!found && ingAr[j].getCraftingQuality() >= qual && ingAr[j].getCraftingGroup() == checkAr[i]) {
+                            found = true;
+                        } else {
+                            remainingIngs.push(ingAr[j]);
+                        }
+                    }
+                    if (! found) { 
+                        //console.log('missing ingredient '+checkAr[i]+'~'+qual);
+                        return false;
+                    }
+                    ingAr = remainingIngs;
+                    remainingIngs = [];
+                    //console.log('ingAr:');
+                    //console.dir(ingAr);
+                }
+            }
+
+            if (ingAr.length>0) {
+                //console.log('leftover ingredients:');
+                //console.dir(ingAr);
+                return false;
+            }
+        }
+
+        //---------- end ingredient checking, start tool checking ----------------
+
+        // same process as ingredients, but overage is OK
+
+        var remainingTools = [];                
+        for (var i=0;i<this._craftToolItemsToCheck.length;i++) {
+            var found = false;
+            for (var j=0;j<toolAr.length;j++) {
+                if (!found && toolAr[j].getNameSimple() == this._craftToolItemsToCheck[i]) {
+                    found = true;
+                } else {
+                    remainingTools.push(toolAr[j]);
+                }
+            }
+            if (! found) { 
+                //console.log('missing tool '+this._craftToolItemsToCheck[i]);
+                return false;
+            }
+            toolAr = remainingTools;
+            remainingTools = [];
+            //console.log('toolAr:');
+            //console.dir(toolAr);
+        }
+        
+        var qualityKeys = Object.keys(this._craftToolGroupsToCheck);
+        qualityKeys.sort(function(a, b){return b-a}); // descending order of quality
+        for (var qi=0;qi<qualityKeys.length;qi++) {
+            var qual = qualityKeys[qi];
+            var checkAr = this._craftToolGroupsToCheck[qual];            
+            for (var i=0;i<checkAr.length;i++) {
+                var found = false;
+                for (var j=0;j<toolAr.length;j++) {
+                    if (!found && toolAr[j].getCraftingToolQuality() >= qual && toolAr[j].getCraftingToolGroup() == checkAr[i]) {
+                        found = true;
+                    } else {
+                        remainingTools.push(toolAr[j]);
+                    }
+                }
+                if (! found) { 
+                    //console.log('missing tool '+checkAr[i]+'~'+qual);
+                    return false;
+                }
+                toolAr = remainingTools;
+                remainingTools = [];
+                //console.log('toolAr:');
+                //console.dir(toolAr);
+            }
+        }
+        
+        //---------- end tool checking, start structure checking ----------------
+
+        var remainingStrus = [];                
+        for (var i=0;i<this._craftStruItemsToCheck.length;i++) {
+            var found = false;
+            for (var j=0;j<struAr.length;j++) {
+                if (!found && struAr[j].getNameSimple() == this._craftStruItemsToCheck[i]) {
+                    found = true;
+                } else {
+                    remainingStrus.push(struAr[j]);
+                }
+            }
+            if (! found) { 
+                //console.log('missing Stru '+this._craftStruItemsToCheck[i]);
+                return false;
+            }
+            struAr = remainingStrus;
+            remainingStrus = [];
+            //console.log('struAr:');
+            //console.dir(struAr);
+        }
+        
+        var qualityKeys = Object.keys(this._craftStruGroupsToCheck);
+        qualityKeys.sort(function(a, b){return b-a}); // descending order of quality
+        for (var qi=0;qi<qualityKeys.length;qi++) {
+            var qual = qualityKeys[qi];
+            var checkAr = this._craftStruGroupsToCheck[qual];            
+            for (var i=0;i<checkAr.length;i++) {
+                var found = false;
+                for (var j=0;j<struAr.length;j++) {
+                    if (!found && struAr[j].getCraftingStruQuality() >= qual && struAr[j].getCraftingStruGroup() == checkAr[i]) {
+                        found = true;
+                    } else {
+                        remainingStrus.push(struAr[j]);
+                    }
+                }
+                if (! found) { 
+                    //console.log('missing Stru '+checkAr[i]+'~'+qual);
+                    return false;
+                }
+                struAr = remainingStrus;
+                remainingStrus = [];
+                //console.log('struAr:');
+                //console.dir(struAr);
+            }
+        }
+        
+        //---------- end structure checking ----------------
+
+        //console.log(' - valid reicpe '+this._name);
+        //console.dir(this);
+
+        return true;
+    },
+    details: function() {
+        var detStr = "";
+        if (this._name == 'BREAKDOWN') {
+            detStr =  "INGREDIENTS: selected item\nTOOLS: varies\nSTRUCTURES: varies\nTIME: varies\nSUCCESS RATE: varies";
+        } else {
+            var ingItems = processCraftingIndivsAndGroupsToDescription(this._craftIngrItemsToCheck,this._craftIngrGroupsToCheck);
+            if (ingItems.length > 0) {
+                detStr += "INGREDIENTS: "+ingItems;
+            }
+
+            var ingTools = processCraftingIndivsAndGroupsToDescription(this._craftToolItemsToCheck,this._craftToolGroupsToCheck);
+            if (ingTools.length > 0) {
+                detStr += "\nTOOLS: "+ingTools;
+            }
+
+
+            var ingStrus = processCraftingIndivsAndGroupsToDescription(this._craftStruItemsToCheck,this._craftStruGroupsToCheck);
+            if (ingStrus.length > 0) {
+                detStr += "\nSTRUCTURES: "+ingStrus;
+            }
+            
+            detStr += "\nTIME: apx " + this._craftingDuration/1000 + ' turns';
+            detStr += "\nSUCCESS RATE: "+ (this._craftingSuccessChance * 100).toFixed(0) + '%';
+        }
+        return detStr;
+    }
+/*
+    listeners: {
+        'details': function() {
+            var det = [];
+            return det;
+        },
+        'calcDetails': function() {
+            var det = [];
+//            det.push({key: 'foodDensity', value: this._foodDensity});
+            return det;
+        }
+    }
+    */
+};

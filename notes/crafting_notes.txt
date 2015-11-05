@@ -15,6 +15,14 @@ TODO:
 //////////////////////////////////////////////
 
 
+
+
+
+//////////////////////////////////////////////
+//////////////////////////////////////////////
+//////////////////////////////////////////////
+
+
 Game.ItemRepository.Symbol = {
 'blade': String.fromCharCode(124), // 124 |
 'polearm': String.fromCharCode(47), // 47 /
@@ -89,6 +97,7 @@ name: 'belt-sheath',
 //////////////////////////////////////////////
 //////////////////////////////////////////////
 
+material edge pole stick plate cord
 
 20. !!!!!!!!!!!!! design crafting system!
     two basic operations - break down (consume?) (create raw materials from something), and construct (build something from raw materials and/or other things)
@@ -96,14 +105,14 @@ name: 'belt-sheath',
         ! create a crafting tree
         ! create a crafting recipe set
     base materials & possible sources:
-        - surface
+x        - surface
             + leather (generally, creature parts)
             + suit scraps
             + dried mycelium (particular fungus, particular techniques?)
-        - cord
+x        - cord
             + sinew (generally, creature parts)
             + suit scraps
-        - sticks, small
+x        - sticks, small
             + dried mycelium (particular fungus, particular techniques?)
             + bone (generally, creature parts)
             + JAT scraps
@@ -114,15 +123,18 @@ name: 'belt-sheath',
         - adhesive
             + fungus stuff (particular fungus, particular techniques?)
             + creature-based
-        - edges
+x        - edges
             + stone shards (from worked stone)
             + suit scraps
             + teeth (generally, creature parts)
-        - hard material
+            + JAT scraps
+x        - hard material
             + suit scraps
             + scutes (generally, creature parts)
-            + worked stone (from rocks)
             + dried mycelium (particular fungus, particular techniques?)
+        - structural
+            + rocks
+            + worked stone (from rocks)
     created:
         - various weapons & armor
         - ammo
@@ -144,3 +156,191 @@ name: 'belt-sheath',
         - chemistry tools / cooking tools
             + chemistry/cooking energy source
         - material processing/acquiring tools
+        
+        
+-------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------
+
+
+ITEM STUFF
+
+weapons
+    melee
+        knife
+        short sword
+        long sword
+
+        mace
+        flail
+
+        staff
+        shod staff
+        JAT
+    ranged
+        rocks
+        throwing spikes
+        sling
+            shot
+        staff sling
+            rocks
+            shot
+        blowgun
+            darts
+        bow
+            arrows
+        air gun
+            shot
+            darts
+        plasma gun
+        taser
+armor
+    light leather
+    heavy leather
+    plated leather
+    kevlar-carbon suit
+    HEM, damaged
+    HEM, patched
+    HEM
+    HEM-A, damaged
+    HEM-A, patched
+    HEM-A
+"potions"
+    - heal hp
+    - fix bad state (blind, confused, ill, poison, etc.)
+    - feed
+    - boost
+        - combat
+        - awareness
+        - speed (base)
+    - offense (thrown)
+        - stink
+        - smoke cloud
+        - damage/poison
+        - damage/burn (chemical)
+knowledge
+    - maps
+    - notes
+    - plans
+    - crafting recipes
+    - locations of specific fixed special terrain features (e.g. pool, lava, sand fall, etc.)
+    - info about mobs
+        - general ('l'ook) info
+        - improved processing
+        - combat/interaction boni
+        - capable of establishing alliance (w/ individuals)
+resource gatherers
+    - pick (digging out minerals)
+    - seive (sorting minerals from sand & rubble)
+    - harvest tool (fungus et al)
+    - hunting knife (processing corpses, crude)
+    - dissecting kit (processing corpses, fine)
+    - shears (surfaces, cordage)
+    - flasks (liquids)
+    - hammer (mineral processing)
+    - saw (sticks, hard materials)
+crafting gates
+    - glassware (chemistry)
+    - hand tools (construction)
+    - ceramics (metal work, chemistry)
+    - magnets
+    - sterile/clean table
+    - protected space
+        - lab space
+        - work space
+food
+    - base nutrition
+    - beneficial side effect (indicates refinement possibilities)
+    - harmful side effect (indicates refinement possibilities (good and bad - poison->medicine))
+
+
+resources
+    * see section above (todo item) *
+
+
+mineral
+    stones
+        - pumice
+        - sandstone
+        - shale
+        - conglomerate
+        - scoria
+        - silica
+        - andesite
+        - basalt
+        - kimberlite
+        - chert
+        - gneiss
+        - travertine
+    crystals
+        - obsidian
+        - opal
+        - quartz
+        - diamond
+        - dolomite
+        - cinnabar
+        - chrysoberyl
+        - garnet
+        - stibnite
+        - topaz
+        - tourmaline
+        - 
+    metals
+        - iron
+        - copper
+        - silver
+        - gold
+        - bismuth
+        - lead
+        - nickel
+        - tin
+
+
+
+chemical
+- murky water
+    - salt
+    - arsenic
+    - sulfur
+    - iron
+    - copper
+    - calcium
+    - magnesium
+    - cadmium
+    - flouride
+    - mercury
+    - zinc
+- fungus pieces
+    - various organics
+- creature pieces
+    - various organics
+- processed minerals
+    - powdered
+    - dissolved
+    - oxidized
+    - heated
+
+
+
+STRUCTURES
+- forge (w/ heat source)
+- cooking hearth (w/ heat source)
+- lab table
+- glass furnace
+- kiln
+- door
+- trap
+    - dead drop
+    - pit
+    - snare
+    - spring strike
+    - energy/explosion
+- desk
+- wall
+- obelisk / pillar
+- flagstone flooring (prevents creature spawning)
+- still
+- paper shot
+
+
+

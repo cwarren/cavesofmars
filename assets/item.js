@@ -8,7 +8,8 @@ Game.Item = function(properties) {
 
     this._isWeapon = properties['isWeapon'] || false;
     this._isArmor = properties['isArmor'] || false;
-    this._isTool = properties['isTool'] || false;
+    this._isDigTool = properties['isDigTool'] || false || this.hasMixin('DigTool');
+    this._isCraftTool = properties['isCraftTool'] || false || this.hasMixin('CraftingTool');
     
     this._attackValue = properties['attackValue'] || 0;
     this._defenseValue = properties['defenseValue'] || 0;
@@ -105,14 +106,18 @@ Game.Item.prototype.isWeapon = function() {
 Game.Item.prototype.isArmor = function() {
     return this._isArmor;
 }
-Game.Item.prototype.isTool = function() {
-    return this._isTool;
+Game.Item.prototype.isDigTool = function() {
+    return this._isDigTool;
+}
+Game.Item.prototype.isCraftTool = function() {
+    return this._isCraftTool;
 }
 Game.Item.prototype.getUses = function() {
     var uses = [];
     if (this.isWeapon()) { uses.push('weapon'); }
     if (this.isArmor()) { uses.push('armor'); }
-    if (this.isTool()) { uses.push('tool'); }
+    if (this.isDigTool()) { uses.push('dig'); }
+    if (this.isCraftTool()) { uses.push('craft'); }
     if (this.hasMixin('Ammo')) { uses.push('ammo'); }
     return uses;
 }

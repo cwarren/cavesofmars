@@ -74,7 +74,7 @@ Game.Screen.playScreen = {
         return this._player;
     },
     enter: function() {
-        console.log('entered play screen');        
+        //console.log('entered play screen');        
 
 //        width = 80;
 //        height = 24;
@@ -93,7 +93,9 @@ Game.Screen.playScreen = {
         // Start the map's engine
 //        map.getEngine().start();
     },
-    exit: function() { console.log("Exited play screen."); },
+    exit: function() { 
+        //console.log("Exited play screen."); 
+    },
     getScreenOffsets: function() {
         // Make sure we still have enough space to fit an entire game screen
         var topLeftX = Math.max(0, this._player.getX() - (Game.getScreenWidth() / 2));
@@ -328,12 +330,18 @@ Game.Screen.playScreen = {
             return;
 
         } else if (gameAction === Game.Bindings.Actions.Inventory.INVENTORY_CRAFT) {
-            Game.sendMessage(this._player, "action INVENTORY_CRAFT not yet implemented"); Game.refresh();
+            this.showItemsSubScreen(Game.Screen.craftStep1Screen, this._player.getItems(),'You have nothing to craft.');
+//            Game.sendMessage(this._player, "action INVENTORY_CRAFT not yet implemented"); Game.refresh();
             return;
+            
         } else if (gameAction === Game.Bindings.Actions.Inventory.INVENTORY_USE) {
             Game.sendMessage(this._player, "action INVENTORY_USE not yet implemented"); Game.refresh();
             return;
 
+        } else if (gameAction === Game.Bindings.Actions.Knowledge.KNOWLEDGE_CRAFT) {
+            this.showItemsSubScreen(Game.Screen.craftRecipeKnowledgeScreen, this._player.getCraftingRecipes(),'You don\'t know any crafting recipes.');
+            return;
+        
         //----------------------------
         // world actions
         } else if (gameAction === Game.Bindings.Actions.World.LOOK) {
@@ -652,8 +660,10 @@ Game.Screen.ItemListScreen.prototype.render = function(display) {
             // Render at the correct row and add 1
             var item_symbol = this._displayItems[i].getColorDesignator()+this._displayItems[i].getChar()+Game.Screen.DEFAULT_COLOR_SETTER;
             display.drawText(0, 1 + row, Game.Screen.DEFAULT_COLOR_SETTER + letter + ' ' + selectionState + ' ' + item_symbol + ' ' +this._displayItems[i].getName() + suffix);
-            display.drawText(50, 1 + row, weightNote);
-            display.drawText(65, 1 + row, bulkNote);
+            if (this.showWeightBulk()) {
+                display.drawText(50, 1 + row, weightNote);
+                display.drawText(65, 1 + row, bulkNote);
+            }
             row++;
         }
     }
@@ -662,6 +672,10 @@ Game.Screen.ItemListScreen.prototype.render = function(display) {
             row++;
     }
 };
+
+Game.Screen.ItemListScreen.prototype.showWeightBulk = function() {
+    return true;
+}
 
 Game.Screen.ItemListScreen.prototype.executeOkFunction = function() {
     // Gather the selected items.
@@ -795,8 +809,21 @@ Game.Screen.inventoryScreen.handleInput = function(inputType, inputData) {
     } else if (gameAction === Game.Bindings.Actions.Inventory.INVENTORY_UNPACK) {
         this._parentScreen.showItemsSubScreen(Game.Screen.unpackScreen, this._player.getItems(),'You have no containers.');
         return;
+
+    } else if (gameAction === Game.Bindings.Actions.Inventory.INVENTORY_CRAFT) {
+        this._parentScreen.showItemsSubScreen(Game.Screen.craftStep1Screen, this._player.getItems(),'You have nothing to craft.');
+        return;
+
+    } else if (gameAction === Game.Bindings.Actions.Inventory.INVENTORY_USE) {
+        Game.sendMessage(this._player, "action INVENTORY_USE not yet implemented"); Game.refresh();
+        return;
+
+    } else if (gameAction === Game.Bindings.Actions.Knowledge.KNOWLEDGE_CRAFT) {
+        this._parentScreen.showItemsSubScreen(Game.Screen.craftRecipeKnowledgeScreen, this._player.getCraftingRecipes(),'You don\'t know any crafting recipes.');
+        return;
     }
-    
+
+
     //----------------------------
     // data nav actions
     if (gameAction === Game.Bindings.Actions.DataNav.PAGE_UP) {
@@ -1030,6 +1057,8 @@ Game.Screen.examineScreen = new Game.Screen.ItemListScreen({
 //                Game.sendMessage(this._player, descr);
                 Game.AuxScreen.infoScreen.setCurrentDetailInfo(descr);
 
+            } else {
+                Game.AuxScreen.infoScreen.setCurrentDetailInfo("");
             }
             //Game.sendMessage(this._player, '');
 
@@ -1124,7 +1153,7 @@ Game.Screen.unpackScreen = new Game.Screen.ItemListScreen({
     ok: function(selectedItems) {
         //console.log('item to unpack has been selected');
         Game.Screen.unpackScreen.selectedContainer = selectedItems[(Object.keys(selectedItems))[0]];
-        this._parentScreen.showItemsSubScreen(Game.Screen.unpackItemSelectionScreen, Game.Screen.unpackScreen.selectedContainer.getItems(),'You have nothing to pack.');
+        this._parentScreen.showItemsSubScreen(Game.Screen.unpackItemSelectionScreen, Game.Screen.unpackScreen.selectedContainer.getItems(),'You have nothing to unpack.');
         return;
     }
 });
@@ -1179,6 +1208,209 @@ Game.Screen.unpackItemSelectionScreen = new Game.Screen.ItemListScreen({
 Game.Screen.unpackItemSelectionScreen.getHelpSections = function() {
     return ['datanav'];
 };
+
+//-------------------
+
+Game.Screen.craftStep1Screen = new Game.Screen.ItemListScreen({
+    caption: function() {
+        return 'Choose items for crafting';
+    },
+    canSelect: true,
+    canSelectMultipleItems: true,
+    isAcceptable: function(item) {
+            return item && (item.hasMixin('CraftingIngredient') || item.hasMixin('CraftingBreakdown'));
+    },
+    _selectedIngredients: {},
+    _availableTools: {},
+    _availableStructures: {},
+    ok: function(selectedItems) {
+
+        //console.dir(selectedItems);
+        //console.dir(this._player.getItems());
+        //console.log('selectedItems[1] == '+selectedItems[1]);
+        //return true;
+        
+        this._selectedIngredients = selectedItems;
+        
+        var allItems = this._player.getItems();
+        this._availableTools = {};
+        for (var i=0;i<allItems.length;i++) {
+            if (selectedItems[i] === undefined && allItems[i].hasMixin('CraftingTool')) {
+                this._availableTools[i] = allItems[i];
+            }
+        }
+
+        console.log('TODO: implement crafting structure availability');
+        this._availableStructures = {};
+
+        //console.dir(this._selectedIngredients);
+        //console.dir(this._availableTools);
+        //console.dir(this._availableStructures);
+        //return true;
+        
+        // get list of recipes that are elegible given the selected items
+        var allKnownRecipes = this._player.getCraftingRecipes();
+        var viableRecipes = [];
+        for (var i=0; i<allKnownRecipes.length;i++) {
+            if (allKnownRecipes[i].canBeUsedWith(this._selectedIngredients,this._availableTools,this._availableStructures)) {
+                viableRecipes.push(allKnownRecipes[i]);
+            }
+        }
+                
+        //console.log('VIABLE RECIPES:');
+        //console.dir(viableRecipes);
+
+        //console.log('TODO: implement crafting step 2');
+        //return true;
+        
+        // show the recipe selection screen for those recipes
+        this._parentScreen.showItemsSubScreen(Game.Screen.craftStep2Screen, viableRecipes,'You don\'t know any recipes using those items.');
+        
+
+        return true;
+    }
+});
+
+Game.Screen.craftStep1Screen.getSelectedIngredients = function() {
+    return this._selectedIngredients;
+};
+
+Game.Screen.craftStep1Screen.getHelpSections = function() {
+    return ['datanav'];
+};
+
+
+//-------------------
+
+Game.Screen.craftStep2Screen = new Game.Screen.ItemListScreen({
+    caption: function() {
+        return 'Choose crafting recipe';
+    },
+    canSelect: true,
+    canSelectMultipleItems: false,
+    _selectedRecipe: '',
+    ok: function(selectedItems) {
+        // extract ingredients from inventory
+        // perform success check
+        // if successful, create result item and add it to inventory
+
+        this._selectedRecipe = selectedItems[Object.keys(selectedItems)[0]];
+        //console.log("selected recipe is");
+        //console.dir(this._selectedRecipe);
+
+        var incrementalActivityDuration = 50; // average of twenty craft steps per typical turn duration CSW NOTE: will need to generalize speed scaling to handle this kind of thing...
+        
+        Game.getPlayer().setupOngoingActivity(function(p) {
+            if (p.thePlayer.getOgaCumuDuration() < p.theRecipe.getCraftingDuration()*(1+ROT.RNG.getUniform())) {
+                Game.sendMessage(p.thePlayer,'You are working on %s ... ('+p.thePlayer.getOgaCounter()+') ...',[p.theRecipe.describeThe()]);
+            } else {
+                Game.sendMessage(p.thePlayer,'You have finshed your work on %s.',[p.theRecipe.describeThe()]);
+                p.thePlayer.setOgaInterrupt(true);
+                Game.Screen.craftStep2Screen.handleCraftFinish();
+            }
+
+            p.thePlayer.setLastActionDuration(p.craftDur);
+            p.thePlayer.raiseEvent('onActed');
+            p.thePlayer.stepOgaCounter()
+        },
+        {thePlayer: Game.getPlayer(), theRecipe: this._selectedRecipe, craftDur: incrementalActivityDuration},
+        incrementalActivityDuration);
+        Game.getPlayer().setLastActionDuration(1);
+        
+        return true;
+    }
+});
+
+Game.Screen.craftStep2Screen.getHelpSections = function() {
+    return ['datanav'];
+};
+
+Game.Screen.craftStep2Screen.getSelectedRecipe = function() {
+    return this._selectedRecipe;
+};
+
+Game.Screen.craftStep2Screen.showWeightBulk = function() {
+    return false;
+}
+
+Game.Screen.craftStep2Screen.handleCraftFinish = function() {
+    var ings = Game.Screen.craftStep1Screen.getSelectedIngredients();
+    var p = Game.getPlayer();
+    var idxAry = Object.keys(ings);
+    for (var i=0;i<idxAry.length;i++) {
+        p.extractThisItem(ings[idxAry[i]]);
+    }
+
+    var successCheck = ROT.RNG.getUniform();
+    //console.log('success check is '+successCheck);
+    if (successCheck <= this._selectedRecipe.getCraftingSuccessChance()) {
+        /*
+        console.log("success count table:");
+        console.dir(this._selectedRecipe.getCraftingSuccessCountTable());
+        console.log("success table random is "+(this._selectedRecipe.getCraftingSuccessCountTable()).random());
+        console.log("success table random is "+(this._selectedRecipe.getCraftingSuccessCountTable()).random());
+        console.log("success table random is "+(this._selectedRecipe.getCraftingSuccessCountTable()).random());
+        console.log("success table random is "+(this._selectedRecipe.getCraftingSuccessCountTable()).random());
+        console.log("success table random is "+(this._selectedRecipe.getCraftingSuccessCountTable()).random());
+        console.log("success table random is "+(this._selectedRecipe.getCraftingSuccessCountTable()).random());
+        */
+        var numSuccesses = (this._selectedRecipe.getCraftingSuccessCountTable()).random();
+        //console.log("crafting numSuccesses is "+numSuccesses);
+        for (var i=0;i<numSuccesses;i++) {
+            var newItem = this._selectedRecipe.getCraftingSuccessObject();
+            p.addItem(newItem);
+            Game.sendMessage(this._player,'You got %s',[newItem.describeA()]);
+        }
+        if (numSuccesses > 1) {
+            Game.sendMessage(this._player,'You got %s items from your work',[numSuccesses]);
+        }
+    } else {
+        Game.sendMessage(this._player,'Your %s project didn\'t work.',[this._selectedRecipe.getName()]);
+    }
+}
+
+//-------------------
+
+Game.Screen.craftRecipeKnowledgeScreen = new Game.Screen.ItemListScreen({
+    caption: function() {
+        return 'You know these crafting recipes; choose one to learn more about it';
+    },
+    canSelect: true,
+    canSelectMultipleItems: false,
+    ok: function(selectedItems) {
+
+        //console.log('SELECTED RECIPE:');
+        //console.dir(selectedItems);
+//        return true;
+
+        var recipe = selectedItems[Object.keys(selectedItems)[0]];
+
+        var descr = recipe.getDescription();
+        if (descr) {
+            if (recipe.getRecipeType() == 'compose') {
+                descr = "make "+descr;
+            }
+            Game.AuxScreen.infoScreen.setCurrentShortInfo(descr);
+
+        }
+        Game.AuxScreen.infoScreen.setCurrentDetailInfo(recipe.details());
+
+
+        //Game.AuxScreen.avatarScreen.render();
+        Game.refresh();
+
+
+        return true;
+    }
+});
+
+Game.Screen.craftRecipeKnowledgeScreen.getHelpSections = function() {
+    return ['datanav'];
+};
+
+Game.Screen.craftRecipeKnowledgeScreen.showWeightBulk = function() {
+    return false;
+}
 
 
 ////////////////////////////////////////////////////////////
@@ -1879,34 +2111,41 @@ Game.Screen.storyScreen = {
                 /// CODE FOR ITEM TESTING!!!!
                 if (itemTesting) {
                     console.log('item testing code is active');
-                
-//                player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('human corpse'),player.getX(),player.getY(),player.getZ());
-                player.addItem(Game.ItemRepository.create('sack'));
-                player.addItem(Game.ItemRepository.create('shoulder-strap'));
-                player.addItem(Game.ItemRepository.create('shoulder-strap'));
-                player.addItem(Game.ItemRepository.create('bandolier'));
-                player.addItem(Game.ItemRepository.create('stone shot'));
-                player.addItem(Game.ItemRepository.create('stone shot'));
-                player.addItem(Game.ItemRepository.create('iron shot'));
-                player.addItem(Game.ItemRepository.create('iron shot'));
 
-                for (var i=0;i<6;i++) {
-                    player.addItem(Game.ItemRepository.createRandom());
-                    player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('lodestone'),player.getX(),player.getY(),player.getZ());
-                }
-                
-                for (var i=0;i<24;i++) {
-                    player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.createRandom(),player.getX(),player.getY(),player.getZ());
-//                    player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('human corpse'),player.getX(),player.getY(),player.getZ());
-//                    player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('geodic nut'),player.getX(),player.getY(),player.getZ());
-//                    player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('geodic nut'),player.getX(),player.getY(),player.getZ());
-//                    player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('spore-y mass'),player.getX(),player.getY(),player.getZ());
-//                    player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('lodestone'),player.getX(),player.getY(),player.getZ());
-                }
-/*
-                  player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('plated leather armor'),player.getX(),player.getY(),player.getZ());
+    //                player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('human corpse'),player.getX(),player.getY(),player.getZ());
+                   // player.addItem(Game.ItemRepository.create('sack'));
+                   // player.addItem(Game.ItemRepository.create('shoulder-strap'));
+                   // player.addItem(Game.ItemRepository.create('shoulder-strap'));
+                   // player.addItem(Game.ItemRepository.create('bandolier'));
+                   // player.addItem(Game.ItemRepository.create('stone shot'));
+                   // player.addItem(Game.ItemRepository.create('stone shot'));
+                   // player.addItem(Game.ItemRepository.create('iron shot'));
+                   // player.addItem(Game.ItemRepository.create('iron shot'));
+                    player.addItem(Game.ItemRepository.create('sinew'));
+                    player.addItem(Game.ItemRepository.create('sinew'));
+                    player.addItem(Game.ItemRepository.create('leather piece'));
+                    player.addItem(Game.ItemRepository.create('obsidian shard'));
+                    player.addItem(Game.ItemRepository.create('iron nugget'));
+                    player.addItem(Game.ItemRepository.create('iron nugget'));
+                    player.addItem(Game.ItemRepository.create('stone hammer'));
 
-                */
+                    for (var i=0;i<6;i++) {
+                        player.addItem(Game.ItemRepository.createRandom());
+                        player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('lodestone'),player.getX(),player.getY(),player.getZ());
+                    }
+
+                    for (var i=0;i<9;i++) {
+                        player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.createRandom(),player.getX(),player.getY(),player.getZ());
+    //                    player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('human corpse'),player.getX(),player.getY(),player.getZ());
+    //                    player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('geodic nut'),player.getX(),player.getY(),player.getZ());
+    //                    player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('geodic nut'),player.getX(),player.getY(),player.getZ());
+    //                    player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('spore-y mass'),player.getX(),player.getY(),player.getZ());
+    //                    player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('lodestone'),player.getX(),player.getY(),player.getZ());
+                    }
+    /*
+                      player.getMap().attemptAddItemAtOrAdjacentTo(Game.ItemRepository.create('plated leather armor'),player.getX(),player.getY(),player.getZ());
+
+                    */
                 }
                 /// CODE FOR ITEM TESTING!!!!
                 /////////////////////////////
@@ -2040,7 +2279,7 @@ Game.Screen.fallingScreen = {
         return [];
     },
     enter: function() {
-        console.log("Entered falling screen."); 
+        //console.log("Entered falling screen."); 
         this._player = Game.getPlayer();
         this._fallLine = '';
         for (var i=0;i<Game.getScreenWidth();i++) {
@@ -2057,7 +2296,7 @@ Game.Screen.fallingScreen = {
         Game.AuxScreen.helpScreen.refresh(this.getHelpSections());
     },
     exit: function() {
-        console.log("Exited falling screen.");
+        //console.log("Exited falling screen.");
     },
     render: function(display) {
         var wallRep = Game.Tile.STANDARD_WALL_TILES.random().getRepresentation();
@@ -2139,10 +2378,12 @@ Game.Screen.winScreen = {
         return ['winning'];
     },
     enter: function() {
-        console.log("Entered win screen."); 
+        //console.log("Entered win screen."); 
         Game.AuxScreen.helpScreen.refresh(this.getHelpSections());
     },
-    exit: function() { console.log("Exited win screen."); },
+    exit: function() {
+        //console.log("Exited win screen.");
+    },
     render: function(display) {
         // Render our prompt to the screen
         display.drawText(2,3,this._texts[this._text_idx]);
@@ -2193,7 +2434,8 @@ Game.Screen.winScreen = {
 
 // Define our losing screen
 Game.Screen.loseScreen = {
-    enter: function() {    console.log("Entered lose screen.");
+    enter: function() {    
+        //console.log("Entered lose screen.");
         Game.AuxScreen.helpScreen.refresh(this.getHelpSections());
         Game.AuxScreen.infoScreen.setCurrentShortInfo('');
         Game.AuxScreen.infoScreen.setCurrentDetailInfo('');
@@ -2201,7 +2443,9 @@ Game.Screen.loseScreen = {
         Game.getPlayer().resetMessages();
         Game.AuxScreen.messageScreen.refresh();
     },
-    exit: function() { console.log("Exited lose screen."); },
+    exit: function() {
+        //console.log("Exited lose screen.");
+    },
     getHelpSections: function() {
         return ['losing'];
     },
