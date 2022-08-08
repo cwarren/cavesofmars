@@ -1,0 +1,13 @@
+This license was added 2022/08/08, and applies retroactively
+
+The source code for Caves of Mars is fully open and free to use,
+re-use, modify, build-on, etc. for personal, professional, commercial,
+and all other uses, limited only by the licenses of the rot.js and
+sprintf.js libraries (and if you pull out those, then it's all fair
+game).
+
+If you feel like you rely on it enough that you want to credit me
+then I'd be happy with a mention in game credits or in the source
+code, but there's no obligation in that regard.
+
+Take it all, make something great, and have fun!
